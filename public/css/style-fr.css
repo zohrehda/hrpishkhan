@@ -1,0 +1,81 @@
+@font-face {
+    font-family: 'Yekan';
+    src: url('/fonts/Yekan.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+table {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.foods .list-group {
+    text-align: right;
+    font-family: Yekan;
+}
+
+.foods .list-group img {
+    width: 20px;
+    margin-right: 20px;
+}
+
+
+.food-reserve select,td {
+    font-family: 'Yekan';
+}
+
+.food-plan .status-bar {
+    font-size: 1.2rem;
+}
+
+.food-plan .food-select {
+    width: 100%;
+}
+
+
+.food-report-daily a {
+    color: white;
+}
+
+.food-report-daily a:hover {
+    color: white;
+    text-decoration: none;
+}
+.food-report-daily .info-bar
+{
+    direction: rtl;
+    text-align: right;
+    font-family: 'Yekan';
+}
+
+.food-report-weekly .info-bar
+{
+    direction: rtl;
+    text-align: right;
+    font-family: 'Yekan';
+}
+
+.line-through {
+    text-decoration: line-through;
+}
+
+.expire-alert .expired {
+    font-size: 20px;
+}
+
+
+.sidebar-sticky li {
+
+    list-style: none;
+}
+
+
+.food-reserve .tab-content .tab-pane {
+    font-size: 20px;
+    padding: 20px 0;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

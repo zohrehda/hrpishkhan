@@ -1,0 +1,47 @@
+<p>
+    Dear Hiring Manager,
+    Please read the following terms and conditions carefully for opening the job position as it sets out an agreement between you and the Talent Acquisition team.
+    The talent acquisition team will be responsible to find the right candidate for your opening in a timely manner, and to that end, we also need you to live up to your commitments.  
+</p>
+<p>
+    1. Before the interviews start, the list of the interviewers should be provided. Eligibility criteria for interviewers mentioned below must be met:
+    <br>
+    • Minimum 1 year of experience at Snapp and minimum mid-level in performance appraisal; Interviewers with the high-performance in the last Performance appraisal are given priority.
+    <br>
+
+    • The interviewer for each position must be at least one level higher than that position. (e.g., for Specialist/Engineer interviewers should be at least Senior Specialist/Senior Engineer)
+    <br>
+
+    2. All the interviewers have to read ‘’the hiring managers’ interviewing guide’’ before starting the process.
+    <br>
+
+    3. The hiring managers are responsible for analyzing the job thoroughly and determine the required skills and competencies to add to the competencies section in the requisition form. 
+    <br>
+
+    4. A scorecard must be created based on the determined skills and competencies, and all the candidates must be evaluated fairly based on the same criteria. The process won’t start without scorecards with specified criteria, and it should be designed with cooperation of TA team and HM.
+    <br>
+
+    5. The talent acquisition team is responsible for posting jobs and contacting candidates. Hiring managers and their teams must not contact candidates directly in any steps. (e.g., scheduling interviews, sending tasks, and so on). The consequence of direct connection will be putting position on hold for 1 week and if it happens again, the position will be put on hold for 1 month.
+    <br>
+
+    6. Selected CVs will be placed in the HR selected pipeline by HR. Hiring managers and interviewers are responsible for screening CVs in 3 working days; otherwise the position will be put on hold for 1 week, and If it happens again the position will be put on hold for 1 month.
+    <br>
+
+    7. Hiring managers and interviewers must not disqualify CVs in any steps (while screening CVs, after interviews, after reviewing tasks and so on). They should write their comment and evaluations so only the TA team will change the status of the candidate.
+    <br>
+    8. For rescheduling interviews when needed, hiring managers and interviewers have to inform the TA team at least one day in advance since it would create a bad experience for interviewees.
+    <br>
+    9. Only technical issues should be considered in technical interviews based on the designed Scorecard questions, and Items such as salary and contract must not be discussed.
+    <br>
+    10. All interviewers must be present at the meeting in a timely manner. If the interview sessions start with a delay of more than 15 minutes and it repeats 3 times or the interviewer doesn't participate in the interview (even once), new interviews won’t be coordinated till the new interviewer is introduced by the hiring manager. If the issues repeat with the new interviewer, the position will be put on hold for 1 month.
+    <br>
+    11. The evaluation must be based on the scorecard and written in full.
+    <br>
+    12. Interviewers are responsible for sharing the evaluation within 2 working days after the interview. If it does not happen, new interviews won’t be scheduled and the position will be put on hold till the interviewer share the evaluation on the scorecard.
+    <br>
+
+</p>
+<p>
+    By starting the hiring process, you agree to be bound by all of the terms & conditions.
+    Thank you in advance!
+</p>
