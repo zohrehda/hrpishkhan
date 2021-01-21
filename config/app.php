@@ -179,6 +179,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Adldap\Laravel\AdldapServiceProvider::class,
+        Adldap\Laravel\AdldapAuthServiceProvider::class,
+
 
 
 
@@ -235,6 +238,8 @@ return [
 
         'Verta' => Hekmatinasser\Verta\Verta::class,
         'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class ,
+
+        'Adldap' => Adldap\Laravel\Facades\Adldap::class,
 
 
 
