@@ -20,15 +20,15 @@
 
     "require": {
         "php": "^7.2",
+        "adldap2/adldap2-laravel": "^6.1",
         "biscolab/laravel-recaptcha": "^4.0",
         "carlos-meneses/laravel-mpdf": "^2.1",
         "fideloper/proxy": "^4.0",
         "hekmatinasser/verta": "^1.10",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
-        "niklasravnsborg/laravel-pdf": "^4.0" ,
-        "morpheus/swagger-codegen": "dev-main"
-
+        "morpheus/swagger-codegen": "dev-main",
+        "niklasravnsborg/laravel-pdf": "^4.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
