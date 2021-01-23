@@ -5,7 +5,7 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::redirect('/', 'login');
 
-Route::group(['prefix' => 'panel', 'middleware' => ['auth:web', 'verified']], function () {
+Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]], function () {
     Route::get('dashboard', 'RequisitionController@index')->name('dashboard');
     Route::group(['prefix' => 'requisitions'], function () {
         Route::get('create', 'RequisitionController@create')->name('requisitions.create');
