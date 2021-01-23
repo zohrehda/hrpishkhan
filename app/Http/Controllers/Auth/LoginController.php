@@ -37,4 +37,9 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /*public function username()
+    {
+ return config('ldap_auth.identifiers.ldap.locate_users_by');
+    }*/
 }
