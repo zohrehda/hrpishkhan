@@ -328,6 +328,7 @@
                             ajax: {
                                 url: '/panel/requisitions/customizeReceiver/ldapUsers',
                                 dataType: 'json' ,
+                                delay:250 ,
                                 cache: true ,
                                 //matcher: matchStart,
 
