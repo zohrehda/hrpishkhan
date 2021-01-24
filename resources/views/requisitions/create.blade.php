@@ -195,14 +195,14 @@
                             </select>
                             <label for="mission">Mission</label>
                             <textarea type="text" id="mission" name="mission"
-                                      placeholder="{{config('placeholders.mission')}}"
+                                      placeholder="{{config('placeholders.mission')}}" rows="3"
                                       class="form-control form-space">{{ old('mission') }}</textarea>
                             <label for="competency">Competency</label>
-                            <textarea type="text" id="competency" name="competency"
+                            <textarea type="text" id="competency" name="competency" rows="3"
                                       placeholder="{{config('placeholders.competency')}}"
                                       class="form-control form-space">{{ old('competency') }}</textarea>
                             <label for="outcome">Outcome</label>
-                            <textarea type="text" id="outcome" name="outcome"
+                            <textarea type="text" id="outcome" name="outcome" rows="3"
                                       placeholder="{{config('placeholders.outcome')}}"
                                       class="form-control form-space">{{ old('outcome') }}</textarea>
                             <label for="about" class='optional'>about the team</label>
