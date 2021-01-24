@@ -16,8 +16,11 @@
 
     {{-- <script src="{{ asset('js/app.js') }}" defer></script>
      <script src="{{ asset('js/jquery-2.2.4.min.js') }}"></script>--}}
+{{--
     <script src="{{ asset('js/select2.min.js') }}" defer></script>
+--}}
     <script src="{{ asset('js/panel.js') }}"></script>
+    <script src="{{ asset('js/functions.js') }}"></script>
 
 
     <!-- Fonts -->
@@ -29,7 +32,9 @@
    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
     <link href="{{ asset('css/panel.css') }}" rel="stylesheet">
     <link href="{{ asset('css/side-panel.css') }}" rel="stylesheet">
+{{--
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet"/>
+--}}
     <link href="{{ asset('css/style-fr.css') }}" rel="stylesheet"/>
     <link href="{{asset('MD.BootstrapPersianDateTimePicker/dist/jquery.md.bootstrap.datetimepicker.style.css')}}" rel="stylesheet"/>
 

@@ -14,10 +14,14 @@ use Illuminate\Support\Facades\Validator;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use Adldap\Laravel\Facades\Adldap;
+use Illuminate\Support\Str;
+use Adldap\Laravel\Commands\Import;
 
 
 class RequisitionController extends Controller
 {
+
     public function create(Request $request)
     {
 
@@ -81,10 +85,9 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
-        // dd( );
-        // dd($request->post('level'));
+        $determiners = $request->post('determiners', []);
+       // dd($determiners);
 
-        //  session(['termAccepted' => 1]);
 
         $messages = [
             'determiners.*.distinct' => "Can't select same determiner on two or more progresses"
@@ -129,6 +132,11 @@ class RequisitionController extends Controller
         $determiners = $request->post('determiners', []);
         //  $determiners = $determiners + $hr_manager;
 
+        foreach ($determiners as $d)
+        {
+            $this->ImportLdapToModel($d) ;
+        }
+
 
         $requisition = new Requisition();
         $requisition->department = $request->post('department');
@@ -146,7 +154,8 @@ class RequisitionController extends Controller
         $requisition->field_of_study = $request->post('field_of_study');
         $requisition->degree = $request->post('degree');
         $requisition->owner_id = Auth::id();
-        $requisition->determiner_id = array_values($determiners)[0];
+     //   $requisition->determiner_id = array_values($determiners)[0];
+        $requisition->determiner_id = User::where('email',array_values($determiners)[0])->first()->id;
         $requisition->is_full_time = $request->post('time');
         $requisition->is_new = $request->post('hiring_type');
         $requisition->replacement = $request->post('replacement');
@@ -161,14 +170,15 @@ class RequisitionController extends Controller
         $requisition->save();
 
         $sender = User::find(Auth::id());
-        $recipient = User::find(array_values($determiners)[0])  ;
-        event(new RequisitionSent($sender,$recipient));
+        $recipient = User::find(array_values($determiners)[0]);
+        event(new RequisitionSent($sender, $recipient));
 
         foreach ($determiners as $key => $value) {
 
             $requisition->progresses()->create([
                 'requisition_id' => $requisition->id,
-                'determiner_id' => $value,
+               // 'determiner_id' => $value,
+                'determiner_id' => User::where('email',$value)->first()->id,
                 'role' => $key
             ]);
             //   $user=User::find()
@@ -192,7 +202,7 @@ class RequisitionController extends Controller
 
     public function update(Request $request)
     {
-        $requisition=Requisition::find($request->post('id')) ;
+        $requisition = Requisition::find($request->post('id'));
         $validator = Validator::make($request->all(), [
             'fa_title' => 'required',
             'en_title' => 'required',
@@ -273,6 +283,7 @@ class RequisitionController extends Controller
     public function index()
     {
 
+
         $pending = Auth::user()->pending_determiner_requisitions;
         $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
         $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions);
@@ -289,4 +300,52 @@ class RequisitionController extends Controller
         return User::whereNotIn('id', [Auth::id()/*, User::hr_manager()->id*/])
             ->get(['id', 'email']);
     }
+
+    public function ImportLdapToModel($userPrincipalName)
+    {
+        $user = Adldap::search()->users()->findBy('userPrincipalName', $userPrincipalName);
+        $credentials = [
+            'email' => $user->getEmail(),
+        ];
+
+// Create the importer:
+        $importer = new Import($user, new User(), $credentials);
+
+// Run the importer. The synchronized *unsaved* model will be returned:
+        $model = $importer->handle();
+
+// Save the returned model.
+        $model->save();
+    }
+
+    public function getLdapUsers($userPrincipalName)
+    {
+
+        // $users = Adldap::search()->users()->get();
+        $user = Adldap::search()->users()->findBy('userPrincipalName', $userPrincipalName);
+
+        return $user;
+    }
+
+    public function ldapUsers(Request $request)
+    {
+        $term=$request->input('term') ;
+       $users = Adldap::search()->where('userPrincipalName','!=',Auth::user()->email)->whereStartsWith('userPrincipalName',$term)->get();
+        $users=  $users->map(function ($item,$key)
+       {
+         return $item->userPrincipalName [0] ;
+       })->toArray() ;
+
+     $result['results']=[] ;
+     foreach ($users as $k=>$v)
+     {
+         $record=[] ;
+         $record['id']=$v ;
+         $record['text']=$v ;
+         $result['results'][]=$record ;
+     }
+     return json_encode($result) ;
+    }
+
+
 }

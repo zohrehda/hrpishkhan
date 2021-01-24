@@ -220,17 +220,34 @@
                             //    var o = new Option(val, key);
                             $('select[name="' + select_name + '" ]').append('   <option selected disabled>Empty</option>')
 
-                            $.each(response.users, function (key, val) {
+                      /*      $.each(response.users, function (key, val) {
                                 var o = new Option(val, key);
                                 $('select[name="' + select_name + '" ]').append(o)
-                            })
+                            })*/
 
 
-                            i++
+                            i++ ;
 
 
-                        })
-                        $('.approver').select2()
+                        }) ;
+                    //    $('.approver').select2() ;
+
+                        $('.approver').select2({
+                            ajax: {
+                                url: "/panel/requisitions/ldapUsers",
+                                dataType: 'json' ,
+                                templateResult: function (item) {
+                                    return format(item, false);
+                                },
+                                matcher: matchStart,
+                              /*  delay: 250,
+                                placeholder: 'Search in users',
+                                minimumInputLength: 1,*/
+
+
+                                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                            }
+                        });
 
 
                     }
@@ -242,7 +259,7 @@
 
 
             if ($('select[name="department"]').val() != null) {
-             
+
 
                 $('.form-receivers-part').empty();
                 var department_val = $('select[name="department"]').val()
@@ -297,17 +314,25 @@
                             //    var o = new Option(val, key);
                             $('select[name="' + select_name + '" ]').append('   <option selected disabled>Empty</option>')
 
-                            $.each(response.users, function (key, val) {
+                           /* $.each(response.users, function (key, val) {
                                 var o = new Option(val, key);
                                 $('select[name="' + select_name + '" ]').append(o)
-                            })
+                            }) ;*/
 
 
-                            i++
+                            i++ ;
 
 
-                        })
-                        $('.approver').select2()
+                        });
+                        $('.approver').select2({
+                            ajax: {
+                                url: '/panel/requisitions/customizeReceiver/ldapUsers',
+                                dataType: 'json' ,
+                                //matcher: matchStart,
+
+                                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                            }
+                        });
 
 
                     }

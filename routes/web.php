@@ -15,6 +15,8 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
         Route::get('{requisition}/destroy', 'RequisitionController@destroy')->name('requisitions.destroy');
         Route::post('{requisition}/determine', 'RequisitionController@determine')->name('requisitions.determine');
         Route::post('/customizeReceiver', 'RequisitionController@customizeReceiver')->name('requisitions.customizeReceiver');
+        Route::get('/ldapUsers', 'RequisitionController@ldapUsers')->name('requisitions.ldapUsers');
+
     });
 
 
