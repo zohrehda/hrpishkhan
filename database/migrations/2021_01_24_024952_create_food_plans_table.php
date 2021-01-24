@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFoodReservedTable extends Migration
+class CreateFoodPlansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateFoodReservedTable extends Migration
      */
     public function up()
     {
-        Schema::create('food_reserved', function (Blueprint $table) {
-            $table->integer('id');
-            $table->integer('user_id');
+        Schema::create('food_plans', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('date');
-            $table->integer('food_id');
+            $table->string('foods_id');
 
         });
     }
@@ -29,6 +28,6 @@ class CreateFoodReservedTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('food_reserved');
+        Schema::dropIfExists('food_plans');
     }
 }

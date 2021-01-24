@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFoodReservedWeekTable extends Migration
+class CreateFoodReservedWeek extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,10 @@ class CreateFoodReservedWeekTable extends Migration
     public function up()
     {
         Schema::create('food_reserved_week', function (Blueprint $table) {
-            $table->integer('id');
+            $table->bigIncrements('id');
             $table->string('date_range');
             $table->integer('user_id');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
-
+            $table->timestamps();
         });
     }
 

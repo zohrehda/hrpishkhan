@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFoodPlansExpireDateTable extends Migration
+class CreateFoodReserved extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateFoodPlansExpireDateTable extends Migration
      */
     public function up()
     {
-        Schema::create('food_plans_expire_date', function (Blueprint $table) {
-            $table->integer('id');
-            $table->string('plan_date_range');
-            $table->string('expire');
+        Schema::create('food_reserved', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->integer('user_id');
+            $table->string('date');
+            $table->integer('food_id');
 
         });
     }
@@ -28,6 +29,6 @@ class CreateFoodPlansExpireDateTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('food_plans_expire_date');
+        Schema::dropIfExists('food_reserved');
     }
 }
