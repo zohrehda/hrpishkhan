@@ -328,6 +328,7 @@
                             ajax: {
                                 url: '/panel/requisitions/customizeReceiver/ldapUsers',
                                 dataType: 'json' ,
+                                cache: true ,
                                 //matcher: matchStart,
 
                                 // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
