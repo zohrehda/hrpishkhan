@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\RequisitionAccepted;
+use App\Events\RequisitionSent;
 use App\Jobs\SendEmail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendEmailToOwner
+class SendNewEmail
 {
     /**
      * Create the event listener.
@@ -22,10 +22,10 @@ class SendEmailToOwner
     /**
      * Handle the event.
      *
-     * @param  RequisitionAccepted  $event
+     * @param  RequisitionSent  $event
      * @return void
      */
-    public function handle(RequisitionAccepted $event)
+    public function handle(RequisitionSent $event)
     {
         $job=new SendEmail($event->sender,$event->recipient,$event->subject,$event->content)  ;
         dispatch($job) ;

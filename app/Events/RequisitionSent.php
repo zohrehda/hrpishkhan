@@ -25,12 +25,12 @@ class RequisitionSent
     public $content;
 
 
-    public function __construct($sender,$recipient)
+    public function __construct($sender, $recipient)
     {
         $this->sender = $sender;
         $this->recipient = $recipient;
         $this->subject = 'new Requisition';
-        $this->content = 'you have new Requisition pending.';
+        $this->content = "you have new Requisition pending." . "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
 
     }
 

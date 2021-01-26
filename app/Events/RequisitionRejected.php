@@ -10,27 +10,26 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RequisitionAccepted
+class RequisitionRejected
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $sender;
+    public $recipient;
+    public $subject;
+    public $content;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public $sender;
-    public $recipient;
-    public $subject;
-    public $content;
-
-
     public function __construct($sender,$recipient)
     {
         $this->sender = $sender;
         $this->recipient = $recipient;
-        $this->subject = 'Accepted Requisition';
-        $this->content = 'your Requisition has been accepted.'. "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
+        $this->subject = 'Rejected Requisition';
+        $this->content = 'Requisition has been Rejected.'. "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
 
     }
 

@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
-use App\Listeners\SendEmailToOwner;
-use Illuminate\Auth\Events\Registered;
+use App\Events\RequisitionAccepted;
+use App\Events\RequisitionRejected;
 use App\Events\RequisitionSent;
-use App\Listeners\SendEmialToHeader;
+use App\Listeners\SendAcceptedEmail;
+use App\Listeners\SendNewEmail;
+use App\Listeners\SendRejectedEmail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
@@ -19,11 +22,16 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         RequisitionSent::class => [
-            SendEmialToHeader::class,
+            SendNewEmail::class,
         ],
         RequisitionAccepted::class => [
-            SendEmailToOwner::class,
-        ]
+            SendAcceptedEmail::class,
+        ],
+
+        RequisitionRejected::class => [
+            SendRejectedEmail::class,
+        ],
+
 
     ];
 
