@@ -70,7 +70,7 @@
                         </ul>
 
                     </li>
-                    @if(\Illuminate\Support\Facades\Auth::user()->role=='supervisor')
+                    {{--@if(\Illuminate\Support\Facades\Auth::user()->role=='supervisor')
                         <li class="nav-item">
                             <a class="nav-link top-link cursor-pointer "
                             >Reservation </a>
@@ -123,7 +123,7 @@
                                 Food Reservation </a>
 
                         </li>
-                    @endif
+                    @endif--}}
 
 
 

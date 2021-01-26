@@ -21,7 +21,7 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
 
 
     /* Food reservation routes*/
-    Route::group(['prefix' => 'foods', 'namespace' => 'FoodReservation', 'middleware' => 'checkUserRole' ] , function () {
+    /*Route::group(['prefix' => 'foods', 'namespace' => 'FoodReservation', 'middleware' => 'checkUserRole' ] , function () {
         Route::get('/', 'FoodsController@index')->name('FoodReservation.foods.index');
         Route::post('/', 'FoodsController@store')->name('FoodReservation.foods.store');
         Route::get('/delete/{id}', 'FoodsController@delete')->name('FoodReservation.foods.delete');
@@ -30,7 +30,6 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
 
 
     });
-
     Route::group(['prefix' => 'food-plan', 'namespace' => 'FoodReservation', 'middleware' => 'checkUserRole'], function () {
         Route::get('/{week_date}', 'FoodPlansController@index')->name('FoodReservation.foodPlans.index');
         Route::post('/store', 'FoodPlansController@store')->name('FoodReservation.foodPlans.store');
@@ -40,14 +39,12 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
     Route::group(['prefix' => 'food-reserve', 'namespace' => 'FoodReservation'], function () {
         Route::get('/{week_date}', 'FoodsReserveController@index')->name('FoodReservation.FoodReserve.index');
         Route::post('/store', 'FoodsReserveController@store')->name('FoodReservation.FoodReserve.store');
-    }
-    );
-
+    });
     Route::group(['prefix' => 'food-report', 'namespace' => 'FoodReservation', 'middleware' => 'checkUserRole'], function () {
         Route::get('/weekly/{week_date?}', 'FoodReportsController@weekly')->name('FoodReservation.food-report.weekly');
         Route::get('/daily/{day_date?}', 'FoodReportsController@daily')->name('FoodReservation.food-report.daily');
         Route::get('/createPDF', 'FoodReportsController@createPDF')->name('FoodReservation.food-report.createPDF');
-    }
+    });*/
 
-    );;
 });
+
