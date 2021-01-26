@@ -36,7 +36,7 @@ class SendEmail implements ShouldQueue
     public $subject;
     public $content;
 
-    public function __construct( $sender,$recipient, $subject, $content)
+    public function __construct($sender, $recipient, $subject, $content)
     {
         $this->sender = $sender;
         $this->recipient = $recipient;
@@ -52,7 +52,7 @@ class SendEmail implements ShouldQueue
      */
     public function handle()
     {
-      /*  // Configure HTTP bearer authorization: BearerAuth
+        // Configure HTTP bearer authorization: BearerAuth
         $token = Config('morpheus.token');
         $base_url = config('morpheus.base_url');
 
@@ -75,58 +75,58 @@ class SendEmail implements ShouldQueue
             $apiInstance->sendEmail($body);
         } catch (Exception $e) {
             echo 'Exception when calling EmailApi->sendEmail: ', $e->getMessage(), PHP_EOL;
-        }*/
+        }
 
 
     }
 
-   /* public function handle()
-    {
-        //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
+    /* public function handle()
+     {
+         //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
 
-        $token = Config('morpheus.token');
-        $base_url = config('morpheus.base_url');
-        $resourcePath = '/api/email';
+         $token = Config('morpheus.token');
+         $base_url = config('morpheus.base_url');
+         $resourcePath = '/api/email';
 
-        $headers = [
-            'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json',
-        ];
+         $headers = [
+             'Authorization' => 'Bearer ' . $token,
+             'Accept' => 'application/json',
+         ];
 
-        $data = [
-            'sender' => ['email' => $this->sender->email],
-            'recipients' => ['email' => $this->recipient->email],
-            'reply_to' => [],
-            'subject' => $this->subject,
-            'content' => $this->content,
-            'parameters' => [],
-        ];
-        $client = new Client(['base_uri' => $base_url]);
+         $data = [
+             'sender' => ['email' => $this->sender->email],
+             'recipients' => ['email' => $this->recipient->email],
+             'reply_to' => [],
+             'subject' => $this->subject,
+             'content' => $this->content,
+             'parameters' => [],
+         ];
+         $client = new Client(['base_uri' => $base_url]);
 
-        $request = $client->request('POST', $resourcePath, [
-            'headers' => $headers,
-            'form_params' => $data
-        ]);
+         $request = $client->request('POST', $resourcePath, [
+             'headers' => $headers,
+             'form_params' => $data
+         ]);
 
 
-    }*/
+     }*/
 
-/*
-     public function handle()
-    {
-        //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
+    /*
+         public function handle()
+        {
+            //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
 
-        $client = new Client(['base_uri' => 'http://httpbin.org']);
-        $headers = [
+            $client = new Client(['base_uri' => 'http://httpbin.org']);
+            $headers = [
 
-            'Accept' => 'application/json',
-        ];
-        $request = $client->request('POST', '/post', [
-            'headers' => $headers,
+                'Accept' => 'application/json',
+            ];
+            $request = $client->request('POST', '/post', [
+                'headers' => $headers,
 
-        ]);
+            ]);
 
-        dd($request->getBody());
+            dd($request->getBody());
 
-    }*/
+        }*/
 }
