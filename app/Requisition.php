@@ -130,10 +130,9 @@ class Requisition extends Model
             $this->determiner_id = $this->current_progress()->determiner_id;
 
 
-
             $sender = User::find(Auth::id());
-            $recipient =User::find($this->current_progress()->determiner_id) ;
-            event(new RequisitionSent($sender,$recipient));
+            $recipient = User::find($this->current_progress()->determiner_id);
+            event(new RequisitionSent($sender, $recipient));
 
         }
         $this->save();
@@ -162,9 +161,17 @@ class Requisition extends Model
         $this->determiner_id = $this->current_progress()->determiner_id;
 
         $sender = User::find(Auth::id());
-        $recipient = User::find($this->current_progress()->determiner_id) ;
-        event(new RequisitionAccepted($sender, $recipient));
 
+
+        if ($this->progress_status() == 0) {
+            $recipient = User::find($this->current_progress()->determiner_id);
+
+            event(new RequisitionSent($sender, $recipient));
+
+        } elseif ($this->progress_status() == 2) {
+            $recipient = $this->owner;
+            event(new RequisitionRejected($sender, $recipient));
+        }
 
 
         $this->save();
@@ -273,6 +280,21 @@ class Requisition extends Model
         }
 
         return $result;
+    }
+
+    public function progress_status()
+    {
+        $status_array = $this->progresses()->getResults()->map(function ($item) {
+            return $item->getOriginal('status');
+        })->toArray();
+
+        if (count(array_unique($status_array)) == 1) {
+            $status = array_unique($status_array) [0];
+
+        } else {
+            $status = 0;
+        }
+        return $status;
     }
 
 
