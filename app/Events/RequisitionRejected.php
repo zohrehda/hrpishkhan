@@ -24,12 +24,12 @@ class RequisitionRejected
      *
      * @return void
      */
-    public function __construct($sender,$recipient)
+    public function __construct($sender, $recipient)
     {
         $this->sender = $sender;
         $this->recipient = $recipient;
         $this->subject = 'Rejected Requisition';
-        $this->content = 'Requisition has been Rejected.'. "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
+        $this->content = 'Hello Dear' . $this->sender->name . "<br>" . 'your Requisition has been Rejected.' . "<br>" . "<a href='" . config('app.url') . "' target='_blank'> click here to redirect to HR-pishkhan panel </a>";
 
     }
 

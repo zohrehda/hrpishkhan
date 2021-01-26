@@ -25,12 +25,12 @@ class RequisitionAccepted
     public $content;
 
 
-    public function __construct($sender,$recipient)
+    public function __construct($sender, $recipient)
     {
         $this->sender = $sender;
         $this->recipient = $recipient;
         $this->subject = 'Accepted Requisition';
-        $this->content = 'your Requisition has been accepted.'. "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
+        $this->content = 'Hello Dear' . $this->sender->name. "<br>"  . 'your Requisition has been accepted.' . "<br>" . "<a href='" . config('app.url') . "' target='_blank'> click here to redirect to HR-pishkhan panel </a>";
 
     }
 

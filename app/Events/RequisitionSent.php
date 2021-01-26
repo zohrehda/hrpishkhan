@@ -30,7 +30,7 @@ class RequisitionSent
         $this->sender = $sender;
         $this->recipient = $recipient;
         $this->subject = 'new Requisition';
-        $this->content = "you have new Requisition pending." . "<br>" ."<a href='".config('app.url')."'> click here </a>"  ;
+        $this->content = 'Hello Dear' . $this->sender->name . "<br>" . 'you have new Requisition Pending.' . "<br>" . "<a href='" . config('app.url') . "' target='_blank'> click here to redirect to HR-pishkhan panel </a>";
 
     }
 
