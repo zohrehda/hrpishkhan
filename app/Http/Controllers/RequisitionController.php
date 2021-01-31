@@ -170,7 +170,9 @@ class RequisitionController extends Controller
         $requisition->save();
 
         $sender = User::find(Auth::id());
-        $recipient = User::find(array_values($determiners)[0]);
+     //   $recipient = User::find(array_values($determiners)[0]);
+        $recipient = User::where('email',array_values($determiners)[0])->first();
+
         event(new RequisitionSent($sender, $recipient));
 
         foreach ($determiners as $key => $value) {
