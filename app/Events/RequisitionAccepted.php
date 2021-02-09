@@ -30,7 +30,7 @@ class RequisitionAccepted
         $this->sender = $sender;
         $this->recipient = $recipient;
         $this->subject = 'Accepted Requisition';
-        $this->content = 'Hello Dear' . $this->sender->name. "<br>"  . 'your Requisition has been accepted.' . "<br>" . "<a href='" . config('app.url') . "' target='_blank'> click here to redirect to HR-pishkhan panel </a>";
+        $this->content = 'Hello Dear ' . $this->recipient->name. "<br>"  . 'your Requisition has been accepted.' . "<br>" . "<a href='" . config('app.url') . "' target='_blank'> click here to redirect to HR-pishkhan panel </a>";
 
     }
 
