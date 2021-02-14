@@ -20,7 +20,7 @@ use Swagger\Client\ApiException;
 use Swagger\Client\Model\Body1;
 use Swagger\Client\ObjectSerializer;
 use Swagger\Client\Api\EmailApi;
-
+use \Swagger\Client\Model\User as MorphUser ;
 class SendEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -60,9 +60,12 @@ class SendEmail implements ShouldQueue
             ->setAccessToken($token);
         $config->setHost($base_url);
 
+        $sender=new MorphUser(['name'=>$this->sender->name  ,'email'=>$this->sender->email   ]) ;
+        $recipient=new MorphUser(['name'=>$this->recipient->name  ,'email'=>$this->recipient->email   ]) ;
+
         $data = [
-            'sender' => ['email' => $this->sender->email],
-            'recipients' => ['email' => $this->recipient->email],
+            'sender' => $sender,
+            'recipients' => [$recipient],
            // 'reply_to' => [],
             'subject' => $this->subject,
             'content' => $this->content,
