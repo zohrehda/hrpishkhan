@@ -63,10 +63,10 @@ class SendEmail implements ShouldQueue
         $data = [
             'sender' => ['email' => $this->sender->email],
             'recipients' => ['email' => $this->recipient->email],
-            'reply_to' => [],
+           // 'reply_to' => [],
             'subject' => $this->subject,
             'content' => $this->content,
-            'parameters' => [],
+         //   'parameters' => [],
         ];
         $apiInstance = new EmailApi(new Client(), $config);
         $body = new Body1($data);
