@@ -20,7 +20,8 @@ use Swagger\Client\ApiException;
 use Swagger\Client\Model\Body1;
 use Swagger\Client\ObjectSerializer;
 use Swagger\Client\Api\EmailApi;
-use \Swagger\Client\Model\User as MorphUser ;
+use Swagger\Client\Model\User as MorphUser ;
+use Swagger\Client\Model\Sender ;
 class SendEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -55,12 +56,13 @@ class SendEmail implements ShouldQueue
         // Configure HTTP bearer authorization: BearerAuth
         $token = Config('morpheus.token');
         $base_url = config('morpheus.base_url');
+        $sender_account = config('morpheus.sender_account');
 
         $config = Configuration::getDefaultConfiguration()
             ->setAccessToken($token);
         $config->setHost($base_url);
 
-        $sender=new MorphUser(['name'=>$this->sender->name  ,'email'=>$this->sender->email   ]) ;
+        $sender=new Sender(['name'=>$this->sender->name  ,'account'=> $sender_account  ]) ;
         $recipient=new MorphUser(['name'=>$this->recipient->name  ,'email'=>$this->recipient->email   ]) ;
 
         $data = [
@@ -71,6 +73,7 @@ class SendEmail implements ShouldQueue
             'content' => $this->content,
          //   'parameters' => [],
         ];
+
         $apiInstance = new EmailApi(new Client(), $config);
         $body = new Body1($data);
 
