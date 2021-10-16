@@ -166,7 +166,7 @@ return [
 
         Hekmatinasser\Verta\VertaServiceProvider::class,
 
-        niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
+      //  niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
         /*
          * Package Service Providers...
          */
