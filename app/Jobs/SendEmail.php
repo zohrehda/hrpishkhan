@@ -20,8 +20,9 @@ use Swagger\Client\ApiException;
 use Swagger\Client\Model\Body1;
 use Swagger\Client\ObjectSerializer;
 use Swagger\Client\Api\EmailApi;
-use Swagger\Client\Model\User as MorphUser ;
-use Swagger\Client\Model\Sender ;
+use Swagger\Client\Model\User as MorphUser;
+use Swagger\Client\Model\Sender;
+
 class SendEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -53,6 +54,9 @@ class SendEmail implements ShouldQueue
      */
     public function handle()
     {
+        if (config('app.users_provider') == 'mysql') {
+            return;
+        }
         // Configure HTTP bearer authorization: BearerAuth
         $token = Config('morpheus.token');
         $base_url = config('morpheus.base_url');
@@ -62,16 +66,16 @@ class SendEmail implements ShouldQueue
             ->setAccessToken($token);
         $config->setHost($base_url);
 
-        $sender=new Sender(['name'=>$this->sender->name  ,'account'=> $sender_account  ]) ;
-        $recipient=new MorphUser(['name'=>$this->recipient->name  ,'email'=>$this->recipient->email   ]) ;
+        $sender = new Sender(['name' => $this->sender->name, 'account' => $sender_account]);
+        $recipient = new MorphUser(['name' => $this->recipient->name, 'email' => $this->recipient->email]);
 
         $data = [
             'sender' => $sender,
             'recipients' => [$recipient],
-           // 'reply_to' => [],
+            // 'reply_to' => [],
             'subject' => $this->subject,
             'content' => $this->content,
-         //   'parameters' => [],
+            //   'parameters' => [],
         ];
 
         $apiInstance = new EmailApi(new Client(), $config);
@@ -86,53 +90,5 @@ class SendEmail implements ShouldQueue
 
     }
 
-    /* public function handle()
-     {
-         //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
 
-         $token = Config('morpheus.token');
-         $base_url = config('morpheus.base_url');
-         $resourcePath = '/api/email';
-
-         $headers = [
-             'Authorization' => 'Bearer ' . $token,
-             'Accept' => 'application/json',
-         ];
-
-         $data = [
-             'sender' => ['email' => $this->sender->email],
-             'recipients' => ['email' => $this->recipient->email],
-             'reply_to' => [],
-             'subject' => $this->subject,
-             'content' => $this->content,
-             'parameters' => [],
-         ];
-         $client = new Client(['base_uri' => $base_url]);
-
-         $request = $client->request('POST', $resourcePath, [
-             'headers' => $headers,
-             'form_params' => $data
-         ]);
-
-
-     }*/
-
-    /*
-         public function handle()
-        {
-            //   Mail::to($this->user)->send(new NewRequisition($this->user->name,$this->msg ));
-
-            $client = new Client(['base_uri' => 'http://httpbin.org']);
-            $headers = [
-
-                'Accept' => 'application/json',
-            ];
-            $request = $client->request('POST', '/post', [
-                'headers' => $headers,
-
-            ]);
-
-            dd($request->getBody());
-
-        }*/
 }

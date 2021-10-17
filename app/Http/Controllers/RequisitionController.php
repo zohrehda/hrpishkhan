@@ -17,7 +17,8 @@ use GuzzleHttp\Client;
 use Adldap\Laravel\Facades\Adldap;
 use Illuminate\Support\Str;
 use Adldap\Laravel\Commands\Import;
-
+use Maatwebsite\Excel\Facades\Excel;
+use \App\Extract\StaffInfo;
 
 class RequisitionController extends Controller
 {
@@ -86,7 +87,7 @@ class RequisitionController extends Controller
     public function store(Request $request)
     {
         $determiners = $request->post('determiners', []);
-       // dd($determiners);
+        // dd($determiners);
 
 
         $messages = [
@@ -128,13 +129,15 @@ class RequisitionController extends Controller
         }
 
         //    $hr_manager = [5 => User::hr_manager()->id];
+        $hr_admin = [0 => User::hrAdmin()->id];
 
         $determiners = $request->post('determiners', []);
-        //  $determiners = $determiners + $hr_manager;
+        $determiners = $hr_admin + $determiners + [100 => User::hrAdmin()->id];
 
-        foreach ($determiners as $d)
-        {
-            $this->ImportLdapToModel($d) ;
+        if (config('app.users_provider') == 'ldap') {
+            foreach ($determiners as $d) {
+                $this->ImportLdapToModel($d);
+            }
         }
 
 
@@ -154,8 +157,11 @@ class RequisitionController extends Controller
         $requisition->field_of_study = $request->post('field_of_study');
         $requisition->degree = $request->post('degree');
         $requisition->owner_id = Auth::id();
-     //   $requisition->determiner_id = array_values($determiners)[0];
-        $requisition->determiner_id = User::where('email',array_values($determiners)[0])->first()->id;
+        $requisition->determiner_id = array_values($determiners)[0];
+        if (config('app.users_provider') == 'ldap') {
+            $requisition->determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
+        }
+
         $requisition->is_full_time = $request->post('time');
         $requisition->is_new = $request->post('hiring_type');
         $requisition->replacement = $request->post('replacement');
@@ -170,17 +176,22 @@ class RequisitionController extends Controller
         $requisition->save();
 
         $sender = User::find(Auth::id());
-     //   $recipient = User::find(array_values($determiners)[0]);
-        $recipient = User::where('email',array_values($determiners)[0])->first();
+        $recipient = User::find(array_values($determiners)[0]);
+
+        if (config('app.users_provider') == 'ldap') {
+            $recipient = User::where('email', array_values($determiners)[0])->first();
+        }
+        $recipient = User::find(array_values($determiners)[0]);
 
         event(new RequisitionSent($sender, $recipient));
 
         foreach ($determiners as $key => $value) {
 
+
             $requisition->progresses()->create([
                 'requisition_id' => $requisition->id,
-               // 'determiner_id' => $value,
-                'determiner_id' => User::where('email',$value)->first()->id,
+                // 'determiner_id' => $value,
+                'determiner_id' => ((config('app.users_provider') == 'ldap')) ? User::where('email', $value)->first()->id : $value,
                 'role' => $key
             ]);
             //   $user=User::find()
@@ -276,15 +287,24 @@ class RequisitionController extends Controller
             $requisition->accept($request->post('determiner_comment'));
 
 
-        } else $requisition->reject($request->post('determiner_comment'));
+        }elseif ($request->post('progress_result') == RequisitionProgress::ASSIGN_STATUS){
+
+         dd($request->all() );
+          //  $requisition->accept($request->post('determiner_comment'));
+
+        }
+        else $requisition->reject($request->post('determiner_comment'));
 
         $request->session()->flash('success', 'Requisition updated successfully.');
         return redirect()->route('dashboard');
     }
 
+    public function assign()
+    {
+        
+    }
     public function index()
     {
-
 
         $pending = Auth::user()->pending_determiner_requisitions;
         $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
@@ -331,22 +351,51 @@ class RequisitionController extends Controller
 
     public function ldapUsers(Request $request)
     {
-        $term=$request->input('term') ;
-       $users = Adldap::search()->where('userPrincipalName','!=',Auth::user()->email)->whereStartsWith('userPrincipalName',$term)->get();
-        $users=  $users->map(function ($item,$key)
-       {
-         return $item->userPrincipalName [0] ;
-       })->toArray() ;
+        $term = $request->input('term');
+        $users = Adldap::search()->where('userPrincipalName', '!=', Auth::user()->email)->whereStartsWith('userPrincipalName', $term)->get();
+        $users = $users->map(function ($item, $key) {
+            return $item->userPrincipalName [0];
+        })->toArray();
 
-     $result['results']=[] ;
-     foreach ($users as $k=>$v)
-     {
-         $record=[] ;
-         $record['id']=$v ;
-         $record['text']=$v ;
-         $result['results'][]=$record ;
-     }
-     return json_encode($result) ;
+        $result['results'] = [];
+        foreach ($users as $k => $v) {
+            $record = [];
+            $record['id'] = $v;
+            $record['text'] = $v;
+            $result['results'][] = $record;
+        }
+        return json_encode($result);
+    }
+
+    public function staff(Request $request)
+    {
+        $users_provider = config('app.users_provider');
+
+        if ($users_provider == 'ldap') {
+            return $this->ldapUsers($request);
+
+        } elseif ($users_provider == 'mysql') {
+
+            return $this->mysqlUsers($request);
+        }
+    }
+
+    public function mysqlUsers(Request $request)
+    {
+        $term = $request->input('term');
+
+        $users = User::where('email', 'like', "%$term%")->where('email', '!=', Auth::user()->email)->get();
+
+        $result['results'] = [];
+        foreach ($users as $k => $v) {
+            $record = [];
+            $record['id'] = $v->id;
+            $record['text'] = $v->email;
+            $result['results'][] = $record;
+        }
+
+        return json_encode($result);
+
     }
 
 

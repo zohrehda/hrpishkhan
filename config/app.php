@@ -123,7 +123,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'host'=>env('APP_HOST') ,
+    'host' => env('APP_HOST'),
+    'users_provider' => env('USERS_PROVIDER'),
 
     /*
     |--------------------------------------------------------------------------
@@ -167,7 +168,7 @@ return [
         Hekmatinasser\Verta\VertaServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
-      //  niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
+        //  niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -182,8 +183,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         Adldap\Laravel\AdldapServiceProvider::class,
         Adldap\Laravel\AdldapAuthServiceProvider::class,
-
-
 
 
     ],
@@ -241,8 +240,6 @@ return [
 //        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class ,
         'Adldap' => Adldap\Laravel\Facades\Adldap::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-
-
 
 
     ],
