@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\StaffHierarchy;
 use Illuminate\Database\Eloquent\Model;
 
 class RequisitionProgress extends Model
@@ -9,6 +10,7 @@ class RequisitionProgress extends Model
     const PENDING_STATUS = 0;
     const ACCEPTED_STATUS = 1;
     const REJECTED_STATUS = 2;
+    const ASSIGN_STATUS = 3;
 protected $table='requisition_progresses' ;
     protected $guarded = [];
 
@@ -42,9 +44,12 @@ protected $table='requisition_progresses' ;
         } elseif ($this->attributes['role'] == 4) {
             return "cxo";
         } else return "HR manager";*/
-        
+
+
+
         switch($this->attributes['role'])
         {
+
            case 1: $result='CPO' ;
             break ;
              case 2: $result='CTO' ;
@@ -57,13 +62,13 @@ protected $table='requisition_progresses' ;
             break ;
              case 6: $result='HR Director' ;
             break ;
-             default:  $result='manager' ;
+             default:  $result='Hr admin' ;
         }
-        
+
        return $result ;
-        
-        
-        
+
+
+
     }
 
     /**

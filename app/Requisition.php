@@ -104,6 +104,7 @@ class Requisition extends Model
     public function accept($comment = null)
     {
 
+        $c = $this->current_progress()->id;
 
         // update progress to accepted status.
         $this->current_progress()->update([
@@ -111,11 +112,12 @@ class Requisition extends Model
             'determiner_comment' => $comment
         ]);
 
+
         // HR manager is determining.
         // update "requisition" to accepted status.
-
         //   if (User::hr_manager()->id == Auth::id())
-        if ($this->determiners->last()->id == Auth::id()) {
+        //  if ($this->determiners->last()->id == Auth::id()) {
+        if (User::hrAdmin()->id == Auth::id() && $this->progresses()->get()->last()->id == $c) {
             $this->determiner_id = null;
             $this->status = Requisition::ACCEPTED_STATUS;
 
