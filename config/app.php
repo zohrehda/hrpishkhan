@@ -165,6 +165,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         Hekmatinasser\Verta\VertaServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
       //  niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
         /*
@@ -237,9 +238,10 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Verta' => Hekmatinasser\Verta\Verta::class,
-        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class ,
-
+//        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class ,
         'Adldap' => Adldap\Laravel\Facades\Adldap::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
 
 
 

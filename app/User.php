@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Extract\StaffInfo;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','objectguid'
+        'name', 'email', 'password', 'objectguid'
     ];
 
     /**
@@ -43,10 +44,12 @@ class User extends Authenticatable implements MustVerifyEmail
      * get Human Resources manager user
      *
      */
+
+
     public static function hr_manager()
     {
-       // return User::find(5);
-         return User::where('role','hr_manager')->first();
+        // return User::find(5);
+        return User::where('role', 'hr_manager')->first();
     }
 
     /**
@@ -94,4 +97,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
             ->where('requisitions.status', '=', Requisition::ACCEPTED_STATUS);
     }
+
+    public function details()
+    {
+        $this->email = 'maryam.delbari@snapp.cab';
+        // return StaffInfo::get() ;
+        return StaffInfo::get()->where('email', $this->email)->first();
+
+    }
+
+    public static function hrAdmin()
+    {
+      return  self::where('role', 'hr_admin')->first();
+    }
+
 }
