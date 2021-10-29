@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-9">
-                <form action="{{ Route('requisitions.update') }}" method="POST">
+                <form id="form" action="{{ Route('requisitions.update') }}" method="POST">
                     @csrf
                     <input type="hidden" name="id" value="{{$requisition->id}}">
                     <h3>Requisition information</h3>
@@ -69,6 +69,36 @@
                             <input type="text" id="location" name="location"  placeholder="location" class="form-control form-space"
                                    value="{{ $requisition->location }}">
                             </div>
+
+
+                                <div class="col-md-12">
+                                    <label for="location">City</label>
+                                    <input type="text" id="city" name="city" placeholder="city"
+                                           class="form-control form-space"
+                                           value="{{ $requisition->city }}">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="location">Direct manager</label>
+                                    <input type="text" id="city" name="direct_manger" placeholder="direct manger"
+                                           class="form-control form-space"
+                                           value="{{ $requisition->direct_manger }}">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="location">Venture</label>
+                                    <input type="text" id="venture" name="venture" placeholder="venture"
+                                           class="form-control form-space"
+                                           value="{{ $requisition->venture }}">
+                                </div>
+
+
+
+                                <div class="col-md-12">
+                                    <label for="seniority">Seniority</label>
+                                    <input type="text" id="city" name="seniority" placeholder="seniority"
+                                           class="form-control form-space"
+                                           value="{{ $requisition->seniority }}">
+                                </div>
 
 
                                 <div class="col-md-12">
@@ -217,8 +247,66 @@
                              'Are you sure?')">Update
                             </button>
                         @endcan
+                            <button type="button"
+                                    data-toggle="modal" data-target="#DraftNameModal"
+                                    id='draft-requisition' class="btn btn-primary">Draft
+                            </button>
+
+                            <button type="button"
+                                    data-toggle="modal" data-target="#DraftImportModal"
+                                    id='import-requisition' class="btn btn-warning">Import
+                            </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="DraftNameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="form-draft">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+
+
+                        <div class="custom-control custom-checkbox d-none ">
+                            <input type="checkbox" class="custom-control-input" name="draft_update" value="1"
+                                   id="draft_update" data-draft-name="">
+                            <label class="custom-control-label" for="draft_update">update</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" name="draft_public" value="1"
+                                   id="draft-public">
+                            <label class="custom-control-label" for="draft-public">public</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label optional">name the draft:</label>
+                            <input type="text" class="form-control " id="draft-name" name="draft_name" required>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" id="save-draft-requisition" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="DraftImportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <ul class="list-group">
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
