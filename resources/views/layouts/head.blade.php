@@ -19,6 +19,7 @@
 {{--
     <script src="{{ asset('js/select2.min.js') }}" defer></script>
 --}}
+    <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/panel.js') }}"></script>
     <script src="{{ asset('js/functions.js') }}"></script>
 

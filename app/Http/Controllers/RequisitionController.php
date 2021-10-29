@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Draft;
 use App\Events\RequisitionSent;
 use App\Requisition;
 use App\RequisitionAssignment;
@@ -37,9 +38,10 @@ class RequisitionController extends Controller
         $departments = $this->departments;
         //    $levels=['']
         $hr_manager_user = User::hr_manager();
+        $drafts = Draft::where('user_id', Auth::user()->id)->get();
 
 
-        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments'));
+        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments','drafts'));
     }
 
     public function customizeReceiver()
@@ -408,6 +410,8 @@ class RequisitionController extends Controller
         return json_encode($result);
 
     }
+
+
 
 
 }

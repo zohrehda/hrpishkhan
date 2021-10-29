@@ -1,6 +1,6 @@
 <?php
 
-Auth::routes(['verify' => false,'register'=>false,'reset'=>false]) ;
+Auth::routes(['verify' => false, 'register' => false, 'reset' => false]);
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::redirect('/', 'login');
@@ -18,6 +18,10 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
         Route::post('/customizeReceiver', 'RequisitionController@customizeReceiver')->name('requisitions.customizeReceiver');
         Route::get('/ldapUsers', 'RequisitionController@ldapUsers')->name('requisitions.ldapUsers');
         Route::get('/staff', 'RequisitionController@staff')->name('requisitions.staff');
+        Route::post('/draft', 'DraftsController@store')->name('draft.store');
+        Route::get('/draft/{draft}/destroy', 'DraftsController@destroy')->name('draft.destroy');
+        Route::get('/draft/{draft?}', 'DraftsController@list')->name('draft.list');
+
 
     });
 

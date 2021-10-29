@@ -290,6 +290,16 @@
 
                     <div class="center">
                         <button type="submit" id='submit-requisition' class="btn btn-success">Submit</button>
+                        <button type="button"
+                                data-toggle="modal" data-target="#DraftNameModal"
+                                id='draft-requisition' class="btn btn-primary">Draft
+                        </button>
+
+                        <button type="button"
+                                data-toggle="modal" data-target="#DraftImportModal"
+                                id='import-requisition' class="btn btn-warning">Import
+                        </button>
+
                     </div>
                 </form>
             </div>
@@ -325,7 +335,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="firstTermsModel" data-backdrop="static" data-keyboard="false" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -346,27 +355,79 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="DraftNameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="form-draft">
+                <div class="modal-content">
 
-    <script>
-
-        var termAccepted =  @json(session('termAccepted') ) ;
-        console.log(termAccepted);
-        if (termAccepted == 0) {
-            $('#firstTermsModel').modal('show');
-
-        }
-
-        $("#submit-requisition").click(function (e) {
-            e.preventDefault();
-
-            $(this).prop('disabled', true);
-
-            $('#form').submit();
+                    <div class="modal-body">
 
 
-        })
+                        <div class="custom-control custom-checkbox d-none ">
+                            <input type="checkbox" class="custom-control-input" name="draft_update" value="1"
+                                   id="draft_update" data-draft-name="">
+                            <label class="custom-control-label" for="draft_update">update</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" name="draft_public" value="1"
+                                   id="draft-public">
+                            <label class="custom-control-label" for="draft-public">public</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label optional">name the draft:</label>
+                            <input type="text" class="form-control " id="draft-name" name="draft_name" required>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" id="save-draft-requisition" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="DraftImportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <ul class="list-group">
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if(config('app.required_terms'))
+
+        <script>
+
+            var termAccepted =  @json(session('termAccepted') ) ;
+            console.log(termAccepted);
+            if (termAccepted == 0) {
+                $('#firstTermsModel').modal('show');
+
+            }
+
+            $("#submit-requisition").click(function (e) {
+                e.preventDefault();
+
+                $(this).prop('disabled', true);
+
+                $('#form').submit();
 
 
-    </script>
+            })
+
+
+        </script>
+    @endif
 
 @stop

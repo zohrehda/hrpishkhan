@@ -124,7 +124,14 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'host' => env('APP_HOST'),
+
     'users_provider' => env('USERS_PROVIDER'),
+
+    'mongodb' => env('DB_MONGODB'),
+
+    'draft_db' => env('DRAFT_DB_CONNECTION'),
+
+    'required_terms' => env('REQUIRED_TERMS'),
 
     /*
     |--------------------------------------------------------------------------
