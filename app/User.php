@@ -70,6 +70,12 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('status', '=', Requisition::ACCEPTED_STATUS);
     }
 
+    public function assigned_user_requisitions()
+    {
+        return $this->hasMany(Requisition::class, 'owner_id')
+            ->where('status', '=', Requisition::ASSIGN_STATUS);
+    }
+
     /**
      * get determiner pending requisitions to accept
      */
@@ -98,6 +104,12 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('requisitions.status', '=', Requisition::ACCEPTED_STATUS);
     }
 
+    public function determiner_assignedd_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+            ->where('requisitions.status', '=', Requisition::ASSIGN_STATUS);
+    }
+
     public function details()
     {
         $this->email = 'maryam.delbari@snapp.cab';
@@ -108,7 +120,55 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public static function hrAdmin()
     {
-      return  self::where('role', 'hr_admin')->first();
+        return self::where('role', 'hr_admin')->first();
     }
+
+
+    public function user_assigned_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'from')->where('requisitions.status', '=', Requisition::ASSIGN_STATUS);
+    }
+
+    public function user_assigned_to_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')->where('requisitions.status', '=', Requisition::ASSIGN_STATUS);
+    }
+
+
+    public function hr_admin_closed_requisition()
+    {
+        return Requisition::where('status', '=', Requisition::CLOSED_STATUS)->get();
+        //  return $this->hasMany(Requisition::class)->where('status', '=', Requisition::CLOSED_STATUS);
+    }
+
+    public function user_closed_requisitions()
+    {
+        return $this->hasMany(Requisition::class, 'owner_id')
+        ->where('status', '=', Requisition::CLOSED_STATUS);
+    }
+
+    public function determiner_closed_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+            ->where('requisitions.status', '=', Requisition::CLOSED_STATUS);
+        // determiner_assignedd_requisitions
+    }
+
+    public function closed_user_assignment_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')
+            ->where('requisitions.status', '=', Requisition::CLOSED_STATUS);
+        // determiner_assignedd_requisitions
+    }
+
+
+
+    public function user_assigned_to_assign_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')->where('requisitions.status', '=', Requisition::ASSIGN_STATUS)
+            ->where('type', 'assign');
+
+    }
+
 
 }

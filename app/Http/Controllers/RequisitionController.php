@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\RequisitionSent;
 use App\Requisition;
+use App\RequisitionAssignment;
 use App\RequisitionProgress;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -281,40 +282,50 @@ class RequisitionController extends Controller
         return redirect()->route('dashboard');
     }
 
+    public function close(Requisition $requisition)
+    {
+        $requisition->update([
+            'status' => Requisition::CLOSED_STATUS
+        ]);
+        return redirect()->route('dashboard');
+    }
+
     public function determine(Request $request, Requisition $requisition)
     {
         if ($request->post('progress_result') == RequisitionProgress::ACCEPTED_STATUS) {
             $requisition->accept($request->post('determiner_comment'));
 
 
-        }elseif ($request->post('progress_result') == RequisitionProgress::ASSIGN_STATUS){
+        } elseif ($request->post('progress_result') == RequisitionProgress::ASSIGN_STATUS) {
+            $request->validate([
+                'user_id' => 'required'
+            ]);
+            $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-         dd($request->all() );
-          //  $requisition->accept($request->post('determiner_comment'));
-
-        }
-        else $requisition->reject($request->post('determiner_comment'));
+        } else $requisition->reject($request->post('determiner_comment'));
 
         $request->session()->flash('success', 'Requisition updated successfully.');
         return redirect()->route('dashboard');
     }
 
-    public function assign()
-    {
-        
-    }
     public function index()
     {
 
         $pending = Auth::user()->pending_determiner_requisitions;
         $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
-        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions);
 
+        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions)
+            ->merge(Auth::user()->determiner_assignedd_requisitions)->merge(Auth::user()->accepted_user_requisitions);
+
+        $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions);
+        //  ->merge(Auth::user()->user_assignments_do)->merge(Auth::user()->user_request_assignments);
+
+        $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
 
         $levels_array = $this->levels;
         $departments = $this->departments;
 
-        return view('panel.dashboard', compact('departments', 'levels_array', 'pending', 'in_progress', 'accepted'));
+        return view('panel.dashboard', compact('departments', 'levels_array', 'pending', 'in_progress', 'accepted', 'assignment', 'closed'));
     }
 
     public function determiners()

@@ -145,6 +145,53 @@
       \*******************************/
     /*! no static exports found */
     /***/ (function (module, exports) {
+        function insertUsersForm(area, select_name, label, option_label) {
+            selected_id = $(area).attr('data-selected-id');
+            selected_email = $(area).attr('data-selected-email');
+            var i = 1;
+            $('.form-receivers-part').empty();
+            // var select_name = "user";
+            label = '';
+            if (label) {
+                label = ' <label for="determiners" class="optional">' + label + '</label>';
+            }
+            option_inner = 'Empty';
+            if (option_label) {
+                option_inner = option_label
+            }
+
+            selected_option = ' <option selected disabled>' + option_inner + '</option>'
+            if (selected_id) {
+                selected_option = '  <option selected value="'+selected_id+'"  >' + selected_email + '</option>';
+            }
+
+            $(area).append(' <div class="">' +
+                label +
+                '<select id="" name="' + select_name + '" required="true" class="form-space select22 custom-select select2"  ></select>'
+                + '</div>');
+            $('select[name="' + select_name + '" ]').append(selected_option)
+            i++;
+            // $('.select22').prop('required', true);
+            $('.select22').select2({
+                ajax: {
+                    url: "/panel/requisitions/staff",
+                    dataType: 'json',
+                    templateResult: function (item) {
+
+                        return format(item, false);
+                    },
+                    matcher: matchStart,
+                    /*  delay: 250,
+                      placeholder: 'Search in users',
+                      minimumInputLength: 1,*/
+
+
+                    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                }
+            });
+
+
+        }
 
         $(document).ready(function () {
 
@@ -165,7 +212,6 @@
 
                 }
             })
-
 
             $('select[name="department"]').on('change', function () {
                 $('.form-receivers-part').empty();
@@ -189,7 +235,7 @@
                     }
                 })
 
-            })
+            });
 
             $('select[name="level"]').on('change', function () {
                 var level_val = $(this).val()
@@ -220,29 +266,30 @@
                             //    var o = new Option(val, key);
                             $('select[name="' + select_name + '" ]').append('   <option selected disabled>Empty</option>')
 
-                      /*      $.each(response.users, function (key, val) {
-                                var o = new Option(val, key);
-                                $('select[name="' + select_name + '" ]').append(o)
-                            })*/
+                            /*      $.each(response.users, function (key, val) {
+                                      var o = new Option(val, key);
+                                      $('select[name="' + select_name + '" ]').append(o)
+                                  })*/
 
 
-                            i++ ;
+                            i++;
 
 
-                        }) ;
-                    //    $('.approver').select2() ;
+                        });
+                        //    $('.approver').select2() ;
 
                         $('.approver').select2({
                             ajax: {
-                                url: "/panel/requisitions/ldapUsers",
-                                dataType: 'json' ,
+                                url: "/panel/requisitions/staff",
+                                dataType: 'json',
                                 templateResult: function (item) {
+
                                     return format(item, false);
                                 },
                                 matcher: matchStart,
-                              /*  delay: 250,
-                                placeholder: 'Search in users',
-                                minimumInputLength: 1,*/
+                                /*  delay: 250,
+                                  placeholder: 'Search in users',
+                                  minimumInputLength: 1,*/
 
 
                                 // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
@@ -253,10 +300,7 @@
                     }
                 })
 
-            })
-
-
-
+            });
 
             if ($('select[name="department"]').val() != null) {
 
@@ -283,10 +327,10 @@
                 })
 
             }
-
+            ;
 
             if ($('select[name="level"]').val() != null) {
-                var level_val = $('select[name="level"]').val()
+                var level_val = $('select[name="level"]').val();
                 var department_val = $('select[name="department"]').val();
 
                 $.ajax({
@@ -314,22 +358,22 @@
                             //    var o = new Option(val, key);
                             $('select[name="' + select_name + '" ]').append('   <option selected disabled>Empty</option>')
 
-                           /* $.each(response.users, function (key, val) {
-                                var o = new Option(val, key);
-                                $('select[name="' + select_name + '" ]').append(o)
-                            }) ;*/
+                            /* $.each(response.users, function (key, val) {
+                                 var o = new Option(val, key);
+                                 $('select[name="' + select_name + '" ]').append(o)
+                             }) ;*/
 
 
-                            i++ ;
+                            i++;
 
 
                         });
                         $('.approver').select2({
                             ajax: {
                                 url: '/panel/requisitions/customizeReceiver/ldapUsers',
-                                dataType: 'json' ,
-                                delay:250 ,
-                                cache: true ,
+                                dataType: 'json',
+                                delay: 250,
+                                cache: true,
                                 //matcher: matchStart,
 
                                 // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
@@ -341,7 +385,10 @@
                 })
 
             }
+            ;
 
+
+            insertUsersForm('.select-user', 'user_id', null, 'select user');
 
             /*$("#accept[name='accept']").on('change', function () {
 
@@ -360,7 +407,6 @@
             } else {
                   $('#submit-requisition').attr('disabled', 'disabled')
             }*/
-
 
         });
 

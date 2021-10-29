@@ -13,9 +13,11 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth:web'/*, 'verified'*/]]
         Route::get('{requisition}/edit', 'RequisitionController@edit')->name('requisitions.edit');
         Route::post('update', 'RequisitionController@update')->name('requisitions.update');
         Route::get('{requisition}/destroy', 'RequisitionController@destroy')->name('requisitions.destroy');
+        Route::get('{requisition}/close', 'RequisitionController@close')->name('requisitions.close');
         Route::post('{requisition}/determine', 'RequisitionController@determine')->name('requisitions.determine');
         Route::post('/customizeReceiver', 'RequisitionController@customizeReceiver')->name('requisitions.customizeReceiver');
         Route::get('/ldapUsers', 'RequisitionController@ldapUsers')->name('requisitions.ldapUsers');
+        Route::get('/staff', 'RequisitionController@staff')->name('requisitions.staff');
 
     });
 

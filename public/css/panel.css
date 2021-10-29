@@ -36,11 +36,11 @@ nav {
   margin-right: 5px;
 }
 
-.bg-warning {
+/*.bg-warning {
   background-color: #FF0000 !important;
-}
+}*/
 
- 
+
 label:not(.optional):not(.custom-control-label):after {
   content:"*";
   color:red;

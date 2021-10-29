@@ -18,6 +18,8 @@ class Requisition extends Model
 
     const PENDING_STATUS = 0;
     const ACCEPTED_STATUS = 1;
+    const ASSIGN_STATUS = 2;
+    const CLOSED_STATUS = 3;
 
     protected $appends = ['updated_at'];
 
@@ -139,6 +141,7 @@ class Requisition extends Model
         }
         $this->save();
     }
+
 
     /**
      * reject requisition
@@ -297,6 +300,90 @@ class Requisition extends Model
             $status = 0;
         }
         return $status;
+    }
+
+
+    public function assignments()
+    {
+        return $this->hasMany(RequisitionAssignment::class, 'requisition_id');
+    }
+
+    public function assignment_type()
+    {
+        $assignment = $this->hasMany(RequisitionAssignment::class, 'requisition_id')->first();
+        if ($assignment) {
+            return $assignment->type;
+        }
+        return null;
+
+    }
+
+    public function type_assign_assignment()
+    {
+        return $this->hasOne(RequisitionAssignment::class, 'requisition_id')->where('type', 'assign');
+    }
+
+    public function type_do_assignment()
+    {
+        return $this->hasOne(RequisitionAssignment::class, 'requisition_id')->where('type', 'do');
+    }
+
+    public function prettyAssignments()
+    {
+        $text = '';
+
+        if (Auth::user()->id == User::hrAdmin()->id && $this->assignment_time()) {
+
+            $text .= "<div class='text-danger'>" . 'Time:' . $this->assignment_time() . "</div><br>";
+        }
+
+        foreach ($this->assignments as $asgm) {
+
+            $user = (User::find($asgm->to)->id == Auth::user()->id) ? 'you' : User::find($asgm->to)->name;
+            $type_text = ($asgm->type == 'assign') ? 'assign' : 'do';
+            $text .= User::find($asgm->from)->name . ' assigned to ' . $user . ' to ' . $type_text . "<br>";
+        }
+        return $text;
+    }
+
+    public function assigned_to_user()
+    {
+        return $this->belongsToMany(User::class, 'requisition_assignments', 'requisition_id', 'to')
+            ->where('requisition_assignments.from', Auth::user()->id)->first();;
+    }
+
+    public function assignment_time()
+    {
+        $last = $this->assignments()->latest()->first();
+
+        if ($this->status == self::CLOSED_STATUS) {
+            return Carbon::parse($this->updated_at)->longAbsoluteDiffForHumans(Carbon::parse($last->updated_at));
+        }
+        if (!$last) {
+            return false;
+        }
+        return Carbon::createFromTimeStamp(strtotime($last->updated_at))->diffForHumans();
+    }
+
+    public function assign($to, $type)
+    {
+        // RequisitionAssignment::where('from', Auth::user()->id)->delete();
+        // $this->auth_user_assignment_assigned()->delete();
+        if ($this->assignments()->count() > 1) {
+            $this->type_do_assignment()->delete();
+        }
+
+        $this->update([
+            'status' => Requisition::ASSIGN_STATUS
+        ]);
+        RequisitionAssignment::updateOrCreate([
+            'requisition_id' => $this->id,
+            'from' => Auth::user()->id,
+
+        ], [
+            'to' => $to,
+            'type' => $type
+        ]);
     }
 
 

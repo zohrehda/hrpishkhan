@@ -36,10 +36,10 @@ class RequisitionPolicy
             return true;
         }
     }
-    
-        public function accepted(User $user,Requisition $requisition)
+
+    public function view(User $user, Requisition $requisition)
     {
-        if ($requisition->status == 1) {
+        if (in_array($requisition->status ,[Requisition::ASSIGN_STATUS,Requisition::ACCEPTED_STATUS,Requisition::CLOSED_STATUS])) {
             return true;
         }
     }
@@ -52,4 +52,41 @@ class RequisitionPolicy
             }
         }
     }
+
+    public function close(User $user, Requisition $requisition)
+    {
+        if ($requisition->status == Requisition::ASSIGN_STATUS) {
+            if ($user->id == User::hrAdmin()->id) {
+                return true;
+            }
+
+        }
+
+    }
+
+    public function assign_assign(User $user, Requisition $requisition)
+    {
+        //if ($requisition->status == Requisition::ACCEPTED_STATUS) {
+        if (in_array($requisition->status, [Requisition::ACCEPTED_STATUS, Requisition::ASSIGN_STATUS])) {
+            if ($user->id == User::hrAdmin()->id) {
+                return true;
+            }
+
+        }
+
+    }
+    public function assign_do(User $user, Requisition $requisition)
+    {
+
+        if ($requisition->status == Requisition::ASSIGN_STATUS) {
+
+            if ($user->user_assigned_to_assign_requisitions->whereIn('id', $requisition->id)->count()) {
+                return true;
+            }
+
+        }
+
+
+    }
+
 }
