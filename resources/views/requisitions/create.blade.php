@@ -67,11 +67,40 @@
                                            value="{{ old('report_to') }}">
                                 </div>
 
+
                                 <div class="col-md-12">
                                     <label for="location">Location</label>
                                     <input type="text" id="location" name="location" placeholder="location"
                                            class="form-control form-space"
                                            value="{{ old('location') }}">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="location">City</label>
+                                    <input type="text" id="city" name="city" placeholder="city"
+                                           class="form-control form-space"
+                                           value="{{ old('city') }}">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="location">Direct manager</label>
+                                    <input type="text" id="city" name="direct_manger" placeholder="direct manger"
+                                           class="form-control form-space"
+                                           value="{{ old('direct_manger') }}">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="location">Venture</label>
+                                    <input type="text" id="venture" name="venture" placeholder="venture"
+                                           class="form-control form-space"
+                                           value="{{ old('venture') }}">
+                                </div>
+
+
+
+                                <div class="col-md-12">
+                                    <label for="seniority">Seniority</label>
+                                    <input type="text" id="city" name="seniority" placeholder="seniority"
+                                           class="form-control form-space"
+                                           value="{{ old('seniority') }}">
                                 </div>
 
 

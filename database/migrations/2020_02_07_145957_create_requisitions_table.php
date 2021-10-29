@@ -22,6 +22,10 @@ class CreateRequisitionsTable extends Migration
             $table->integer('position_count');
             $table->string('report_to') ;
             $table->string('location') ;
+            $table->string('city') ;
+            $table->string('direct_manger') ;
+            $table->string('venture') ;
+            $table->string('seniority') ;
             $table->integer('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
             $table->boolean('is_new')->default(0);

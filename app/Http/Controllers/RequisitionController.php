@@ -156,6 +156,10 @@ class RequisitionController extends Controller
         $requisition->shift = ($request->post('shift') == 0) ? null : $request->post('shift');
         $requisition->report_to = $request->post('report_to');
         $requisition->location = $request->post('location');
+        $requisition->city = $request->post('city');
+        $requisition->direct_manger = $request->post('direct_manger');
+        $requisition->venture = $request->post('venture');
+        $requisition->seniority = $request->post('seniority');
         $requisition->experience_year = $request->post('experience_year');
         $requisition->field_of_study = $request->post('field_of_study');
         $requisition->degree = $request->post('degree');
@@ -247,6 +251,10 @@ class RequisitionController extends Controller
         $requisition->position_count = $request->post('position_count');
         $requisition->report_to = $request->post('report_to');
         $requisition->location = $request->post('location');
+        $requisition->city = $request->post('city');
+        $requisition->direct_manger = $request->post('direct_manger');
+        $requisition->venture = $request->post('venture');
+        $requisition->seniority = $request->post('seniority');
         $requisition->experience_year = $request->post('experience_year');
         $requisition->field_of_study = $request->post('field_of_study');
         $requisition->degree = $request->post('degree');
