@@ -316,12 +316,23 @@
                     },
                     success: function (response) {
 
-                        $('select[name="level"]').empty()
-                        $('select[name="level"]').append("  <option selected disabled> Empty</option>")
-                        $.each(response.levels, function (key, val) {
-                            var o = new Option(val, key.substr(1));
-                            $('select[name="level"]').append(o)
-                        })
+
+                        if($('select[name="level"]').val().length<=0){
+
+                            $('select[name="level"]').empty() ;
+
+                            $('select[name="level"]').append("  <option selected disabled> Empty</option>")
+                            $.each(response.levels, function (key, val) {
+                                if (rr==key.substr(1))
+                                {
+                                    var o = new Option(val, key.substr(1),true,true );
+                                }else {
+                                    var o = new Option(val, key.substr(1) );
+
+                                }
+                                $('select[name="level"]').append(o)
+                            })
+                        }
 
                     }
                 })

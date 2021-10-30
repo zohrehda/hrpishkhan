@@ -28,9 +28,12 @@
 
                                 <div class="col-md-6">
                                     <label for="level">Level</label>
+
                                     <select id="level" name="level" disabled
                                             class="form-space form-control select2">
+
                                         @foreach($levels as $k=>$v)
+
                                             <option value="{{ $k }}" {{ ($requisition->level==$k)?'selected':''  }} >{{ $v }}</option>
                                         @endforeach
 
