@@ -25,6 +25,7 @@ class CreateRequisitionsTable extends Migration
             $table->string('city') ;
             $table->string('direct_manger') ;
             $table->string('venture') ;
+            $table->json('interviewer')->nullable() ;
             $table->string('seniority') ;
             $table->integer('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
@@ -37,6 +38,7 @@ class CreateRequisitionsTable extends Migration
             $table->text('competency');
             $table->text('outcome');
             $table->text('about')->nullable();
+            $table->json('interviewers')->nullable();
             $table->unsignedBigInteger('owner_id');
             $table->foreign('owner_id')
                 ->references('id')

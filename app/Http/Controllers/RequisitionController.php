@@ -41,7 +41,7 @@ class RequisitionController extends Controller
         $drafts = Draft::where('user_id', Auth::user()->id)->get();
 
 
-        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments','drafts'));
+        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments', 'drafts'));
     }
 
     public function customizeReceiver()
@@ -89,6 +89,8 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
+
+        //  dd($request->all());
         $determiners = $request->post('determiners', []);
         // dd($determiners);
 
@@ -110,6 +112,10 @@ class RequisitionController extends Controller
             'position_count' => 'required',
             'report_to' => 'required',
             'location' => 'required',
+            'city' => 'required',
+            'direct_manger' => 'required',
+            'venture' => 'required',
+            'seniority' => 'required',
             'experience_year' => 'required',
             'field_of_study' => 'required',
             'degree' => 'required',
@@ -174,12 +180,22 @@ class RequisitionController extends Controller
         $requisition->replacement = $request->post('replacement');
         $requisition->about = $request->post('about');
 
-        /* if ($request->filled('is_full_time')) {
-             $requisition->is_full_time = 1;
-         }
-         if ($request->filled('is_new')) {
-             $requisition->is_new = 1;
-         }*/
+        $intw = $request->post('interviewers');
+        if (!$intw) {
+            $interviewers = null;
+        } else {
+            $array = [];
+            foreach ($intw as $k => $v) {
+                if (!empty($v[0]) || !empty($v[1])) {
+                    $array[$k] = $v;
+                }
+            }
+            $interviewers = (count($array) > 0) ? json_encode($array) : null;
+
+        }
+        $requisition->interviewers = $interviewers;
+
+
         $requisition->save();
 
         $sender = User::find(Auth::id());
@@ -235,6 +251,10 @@ class RequisitionController extends Controller
             'position_count' => 'required',
             'report_to' => 'required',
             'location' => 'required',
+            'city' => 'required',
+            'direct_manger' => 'required',
+            'venture' => 'required',
+            'seniority' => 'required',
             'experience_year' => 'required',
             'field_of_study' => 'required',
             'degree' => 'required',
@@ -263,13 +283,21 @@ class RequisitionController extends Controller
         $requisition->replacement = $request->post('replacement');
         $requisition->about = $request->post('about');
 
+        $intw = $request->post('interviewers');
+        if (!$intw) {
+            $interviewers = null;
+        } else {
+            $array = [];
+            foreach ($intw as $k => $v) {
+                if (!empty($v[0]) || !empty($v[1])) {
+                    $array[$k] = $v;
+                }
+            }
+            $interviewers = (count($array) > 0) ? json_encode($array) : null;
 
-        /*  if ($request->filled('is_full_time')) {
-              $requisition->is_full_time = 1;
-          } else $requisition->is_full_time = 0;
-          if ($request->filled('is_new')) {
-              $requisition->is_new = 1;
-          } else $requisition->is_new = 0;*/
+        }
+        $requisition->interviewers = $interviewers;
+
 
         if (Auth::user()->can('accept', $requisition)) {
             $this->determine($request, $requisition);
@@ -418,8 +446,6 @@ class RequisitionController extends Controller
         return json_encode($result);
 
     }
-
-
 
 
 }

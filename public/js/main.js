@@ -130,7 +130,26 @@ $(document).ready(function () {
                 //   console.log()
 
                 $.each(draft, function (index, item) {
-                    //     console.log(index+';'+item)
+
+                    if (index == 'interviewers') {
+                        array = Object.values(item);
+                        i = 0
+                        append = '';
+                        $.each(array, function (index, item) {
+                            i++;
+                            tmp = $("#tmp_interviewers_form").html();
+                            tmp = tmp.replaceAll('__name', 'interviewers[' + i + '][]');
+
+                            tmp = tmp.replaceAll('__data-form-num', i);
+                            tmp = tmp.replaceAll('__value1', item[0]);
+                            tmp = tmp.replaceAll('__value2', item[1]);
+                            //$(tmp).find('input').val('dd');
+
+                            append += tmp;
+                        });
+                        $("#interviewer_form_rows").html(append)
+                    }
+
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
                     $("#form").find('textarea[name="' + index + '"]').html(item).val(item);
@@ -143,7 +162,7 @@ $(document).ready(function () {
                 DraftNameModal.find('#draft_update').attr('data-draft-name', response.drafts.name);
                 if (userId == response.drafts.user_id) {
                     DraftNameModal.find('#draft_update').parent('.custom-control').removeClass('d-none');
-                }else{
+                } else {
                     DraftNameModal.find('#draft_update').parent('.custom-control').addClass('d-none');
 
                 }
@@ -158,6 +177,21 @@ $(document).ready(function () {
 
         $('#DraftImportModal').modal('hide');
 
+    });
+
+    /***** add interviewer form row *****/
+    $("#add_interviewer").on('click', function () {
+        i = $("#interviewer_form_rows").find('.form-row').last().attr('data-form-num');
+        if (!i) {
+            i = 0;
+        }
+        i++;
+        tmp = $("#tmp_interviewers_form").html();
+        tmp = tmp.replaceAll('__name', 'interviewers[' + i + '][]');
+        tmp = tmp.replaceAll('__data-form-num', i);
+        tmp = tmp.replaceAll('__value1', '');
+        tmp = tmp.replaceAll('__value2', '');
+        $("#interviewer_form_rows").append(tmp);
     });
 
 });

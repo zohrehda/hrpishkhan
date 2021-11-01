@@ -13,20 +13,45 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'id' => 1,
-            'name' => 'Afshin',
-            'email' => 'bigspiky@gmail.com',
+            'name' => 'user1',
+            'email' => 'user1@snapp.cab',
             'password' => app('hash')->make('password'),
-            'role'=>'supervisor',
+            'role'=>'hr_admin',
             'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         DB::table('users')->insert([
-            'id' => 2,
-            'name' => 'Akbar',
-            'email' => 'bigspikyy@gmail.com',
+            'name' => 'user2',
+            'email' => 'user2@snapp.cab',
+            'password' => app('hash')->make('password'),
+            'role'=>'user',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'user3',
+            'email' => 'user3@snapp.cab',
+            'password' => app('hash')->make('password'),
+            'role'=>'user',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'user4',
+            'email' => 'user4@snapp.cab',
+            'password' => app('hash')->make('password'),
+            'role'=>'user',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'user5',
+            'email' => 'user5@snapp.cab',
             'password' => app('hash')->make('password'),
             'role'=>'user',
             'email_verified_at' => now(),
@@ -34,46 +59,6 @@ class UsersTableSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        DB::table('users')->insert([
-            'id' => 3,
-            'name' => 'Asghar',
-            'email' => 'bigspikyyy@gmail.com',
-            'password' => app('hash')->make('password'),
-            'role'=>'user',
-            'email_verified_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('users')->insert([
-            'id' => 4,
-            'name' => 'Naghi',
-            'email' => 'bigspikyyyy@gmail.com',
-            'password' => app('hash')->make('password'),
-            'role'=>'user',
-            'email_verified_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('users')->insert([
-            'id' => 5,
-            'name' => 'hr-manager',
-            'email' => 'bigspikyyyyy@gmail.com',
-            'password' => app('hash')->make('password'),
-            'role'=>'supervisor',
-            'email_verified_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('food_reserved')->insert([
-            'id' => 1,
-            'user_id' => 1,
-            'date'=> '1399-07-09' ,
-            'food_id' => 1,
-
-        ]);
 
 
 

@@ -95,7 +95,6 @@
                                 </div>
 
 
-
                                 <div class="col-md-12">
                                     <label for="seniority">Seniority</label>
                                     <input type="text" id="city" name="seniority" placeholder="seniority"
@@ -241,6 +240,34 @@
                         </div>
                     </div>
 
+                    <h3>Interviewers</h3>
+                    <div class="card form-space">
+                        <div class="card-header">
+
+                            <div id="interviewer_form_rows">
+                                <div class="form-row" data-form-num="1">
+                                    <div class="form-group col-md-6">
+                                        <label for="interviewer_name" class="optional">name</label>
+                                        <input type="text" name="interviewers[1][]" class="form-control" id="interviewer_name">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="interviewer_skype_id" class="optional">skype id</label>
+                                        <input type="text" class="form-control" name="interviewers[1][]"
+                                               id="interviewer_skype_id">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" id="add_interviewer" class="btn btn-sm btn-success">add
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                   @include('partials.tmp_interviewers_form')
                     <h3>Receiver selection</h3>
                     <div class="card form-space">
                         <div class="card-header">
@@ -300,22 +327,6 @@
                         </div>
                     </div>
 
-                    <!--    <div class="card form-space">
-                            <div class='card-header'>
-                                   <label class='pr-2'></label>
-                            <div class="custom-control custom-checkbox d-inline">
-
-      <input type="checkbox" name='accept' class="custom-control-input " id="accept">
-
-      <label class="custom-control-label" for="accept">I agree with
-
-      </label><span data-toggle="modal" class='text-danger cursor-pointer' data-target="#termsModel"> terms and conditions</span>
-
-
-    </div>
-                            </div>
-
-                            </div> -->
 
                     <div class="center">
                         <button type="submit" id='submit-requisition' class="btn btn-success">Submit</button>

@@ -228,6 +228,41 @@
                         </div>
                     </div>
 
+                    <h3>Interviewers</h3>
+                    <div class="card form-space">
+                        <div class="card-header">
+                            <div id="interviewer_form_rows">
+                                @if($requisition->interviewers)
+
+
+                                 @foreach(json_decode($requisition->interviewers,true) as $k=>$interviewer)
+                                <div class="form-row" data-form-num="{{$k}}">
+                                    <div class="form-group col-md-6">
+                                        <label for="interviewer_name" class="optional">name</label>
+                                        <input type="text" name="interviewers[{{$k}}][]" value="{{$interviewer[0]}}" class="form-control" id="interviewer_name">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="interviewer_skype_id" class="optional">skype id</label>
+                                        <input type="text" class="form-control" value="{{$interviewer[1]}}" name="interviewers[{{$k}}][]"
+                                               id="interviewer_skype_id" >
+                                    </div>
+                                </div>
+                                @endforeach
+                                    @endif
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" id="add_interviewer" class="btn btn-sm btn-success">add
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    @include('partials.tmp_interviewers_form')
+
                     @can('accept',$requisition)
                         <h3>Receiver selection</h3>
                         <div class="card form-space">
