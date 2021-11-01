@@ -88,11 +88,15 @@
                                     </div>
 
 
+
                                     @if($requisition->assignments->count())
                                         <div class="alert alert-warning  ">
                                             {!! $requisition->prettyAssignments() !!}
                                         </div>
                                     @endif
+
+                                    @if(($card_class!='bg-success') ||
+                               ($card_class=='bg-success' && $requisition->assignments->count()==0)   )
                                     @can('assign_assign', $requisition)
                                         <div class="text-left">
                                             <h5><b>Assignment</b></h5>
@@ -174,6 +178,7 @@
                                         </div>
 
                                     @endcan
+                                        @endif
                                 </div>
 
                                 <div class="card-footer text-center text-white">
