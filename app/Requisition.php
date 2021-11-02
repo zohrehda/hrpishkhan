@@ -357,7 +357,7 @@ class Requisition extends Model
         $last = $this->assignments()->latest()->first();
 
         if ($this->status == self::CLOSED_STATUS) {
-            return Carbon::parse($this->updated_at)->longAbsoluteDiffForHumans(Carbon::parse($last->updated_at));
+            return Carbon::parse($this->getOriginal('updated_at'))->longAbsoluteDiffForHumans(Carbon::parse($last->updated_at));
         }
         if (!$last) {
             return false;
