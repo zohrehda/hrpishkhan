@@ -9,7 +9,7 @@ class StaffInfo
 {
     public static function get()
     {
-        $excel = Excel::toCollection(new \App\Imports\StaffInfo, 'staff_information.xls')->first();
+        $excel = Excel::toCollection(new \App\Imports\StaffInfo, 'docs/staff_information.xls')->first();
         $columns = $excel->first();
         $staff_info = $excel->skip(1);
 
