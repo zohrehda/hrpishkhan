@@ -16,21 +16,19 @@ class CreateRequisitionsTable extends Migration
         Schema::create('requisitions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('department');
-            $table->integer('level');
+            $table->string('position');
             $table->text('en_title');
             $table->text('fa_title');
             $table->integer('position_count');
-            $table->string('report_to') ;
-            $table->string('location') ;
-            $table->string('city') ;
-            $table->string('direct_manger') ;
-            $table->string('venture') ;
-            $table->json('interviewer')->nullable() ;
-            $table->string('seniority') ;
+            $table->string('location');
+            $table->string('direct_manger');
+            $table->string('venture');
+            $table->string('vertical');
+            $table->string('seniority');
             $table->integer('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
             $table->boolean('is_new')->default(0);
-            $table->string('replacement')->nullable() ;
+            $table->string('replacement')->nullable();
             $table->string('field_of_study');
             $table->integer('degree');
             $table->integer('experience_year');
