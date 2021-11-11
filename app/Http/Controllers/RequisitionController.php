@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\StaffHierarchy;
 use App\Draft;
 use App\Events\RequisitionSent;
 use App\Requisition;
@@ -21,9 +22,85 @@ use Illuminate\Support\Str;
 use Adldap\Laravel\Commands\Import;
 use Maatwebsite\Excel\Facades\Excel;
 use \App\Extract\StaffInfo;
+use  App\Classes\RequisitionItems;
 
 class RequisitionController extends Controller
 {
+    private $common_validate_rules = [
+        'fa_title' => 'required',
+        'en_title' => 'required',
+        'competency' => 'required',
+        'is_full_time' => 'required',
+        'is_new' => 'required',
+        'replacement' => 'required_if:hiring_type,0',
+        'mission' => 'required',
+        'outcome' => 'required',
+        'position_count' => 'required',
+        //   'report_to' => 'required',
+        'location' => 'required',
+        //  'city' => 'required',
+        'direct_manger' => 'required',
+        'venture' => 'required',
+        'vertical' => 'required',
+        'seniority' => 'required',
+        'experience_year' => 'required',
+        'field_of_study' => 'required',
+        'degree' => 'required'];
+
+
+    private function common_validate_rules()
+    {
+        return array_map(function ($item) {
+            return $item['validate_rules'];
+        }, RequisitionItems::getCommonDb());
+    }
+
+    private function commonDb($requisition, $request)
+    {
+
+        $items = RequisitionItems::getCommonDb();
+        foreach ($items as $name => $value) {
+            $requisition->$name = $request->post($name);
+        }
+
+        /*$requisition->fa_title = $request->post('fa_title');
+        $requisition->en_title = $request->post('en_title');
+        $requisition->competency = $request->post('competency');
+        $requisition->mission = $request->post('mission');
+        $requisition->outcome = $request->post('outcome');
+        $requisition->shift = ($request->post('shift') == 0) ? null : $request->post('shift');
+        $requisition->position_count = $request->post('position_count');
+        $requisition->location = $request->post('location');
+        $requisition->direct_manger = $request->post('direct_manger');
+        $requisition->venture = $request->post('venture');
+        $requisition->vertical = $request->post('vertical', 'g');
+        $requisition->seniority = $request->post('seniority');
+        $requisition->experience_year = $request->post('experience_year');
+        $requisition->field_of_study = $request->post('field_of_study');
+        $requisition->degree = $request->post('degree');
+        $requisition->time = $request->post('time');
+        $requisition->is_new = $request->post('is_new');
+        $requisition->replacement = $request->post('replacement');
+        $requisition->about = $request->post('about');*/
+
+        $intw = $request->post('interviewers');
+        if (!$intw) {
+            $interviewers = null;
+        } else {
+            $array = [];
+            foreach ($intw as $k => $v) {
+                if (!empty($v[0]) || !empty($v[1])) {
+                    $array[$k] = $v;
+                }
+            }
+            $interviewers = (count($array) > 0) ? json_encode($array) : null;
+
+        }
+        $requisition->interviewers = $interviewers;
+        $requisition->competency = json_encode($request->post('competency'));
+
+    }
+
 
     public function create(Request $request)
     {
@@ -32,17 +109,21 @@ class RequisitionController extends Controller
         if ($errors == null) {
             session(['termAccepted' => 0]);
         }
-        //   dd($errors);
+
 
         $users = $this->determiners();
-        $departments = $this->departments;
+        $departments = StaffHierarchy::$departments;
         //    $levels=['']
         $hr_manager_user = User::hr_manager();
         $drafts = Draft::where('user_id', Auth::user()->id)->get();
 
+        $form_sections_items = RequisitionItems::getPartsItems();
 
-        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments', 'drafts'));
+        // dd($form_sections_items);
+
+        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments', 'drafts', 'form_sections_items'));
     }
+
 
     public function customizeReceiver()
     {
@@ -87,40 +168,21 @@ class RequisitionController extends Controller
 
     }
 
+
     public function store(Request $request)
     {
-
         //  dd($request->all());
         $determiners = $request->post('determiners', []);
-        // dd($determiners);
-
-
         $messages = [
             'determiners.*.distinct' => "Can't select same determiner on two or more progresses"
         ];
         $validator = Validator::make($request->all(), [
-            'department' => 'required',
-            'level' => 'required',
-            'fa_title' => 'required',
-            'en_title' => 'required',
-            'competency' => 'required',
-            'time' => 'required',
-            'hiring_type' => 'required',
-            'replacement' => 'required_if:hiring_type,0',
-            'mission' => 'required',
-            'outcome' => 'required',
-            'position_count' => 'required',
-            'report_to' => 'required',
-            'location' => 'required',
-            'city' => 'required',
-            'direct_manger' => 'required',
-            'venture' => 'required',
-            'seniority' => 'required',
-            'experience_year' => 'required',
-            'field_of_study' => 'required',
-            'degree' => 'required',
-            'determiners.*' => 'distinct',
-        ], $messages);
+                'department' => 'required',
+                'position' => 'required',
+                'determiners.*' => 'distinct',
+                'competency.1' => 'required|array|min:2'
+            ] + $this->common_validate_rules()
+            , $messages);
 
         $validator->after(function ($validator) {
             if (!request()->post('determiners')) {
@@ -128,11 +190,8 @@ class RequisitionController extends Controller
             }
 
         });
-
         if ($validator->fails()) {
-
             session(['termAccepted' => 1]);
-
             return redirect()->back()->withErrors($validator)->withInput();
 
         }
@@ -151,51 +210,14 @@ class RequisitionController extends Controller
 
 
         $requisition = new Requisition();
+        $this->commonDb($requisition, $request);
         $requisition->department = $request->post('department');
-        $requisition->level = $request->post('level');
-        $requisition->fa_title = $request->post('fa_title');
-        $requisition->en_title = $request->post('en_title');
-        $requisition->competency = $request->post('competency');
-        $requisition->mission = $request->post('mission');
-        $requisition->outcome = $request->post('outcome');
-        $requisition->position_count = $request->post('position_count');
-        $requisition->shift = ($request->post('shift') == 0) ? null : $request->post('shift');
-        $requisition->report_to = $request->post('report_to');
-        $requisition->location = $request->post('location');
-        $requisition->city = $request->post('city');
-        $requisition->direct_manger = $request->post('direct_manger');
-        $requisition->venture = $request->post('venture');
-        $requisition->seniority = $request->post('seniority');
-        $requisition->experience_year = $request->post('experience_year');
-        $requisition->field_of_study = $request->post('field_of_study');
-        $requisition->degree = $request->post('degree');
+        $requisition->position = $request->post('position');
         $requisition->owner_id = Auth::id();
         $requisition->determiner_id = array_values($determiners)[0];
         if (config('app.users_provider') == 'ldap') {
             $requisition->determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
         }
-
-        $requisition->is_full_time = $request->post('time');
-        $requisition->is_new = $request->post('hiring_type');
-        $requisition->replacement = $request->post('replacement');
-        $requisition->about = $request->post('about');
-
-        $intw = $request->post('interviewers');
-        if (!$intw) {
-            $interviewers = null;
-        } else {
-            $array = [];
-            foreach ($intw as $k => $v) {
-                if (!empty($v[0]) || !empty($v[1])) {
-                    $array[$k] = $v;
-                }
-            }
-            $interviewers = (count($array) > 0) ? json_encode($array) : null;
-
-        }
-        $requisition->interviewers = $interviewers;
-
-
         $requisition->save();
 
         $sender = User::find(Auth::id());
@@ -209,8 +231,6 @@ class RequisitionController extends Controller
         event(new RequisitionSent($sender, $recipient));
 
         foreach ($determiners as $key => $value) {
-
-
             $requisition->progresses()->create([
                 'requisition_id' => $requisition->id,
                 // 'determiner_id' => $value,
@@ -225,79 +245,17 @@ class RequisitionController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function edit(Requisition $requisition)
-    {
-        $departments = $this->departments;
-        $levels = $this->levels;
-
-        // authorize user to view edit page
-        $this->authorize('edit', $requisition);
-
-        return view('requisitions.edit', compact('requisition', 'departments', 'levels'));
-    }
 
     public function update(Request $request)
     {
         $requisition = Requisition::find($request->post('id'));
-        $validator = Validator::make($request->all(), [
-            'fa_title' => 'required',
-            'en_title' => 'required',
-            'competency' => 'required',
-            'time' => 'required',
-            'hiring_type' => 'required',
-            'replacement' => 'required_if:hiring_type,0',
-            'mission' => 'required',
-            'outcome' => 'required',
-            'position_count' => 'required',
-            'report_to' => 'required',
-            'location' => 'required',
-            'city' => 'required',
-            'direct_manger' => 'required',
-            'venture' => 'required',
-            'seniority' => 'required',
-            'experience_year' => 'required',
-            'field_of_study' => 'required',
-            'degree' => 'required',
-        ]);
+        $validator = Validator::make($request->all(),[
+                'competency.1' => 'required|array|min:2'
+            ] + $this->common_validate_rules());
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $requisition->fa_title = $request->post('fa_title');
-        $requisition->en_title = $request->post('en_title');
-        $requisition->competency = $request->post('competency');
-        $requisition->mission = $request->post('mission');
-        $requisition->outcome = $request->post('outcome');
-        $requisition->shift = ($request->post('shift') == 0) ? null : $request->post('shift');
-        $requisition->position_count = $request->post('position_count');
-        $requisition->report_to = $request->post('report_to');
-        $requisition->location = $request->post('location');
-        $requisition->city = $request->post('city');
-        $requisition->direct_manger = $request->post('direct_manger');
-        $requisition->venture = $request->post('venture');
-        $requisition->seniority = $request->post('seniority');
-        $requisition->experience_year = $request->post('experience_year');
-        $requisition->field_of_study = $request->post('field_of_study');
-        $requisition->degree = $request->post('degree');
-        $requisition->is_full_time = $request->post('time');
-        $requisition->is_new = $request->post('hiring_type');
-        $requisition->replacement = $request->post('replacement');
-        $requisition->about = $request->post('about');
-
-        $intw = $request->post('interviewers');
-        if (!$intw) {
-            $interviewers = null;
-        } else {
-            $array = [];
-            foreach ($intw as $k => $v) {
-                if (!empty($v[0]) || !empty($v[1])) {
-                    $array[$k] = $v;
-                }
-            }
-            $interviewers = (count($array) > 0) ? json_encode($array) : null;
-
-        }
-        $requisition->interviewers = $interviewers;
-
+        $this->commonDb($requisition, $request);
 
         if (Auth::user()->can('accept', $requisition)) {
             $this->determine($request, $requisition);
@@ -308,6 +266,21 @@ class RequisitionController extends Controller
         $request->session()->flash('success', 'Requisition updated successfully.');
         return redirect()->route('dashboard');
     }
+
+
+    public function edit(Requisition $requisition)
+    {
+        $departments = $this->departments;
+        $levels = $this->levels;
+
+        // authorize user to view edit page
+        $this->authorize('edit', $requisition);
+        $form_sections_items = RequisitionItems::getPartsItems();
+
+
+        return view('requisitions.edit', compact('requisition', 'departments', 'levels', 'form_sections_items'));
+    }
+
 
     public function destroy(Requisition $requisition)
     {
@@ -362,8 +335,10 @@ class RequisitionController extends Controller
 
         $levels_array = $this->levels;
         $departments = $this->departments;
+        $requisition_items = RequisitionItems::getItems();
 
-        return view('panel.dashboard', compact('departments', 'levels_array', 'pending', 'in_progress', 'accepted', 'assignment', 'closed'));
+        return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
+            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items'));
     }
 
     public function determiners()

@@ -88,7 +88,6 @@
                                     </div>
 
 
-
                                     @if($requisition->assignments->count())
                                         <div class="alert alert-warning  ">
                                             {!! $requisition->prettyAssignments() !!}
@@ -97,88 +96,88 @@
 
                                     @if(($card_class!='bg-success') ||
                                ($card_class=='bg-success' && $requisition->assignments->count()==0)   )
-                                    @can('assign_assign', $requisition)
-                                        <div class="text-left">
-                                            <h5><b>Assignment</b></h5>
-                                            <form
-                                                action="{{ Route('requisitions.determine', $requisition->id) }}"
-                                                method="POST" class="">
-                                                @csrf
+                                        @can('assign_assign', $requisition)
+                                            <div class="text-left">
+                                                <h5><b>Assignment</b></h5>
+                                                <form
+                                                    action="{{ Route('requisitions.determine', $requisition->id) }}"
+                                                    method="POST" class="">
+                                                    @csrf
 
-                                                <div class="mr-1">
-                                                    <div
-                                                        class="custom-control custom-radio custom-control-inline custom-switch">
-                                                        <input type="radio" id="customRadioInline1"
-                                                               name="assign_type"
-                                                               @if($requisition->assignment_type()=='assign') checked
-                                                               @endif
-                                                               value="assign" class="custom-control-input">
-                                                        <label class="custom-control-label"
-                                                               for="customRadioInline1">assign
-                                                            to assign</label>
+                                                    <div class="mr-1">
+                                                        <div
+                                                            class="custom-control custom-radio custom-control-inline custom-switch">
+                                                            <input type="radio" id="customRadioInline1"
+                                                                   name="assign_type"
+                                                                   @if($requisition->assignment_type()=='assign') checked
+                                                                   @endif
+                                                                   value="assign" class="custom-control-input">
+                                                            <label class="custom-control-label"
+                                                                   for="customRadioInline1">assign
+                                                                to assign</label>
+                                                        </div>
+                                                        <div
+                                                            class="custom-control custom-radio custom-control-inline custom-switch">
+                                                            <input type="radio" required id="customRadioInline2"
+                                                                   name="assign_type" value="do"
+                                                                   @if($requisition->assignment_type()=='do') checked
+                                                                   @endif
+                                                                   class="custom-control-input">
+                                                            <label class="custom-control-label"
+                                                                   for="customRadioInline2">assign
+                                                                to do</label>
+                                                        </div>
                                                     </div>
-                                                    <div
-                                                        class="custom-control custom-radio custom-control-inline custom-switch">
-                                                        <input type="radio" required id="customRadioInline2"
-                                                               name="assign_type" value="do"
-                                                               @if($requisition->assignment_type()=='do') checked
-                                                               @endif
-                                                               class="custom-control-input">
-                                                        <label class="custom-control-label"
-                                                               for="customRadioInline2">assign
-                                                            to do</label>
+
+                                                    <br>
+                                                    <div class="select-user"
+                                                         data-selected-id="{{$requisition->assigned_to_user()->id??null}}"
+                                                         data-selected-email="{{$requisition->assigned_to_user()->email??null}}"
+                                                    >
                                                     </div>
-                                                </div>
+                                                    <br>
+                                                    <div class=" text-cene">
+                                                        <button
+                                                            name="progress_result" value="3"
+                                                            class="btn btn-sm btn-primary">assign
+                                                        </button>
+                                                    </div>
 
-                                                <br>
-                                                <div class="select-user"
-                                                     data-selected-id="{{$requisition->assigned_to_user()->id??null}}"
-                                                     data-selected-email="{{$requisition->assigned_to_user()->email??null}}"
-                                                >
-                                                </div>
-                                                <br>
-                                                <div class=" text-cene">
-                                                    <button
-                                                        name="progress_result" value="3"
-                                                        class="btn btn-sm btn-primary">assign
-                                                    </button>
-                                                </div>
+                                                </form>
 
-                                            </form>
+                                            </div>
 
-                                        </div>
+                                        @endcan
 
-                                    @endcan
+                                        @can('assign_do', $requisition)
+                                            <div class="text-left">
+                                                <h5><b>Assignment</b></h5>
+                                                <form
+                                                    action="{{ Route('requisitions.determine', $requisition->id) }}"
+                                                    method="POST" class="">
+                                                    @csrf
+                                                    <input type="hidden" name="assign_type" value="do">
+                                                    <div class="select-user"
 
-                                    @can('assign_do', $requisition)
-                                        <div class="text-left">
-                                            <h5><b>Assignment</b></h5>
-                                            <form
-                                                action="{{ Route('requisitions.determine', $requisition->id) }}"
-                                                method="POST" class="">
-                                                @csrf
-                                                <input type="hidden" name="assign_type" value="do">
-                                                <div class="select-user"
+                                                         data-selected-id="{{$requisition->assigned_to_user()->id??null}}"
+                                                         data-selected-email="{{$requisition->assigned_to_user()->email??null}}"
+                                                    >
 
-                                                     data-selected-id="{{$requisition->assigned_to_user()->id??null}}"
-                                                     data-selected-email="{{$requisition->assigned_to_user()->email??null}}"
-                                                >
+                                                    </div>
+                                                    <br>
+                                                    <div class="text-center">
+                                                        <button
+                                                            name="progress_result" value="3"
+                                                            class="btn btn-sm btn-primary">assign
+                                                        </button>
+                                                    </div>
 
-                                                </div>
-                                                <br>
-                                                <div class="text-center">
-                                                    <button
-                                                        name="progress_result" value="3"
-                                                        class="btn btn-sm btn-primary">assign
-                                                    </button>
-                                                </div>
+                                                </form>
 
-                                            </form>
+                                            </div>
 
-                                        </div>
-
-                                    @endcan
-                                        @endif
+                                        @endcan
+                                    @endif
                                 </div>
 
                                 <div class="card-footer text-center text-white">
@@ -225,128 +224,15 @@
                                                     </div>
                                                 </div>
 
-
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> department</div>
-                                                        <div
-                                                            class="col-6">{{$departments[$requisition->department]}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> level</div>
-                                                        <div class="col-6">{{$levels_array[$requisition->level]}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> en_title</div>
-                                                        <div class="col-6">{{$requisition->en_title}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> fa_title</div>
-                                                        <div class="col-6">{{$requisition->fa_title}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> position_count</div>
-                                                        <div class="col-6">{{$requisition->position_count}}</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> report_to</div>
-                                                        <div class="col-6">{{$requisition->report_to}}</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> location</div>
-                                                        <div class="col-6">{{$requisition->location}}</div>
-                                                    </div>
-                                                </div>
-
-                                                @if($requisition->shift)
+                                                @foreach($requisition_items as $name=>$item)
                                                     <div class="col-md-6">
                                                         <div class="row">
-                                                            <div class="col-6 text-muted"> shift</div>
-                                                            <div class="col-6">{{$requisition->get_shift()}}</div>
+                                                            <div class="col-6 text-muted"> {{$item['label']}}</div>
+                                                            <div
+                                                                class="col-6">{{$requisition->$name }}</div>
                                                         </div>
                                                     </div>
-                                                @endif
-
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> time</div>
-                                                        <div
-                                                            class="col-6">{{($requisition->is_full_time)?'full time':'part time'  }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> hiring type</div>
-                                                        <div
-                                                            class="col-6">{{($requisition->is_new)?'new hiring':'replacement' }}</div>
-                                                    </div>
-                                                </div>
-                                                @if(!$requisition->is_new)
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <div class="col-6 text-muted"> replace with</div>
-                                                            <div class="col-6">{{$requisition->replacement }}</div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                                <div class="col-md-6">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> field of study</div>
-                                                        <div class="col-6">{{$requisition->field_of_study }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 ">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> degree</div>
-                                                        <div class="col-6">{{$requisition->get_degree()}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 ">
-                                                    <div class="row">
-                                                        <div class="col-6 text-muted"> experience year</div>
-                                                        <div
-                                                            class="col-6">{{$requisition->get_experience_year() }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12 ">
-
-                                                    <div class="row">
-                                                        <div class="col-3 text-muted"> mission</div>
-                                                        <div class="col-9">{{$requisition-> 	mission  }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="row">
-                                                        <div class="col-3 text-muted"> outcome</div>
-                                                        <div class="col-9">{{$requisition-> 	outcome   }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="row">
-                                                        <div class="col-3 text-muted"> about the team</div>
-                                                        <div class="col-9">{{$requisition->about   }}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="row">
-                                                        <div class="col-3 text-muted"> competency</div>
-                                                        <div class="col-9">{{$requisition->competency    }}</div>
-                                                    </div>
-                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
 

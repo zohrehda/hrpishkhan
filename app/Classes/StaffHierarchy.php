@@ -4,7 +4,10 @@ namespace App\Classes;
 
 class StaffHierarchy
 {
-    public static $departments = [0 => 'Tech', 1 => 'Product', 2 => 'Other Departments'];
+    public static $departments = ['Tech', 'Product'
+        , 'Business Development', 'Commercial', 'Finance', ' General Services', 'Call Center', 'Human Resources',
+        'Legal', 'Management', 'Marketing', 'Operations', 'Other'
+    ];
     public static $levels = [
         0 => 'Trainee',
         1 => 'Junior',

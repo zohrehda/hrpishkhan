@@ -52,5 +52,15 @@ function getFoodReserved($date)
     }
 }
 
+function colle($array)
+{
+    if (!is_array($array)) {
+        return;
+    }
+    foreach ($array as $item) {
+
+    }
+    collect($array);
+}
 
 ?>

@@ -9,10 +9,12 @@
         @yield('content')
     </main>
 </div>
+<script src="{{ asset('js/main.js') }}"></script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
 </script>
+@yield('script')
 </body>
 </html>

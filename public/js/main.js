@@ -1,3 +1,23 @@
+function ff(competency) {
+    $("#competency_form_row").empty();
+    //  console.log(competency);
+    $.each(competency, function (key, item) {
+        console.log(item[1])
+        tmp = $("#tmp_competency_form").html();
+        tmp = tmp.replaceAll('__name', 'competency[' + key + '][]');
+        tmp = tmp.replaceAll('__data-row-num', key);
+        tmp = tmp.replaceAll('__radio_id1', 'radio1' + key);
+        tmp = tmp.replaceAll('__radio_id2', 'radio2' + key);
+        tmp = tmp.replaceAll('__value1', item[0]);
+
+        $("#competency_form_row").append(tmp);
+        $("#competency_form_row").find('.competency-row').eq(key - 1).find('input[type="radio"][value="' + item[1] + '"]').prop('checked', true);
+
+
+    });
+}
+
+
 $(document).ready(function () {
 
     var draftForm = $('#form-draft'),
@@ -5,7 +25,10 @@ $(document).ready(function () {
         draftUpdate = draftForm.find('input[name="draft_update"]'),
         draftDelete = $("#draft_delete"),
         DraftImportModal = $('#DraftImportModal'),
-        DraftNameModal = $('#DraftNameModal');
+        DraftNameModal = $('#DraftNameModal'),
+        departmentInput = $("select[name='department']"),
+        isNewInput = $("input[name='is_new']")
+    ;
 
     function appendDrafts() {
         $.ajax({
@@ -114,6 +137,7 @@ $(document).ready(function () {
         $(this).find('input[type="text"]').val('');
     });
 
+
     /***** import draft *****/
     DraftImportModal.on('click', '#draft_import', function () {
 
@@ -149,6 +173,11 @@ $(document).ready(function () {
                         });
                         $("#interviewer_form_rows").html(append)
                     }
+                    if (index == 'competency') {
+                        //     console.log(item)
+                        ff(item);
+                    }
+
 
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
@@ -179,6 +208,7 @@ $(document).ready(function () {
 
     });
 
+
     /***** add interviewer form row *****/
     $("#add_interviewer").on('click', function () {
         i = $("#interviewer_form_rows").find('.form-row').last().attr('data-form-num');
@@ -194,4 +224,141 @@ $(document).ready(function () {
         $("#interviewer_form_rows").append(tmp);
     });
 
+
+    /***** get staff using ajax *****/
+    function initializeSelect2(elem) {
+        elem.select2({
+            ajax: {
+                url: "/panel/requisitions/staff",
+                dataType: 'json',
+                templateResult: function (item) {
+                    return format(item, false);
+                },
+                matcher: matchStart,
+                /*  delay: 250,
+                  placeholder: 'Search in users',
+                  minimumInputLength: 1,*/
+            }
+        });
+    }
+
+    initializeSelect2($('.approver'));
+
+
+    /***** select user form *****/
+    function insertUsersForm(area, select_name, label, option_label) {
+        selected_id = $(area).attr('data-selected-id');
+        selected_email = $(area).attr('data-selected-email');
+        var i = 1;
+        //    $('.form-receivers-part').empty();
+        // var select_name = "user";
+        label = '';
+        if (label) {
+            label = ' <label for="determiners" class="optional">' + label + '</label>';
+        }
+        option_inner = 'Empty';
+        if (option_label) {
+            option_inner = option_label
+        }
+
+        selected_option = ' <option selected disabled>' + option_inner + '</option>'
+        if (selected_id) {
+            selected_option = '  <option selected value="' + selected_id + '"  >' + selected_email + '</option>';
+        }
+
+        $(area).append(' <div class="">' +
+            label +
+            '<select id="" name="' + select_name + '" required="true" class="form-space select22 custom-select select2"  ></select>'
+            + '</div>');
+        $('select[name="' + select_name + '" ]').append(selected_option)
+        i++;
+        // $('.select22').prop('required', true);
+        $('.select22').select2({
+            ajax: {
+                url: "/panel/requisitions/staff",
+                dataType: 'json',
+                templateResult: function (item) {
+
+                    return format(item, false);
+                },
+                matcher: matchStart,
+                /*  delay: 250,
+                  placeholder: 'Search in users',
+                  minimumInputLength: 1,*/
+
+
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+
+
+    }
+
+    insertUsersForm('.select-user', 'user_id', null, 'select user');
+
+
+    /***** disable & enable replacement input depending on value of is_new input *****/
+    isNewInput.on('change', function () {
+        var radio_val = $(this).val();
+        //   console.log(radio_val)
+
+
+        if (radio_val == 0) {
+            $("input[name='replacement']").prop('disabled', false);
+        } else {
+            $("input[name='replacement']").prop('disabled', true);
+        }
+    });
+    isNewInput.trigger('change');
+
+
+    /***** disable & enable vertical input depending on value of department input *****/
+    departmentInput.on('change', function () {
+        value = $(this).val();
+        if (value == 1 || value == 2) {
+            $("input[name='vertical']").prop('disabled', false);
+        } else {
+            $("input[name='vertical']").prop('disabled', true)
+        }
+    });
+    departmentInput.trigger('change');
+
+
+    /***** add receiver select input *****/
+    $("#add_receiver").on('click', function () {
+        ee = '<div class="col-md-6">\n' +
+            '                                    <label for="determiners">Receiver</label>\n' +
+            '                                    <select id="" name="determiners[]"\n' +
+            '                                            class="form-space form-control select2 approver">\n' +
+            '                                        <option selected disabled>Empty</option>\n' +
+            '\n' +
+            '                                    </select>\n' +
+            '                                </div>';
+
+        $(".form-receivers-part").append(ee);
+        initializeSelect2($('.approver'));
+
+    });
+
+    $("#add_competency").on('click', function () {
+
+        i = $("#competency_form_row").find('.form-row').last().attr('data-row-num');
+        if (!i) {
+            i = 0;
+        }
+        i++;
+
+        tmp = $("#tmp_competency_form").html();
+        tmp = tmp.replaceAll('__name', 'competency[' + i + '][]');
+        tmp = tmp.replaceAll('__data-row-num', i);
+        tmp = tmp.replaceAll('__radio_id1', 'radio1' + i);
+        tmp = tmp.replaceAll('__radio_id2', 'radio2' + i);
+
+        $("#competency_form_row").append(tmp);
+
+    });
+    //  $("#add_competency").trigger('click');
+
+
 });
+

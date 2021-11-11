@@ -23,7 +23,7 @@ class CreateRequisitionsTable extends Migration
             $table->string('location');
             $table->string('direct_manger');
             $table->string('venture');
-            $table->string('vertical');
+            $table->string('vertical')->nullable();
             $table->string('seniority');
             $table->integer('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
@@ -33,7 +33,7 @@ class CreateRequisitionsTable extends Migration
             $table->integer('degree');
             $table->integer('experience_year');
             $table->text('mission');
-            $table->text('competency');
+            $table->json('competency');
             $table->text('outcome');
             $table->text('about')->nullable();
             $table->json('interviewers')->nullable();

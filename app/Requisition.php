@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RequisitionSent;
 use App\Events\RequisitionAccepted;
+use App\Classes\RequisitionItems;
 
 
 class Requisition extends Model
@@ -197,95 +198,41 @@ class Requisition extends Model
         ]);
     }
 
-    public function get_shift()
+
+    public function getDepartmentAttribute()
     {
-        $sift = $this->shift;
-        switch ($sift) {
-            case null :
-                $result = '0';
-                break;
-            case 1 :
-                $result = 'morning';
-                break;
-            case 2 :
-                $result = 'midday';
-                break;
-            case 3 :
-                $result = 'evening';
-                break;
-            case 4 :
-                $result = 'night';
-                break;
-            default:
-                $result = 'night';
+        return RequisitionItems::getItems('department')['options'][$this->attributes['department']] ?? 'gg';
 
-
-        }
-
-        return $result;
     }
 
-    public function get_degree()
+    public function getIsFullTimeAttribute()
     {
-        $sift = $this->degree;
-        switch ($sift) {
+        return RequisitionItems::getItems('is_full_time')['radios'][$this->attributes['is_full_time']] ?? 'gg';
 
+    }
+    public function getIsNewAttribute()
+    {
+        return RequisitionItems::getItems('is_new')['radios'][$this->attributes['is_new']] ?? 'gg';
 
-            case 1 :
-                $result = 'Diploma';
-                break;
-            case 2 :
-                $result = 'B.A/BSc.';
-                break;
-            case 3 :
-                $result = 'M.A/MSc.';
-                break;
-            case 4 :
-                $result = 'PHD';
-                break;
-            default:
-                $result = '0';
-
-
-        }
-
-        return $result;
     }
 
-    public function get_experience_year()
+    public function getShiftAttribute()
     {
-        $experience_year = $this->experience_year;
-        switch ($experience_year) {
-
-            case 1 :
-                $result = 'Fresh Graduate';
-                break;
-            case 2 :
-                $result = '1';
-                break;
-            case 3 :
-                $result = '(1-2)';
-                break;
-            case 4 :
-                $result = '(2-4)';
-                break;
-            case 5 :
-                $result = '(4-6)';
-                break;
-            case 6 :
-                $result = '(6-10)';
-                break;
-            case 7 :
-                $result = 'More than 10';
-                break;
-            default:
-                $result = '0';
-
-
-        }
-
-        return $result;
+        return RequisitionItems::getItems('shift')['options'][$this->attributes['shift']] ?? 'gg';
     }
+
+    public function getDegreeAttribute()
+    {
+        return RequisitionItems::getItems('degree')['options'][$this->attributes['degree']] ?? 'gg';
+
+    }
+
+    public function getExperienceYearAttribute()
+    {
+        return RequisitionItems::getItems('experience_year')['options'][$this->attributes['experience_year']] ?? 'gg';
+
+    }
+
 
     public function progress_status()
     {

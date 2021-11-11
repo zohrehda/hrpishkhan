@@ -41,10 +41,18 @@ nav {
 }*/
 
 
-label:not(.optional):not(.custom-control-label):after {
+#form label.required:after  {
+    content:"*";
+    color:red;
+}
+#form .replacement{
+    position: relative;
+    top: -7px;
+}
+/*label:not(.optional):not(.custom-control-label):after {
   content:"*";
   color:red;
-}
+}*/
 .cursor-pointer {
     cursor: pointer;
 }
