@@ -171,7 +171,7 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
-        //  dd($request->all());
+        // dd($request->all());
         $determiners = $request->post('determiners', []);
         $messages = [
             'determiners.*.distinct' => "Can't select same determiner on two or more progresses"
@@ -180,6 +180,8 @@ class RequisitionController extends Controller
                 'department' => 'required',
                 'position' => 'required',
                 'determiners.*' => 'distinct',
+                'determiners.0' => 'required',
+                'determiners.1' => 'required',
                 'competency.*' => 'required|array|min:2'
             ] + $this->common_validate_rules()
             , $messages);
@@ -197,11 +199,14 @@ class RequisitionController extends Controller
         }
 
         //    $hr_manager = [5 => User::hr_manager()->id];
-        $hr_admin = [0 => User::hrAdmin()->id];
+        //  $hr_admin = [ User::hrAdmin()->id];
 
         $determiners = $request->post('determiners', []);
-        $determiners = $hr_admin + $determiners + [100 => User::hrAdmin()->id];
-
+        $determiners = array_reverse($determiners);
+        array_push($determiners, User::hrAdmin()->id);
+        $determiners = array_reverse($determiners);
+        $determiners =  $determiners + [100 => User::hrAdmin()->id];
+     //   dd($determiners);
         if (config('app.users_provider') == 'ldap') {
             foreach ($determiners as $d) {
                 $this->ImportLdapToModel($d);
@@ -249,7 +254,7 @@ class RequisitionController extends Controller
     public function update(Request $request)
     {
         $requisition = Requisition::find($request->post('id'));
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
                 'competency.1' => 'required|array|min:2'
             ] + $this->common_validate_rules());
         if ($validator->fails()) {

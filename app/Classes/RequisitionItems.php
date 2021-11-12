@@ -45,7 +45,7 @@ class RequisitionItems
                 'required' => true,
                 'validate_rules' => ['required']
             ],
-            'direct_manger' => [
+            'direct_manager' => [
                 'type' => 'text',
                 'required' => true,
                 'validate_rules' => ['required']

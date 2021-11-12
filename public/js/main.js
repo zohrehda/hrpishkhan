@@ -149,6 +149,8 @@ $(document).ready(function () {
 
                     $("#form").find('select[name="' + index + '"]').val(item);
                     $("#form").find('input[type="radio"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
+                    isNewInput.trigger('change');
+                    departmentInput.trigger('change');
 
                 });
 
@@ -195,9 +197,7 @@ $(document).ready(function () {
             }
         });
     }
-
     initializeSelect2($('.approver'));
-
 
     /***** select user form *****/
     function insertUsersForm(area, select_name, label, option_label) {
@@ -247,13 +247,12 @@ $(document).ready(function () {
 
 
     }
-
     insertUsersForm('.select-user', 'user_id', null, 'select user');
-
 
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
         var radio_val = isNewInput.filter(':checked').val();
+        console.log(radio_val) ;
         if (radio_val == 0) {
 
             $("input[name='replacement']").prop('disabled', false);
@@ -266,11 +265,12 @@ $(document).ready(function () {
 
     /***** disable & enable vertical input depending on value of department input *****/
     departmentInput.on('change', function () {
-        value = $(this).val();
+        value = $(departmentInput).val();
+
         if (value == 1 || value == 2) {
             $("input[name='vertical']").prop('disabled', false);
         } else {
-            $("input[name='vertical']").prop('disabled', true)
+            $("input[name='vertical']").prop('disabled', true) ;
         }
     });
     departmentInput.trigger('change');
@@ -304,7 +304,6 @@ $(document).ready(function () {
 function competency_html(competency = null) {
 
     if (!competency) {
-
         i = $("#competency_form_row").find('.form-row').last().attr('data-row-num');
         if (!i) {
             i = 0;
@@ -320,6 +319,9 @@ function competency_html(competency = null) {
         if (i != 1) {
             $("#competency_form_row").find('.competency-row').eq(i - 1).find('.card-header').removeClass('d-none');
         }
+
+        //$("#competency_form_row").find('.competency-row').eq(i - 1).find('input[type="text"]').val('dd');
+
 
     } else {
         $("#competency_form_row").empty();

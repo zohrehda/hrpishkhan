@@ -94,11 +94,11 @@
     <div class="alert interviewer-row  alert-dismissible fade show p-0" role="alert">
         <div class="form-row" data-form-num="__data-form-num">
             <div class="form-group col-md-6">
-                <label for="inputEmail4 " class="optional">name</label>
+                <label for="inputEmail4 " class="optional">Name</label>
                 <input type="text" name="__name" value="__value1" class="form-control" id="interviewer_name">
             </div>
             <div class="form-group col-md-6">
-                <label for="interviewer_skype_id" class="optional">skype id</label>
+                <label for="interviewer_skype_id" class="optional">Skype ID</label>
                 <input type="text" value="__value2" class="form-control" name="__name" id="interviewer_skype_id">
             </div>
 
@@ -125,11 +125,11 @@
             <div class="form-group col-3 d-flex align-items-center">
                 <div class="custom-control custom-radio custom-control-inline">
                     <input type="radio" id="__radio_id1" name="__name" value="1" class="custom-control-input" >
-                    <label class="custom-control-label" for="__radio_id1">essential</label>
+                    <label class="custom-control-label" for="__radio_id1">Essential</label>
                 </div>
                 <div class="custom-control custom-radio custom-control-inline">
                     <input type="radio" id="__radio_id2" name="__name" value="0" class="custom-control-input" >
-                    <label class="custom-control-label" for="__radio_id2">desirable</label>
+                    <label class="custom-control-label" for="__radio_id2">Desirable</label>
                 </div>
             </div>
         </div>

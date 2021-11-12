@@ -36,7 +36,7 @@
                                         <div>
                                             @foreach($requisition->owner->details() as $k=>$v)
                                                 <div class="text-dark">
-                                                    {{$k}} : {{$v}}
+                                                    {{ucfirst($k)}} : {{$v}}
                                                 </div>
                                             @endforeach
                                         </div>

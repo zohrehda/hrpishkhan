@@ -115,7 +115,7 @@
     </div>
 </div>
 
-<h3>Receiver selection</h3>
+<h3>Receiver Selection</h3>
 <div class="card form-space">
     <div class="card-header">
 
@@ -220,9 +220,10 @@
             if (competency) {
                 competency_html(competency)
             } else {
-                $("#add_competency").trigger('click');
+                var competency = @json(old('competency')) ;
+                competency_html(competency)
+               // $("#add_competency").trigger('click');
             }
-
 
             var interviewer = @json($requisition->interviewers??null) ;
             interviewer = JSON.parse(interviewer);
@@ -230,7 +231,10 @@
             if (interviewer) {
                 interviewer_html(interviewer)
             } else {
-                $("#add_interviewer").trigger('click')
+                var interviewers = @json(old('interviewers')) ;
+                interviewer_html(interviewers)
+
+             //   $("#add_interviewer").trigger('click')
             }
 
         });
