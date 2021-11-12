@@ -58,12 +58,11 @@
                                     <div class="custom-control custom-radio custom-control-inline ">
                                         <input type="radio" id="{{$radio}}" name="{{$name}}" value="{{$value}}"
                                                class="custom-control-input"
-                                               @if( old($name,isset($requisition)?$requisition->getOriginal($name):'empty' )==$value) checked @endif>
+                                               @if((string)old($name,isset($requisition)?$requisition->getOriginal($name):'f' )==(string)$value) checked @endif >
                                         <label class="custom-control-label" for="{{$radio}}">{{$radio}}</label>
 
                                     </div>
                                 @endforeach
-
 
                                 @break
 
@@ -75,15 +74,11 @@
                                           class="form-control form-space">{{ old($name,$requisition->$name??'')}}</textarea>
                                 @break
 
-
                             @endswitch
                         @endif
-
-
                     </div>
                 @endforeach
             </div>
-
         </div>
     </div>
 
@@ -109,38 +104,8 @@
 <div class="card form-space">
     <div class="card-header">
 
-        @if(!empty($requisition->interviewers))
-            @foreach(json_decode($requisition->interviewers,true) as $k=>$interviewer)
-                <div class="form-row" data-form-num="{{$k}}">
-                    <div class="form-group col-md-6">
-                        <label for="interviewer_name" class="optional">name</label>
-                        <input type="text" name="interviewers[{{$k}}][]" value="{{$interviewer[0]}}"
-                               class="form-control" id="interviewer_name">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="interviewer_skype_id" class="optional">skype id</label>
-                        <input type="text" class="form-control" value="{{$interviewer[1]}}"
-                               name="interviewers[{{$k}}][]"
-                               id="interviewer_skype_id">
-                    </div>
-                </div>
-            @endforeach
-        @else
-            <div id="interviewer_form_rows">
-                <div class="form-row" data-form-num="1">
-                    <div class="form-group col-md-6">
-                        <label for="interviewer_name" class="optional">name</label>
-                        <input type="text" name="interviewers[1][]" class="form-control" id="interviewer_name">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="interviewer_skype_id" class="optional">skype id</label>
-                        <input type="text" class="form-control" name="interviewers[1][]"
-                               id="interviewer_skype_id">
-                    </div>
-                </div>
-            </div>
-
-        @endif
+        <div id="interviewer_form_rows">
+        </div>
         <div class="row">
             <div class="col-12">
                 <button type="button" id="add_interviewer" class="btn btn-sm btn-success">add
@@ -253,11 +218,21 @@
             var competency = @json($requisition->competency??null) ;
             competency = JSON.parse(competency)
             if (competency) {
-             ff(competency)
+                competency_html(competency)
             } else {
-
                 $("#add_competency").trigger('click');
             }
+
+
+            var interviewer = @json($requisition->interviewers??null) ;
+            interviewer = JSON.parse(interviewer);
+
+            if (interviewer) {
+                interviewer_html(interviewer)
+            } else {
+                $("#add_interviewer").trigger('click')
+            }
+
         });
 
 

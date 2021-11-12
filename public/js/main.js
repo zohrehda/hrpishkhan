@@ -1,23 +1,3 @@
-function ff(competency) {
-    $("#competency_form_row").empty();
-    //  console.log(competency);
-    $.each(competency, function (key, item) {
-        console.log(item[1])
-        tmp = $("#tmp_competency_form").html();
-        tmp = tmp.replaceAll('__name', 'competency[' + key + '][]');
-        tmp = tmp.replaceAll('__data-row-num', key);
-        tmp = tmp.replaceAll('__radio_id1', 'radio1' + key);
-        tmp = tmp.replaceAll('__radio_id2', 'radio2' + key);
-        tmp = tmp.replaceAll('__value1', item[0]);
-
-        $("#competency_form_row").append(tmp);
-        $("#competency_form_row").find('.competency-row').eq(key - 1).find('input[type="radio"][value="' + item[1] + '"]').prop('checked', true);
-
-
-    });
-}
-
-
 $(document).ready(function () {
 
     var draftForm = $('#form-draft'),
@@ -156,26 +136,10 @@ $(document).ready(function () {
                 $.each(draft, function (index, item) {
 
                     if (index == 'interviewers') {
-                        array = Object.values(item);
-                        i = 0
-                        append = '';
-                        $.each(array, function (index, item) {
-                            i++;
-                            tmp = $("#tmp_interviewers_form").html();
-                            tmp = tmp.replaceAll('__name', 'interviewers[' + i + '][]');
-
-                            tmp = tmp.replaceAll('__data-form-num', i);
-                            tmp = tmp.replaceAll('__value1', item[0]);
-                            tmp = tmp.replaceAll('__value2', item[1]);
-                            //$(tmp).find('input').val('dd');
-
-                            append += tmp;
-                        });
-                        $("#interviewer_form_rows").html(append)
+                        interviewer_html(item);
                     }
                     if (index == 'competency') {
-                        //     console.log(item)
-                        ff(item);
+                        competency_html(item);
                     }
 
 
@@ -211,17 +175,7 @@ $(document).ready(function () {
 
     /***** add interviewer form row *****/
     $("#add_interviewer").on('click', function () {
-        i = $("#interviewer_form_rows").find('.form-row').last().attr('data-form-num');
-        if (!i) {
-            i = 0;
-        }
-        i++;
-        tmp = $("#tmp_interviewers_form").html();
-        tmp = tmp.replaceAll('__name', 'interviewers[' + i + '][]');
-        tmp = tmp.replaceAll('__data-form-num', i);
-        tmp = tmp.replaceAll('__value1', '');
-        tmp = tmp.replaceAll('__value2', '');
-        $("#interviewer_form_rows").append(tmp);
+        interviewer_html();
     });
 
 
@@ -299,11 +253,9 @@ $(document).ready(function () {
 
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
-        var radio_val = $(this).val();
-        //   console.log(radio_val)
-
-
+        var radio_val = isNewInput.filter(':checked').val();
         if (radio_val == 0) {
+
             $("input[name='replacement']").prop('disabled', false);
         } else {
             $("input[name='replacement']").prop('disabled', true);
@@ -340,7 +292,18 @@ $(document).ready(function () {
 
     });
 
+    /***** add competency input *****/
     $("#add_competency").on('click', function () {
+        competency_html();
+    });
+
+
+
+});
+
+function competency_html(competency = null) {
+
+    if (!competency) {
 
         i = $("#competency_form_row").find('.form-row').last().attr('data-row-num');
         if (!i) {
@@ -353,12 +316,60 @@ $(document).ready(function () {
         tmp = tmp.replaceAll('__data-row-num', i);
         tmp = tmp.replaceAll('__radio_id1', 'radio1' + i);
         tmp = tmp.replaceAll('__radio_id2', 'radio2' + i);
-
         $("#competency_form_row").append(tmp);
+        if (i != 1) {
+            $("#competency_form_row").find('.competency-row').eq(i - 1).find('.card-header').removeClass('d-none');
+        }
 
-    });
-    //  $("#add_competency").trigger('click');
+    } else {
+        $("#competency_form_row").empty();
+        $.each(competency, function (key, item) {
+            tmp = $("#tmp_competency_form").html();
+            tmp = tmp.replaceAll('__name', 'competency[' + key + '][]');
+            tmp = tmp.replaceAll('__data-row-num', key);
+            tmp = tmp.replaceAll('__radio_id1', 'radio1' + key);
+            tmp = tmp.replaceAll('__radio_id2', 'radio2' + key);
+
+            $("#competency_form_row").append(tmp);
+            $("#competency_form_row").find('.competency-row').eq(key - 1).find('input[type="radio"][value="' + item[1] + '"]').prop('checked', true);
+            $("#competency_form_row").find('.competency-row').eq(key - 1).find('input[type="text"]').val(item[0]);
+            if (key != 1) {
+                $("#competency_form_row").find('.competency-row').eq(key - 1).find('.card-header').removeClass('d-none');
+            }
+        });
+    }
+}
+
+function interviewer_html(interviewer = null) {
+    if (!interviewer) {
+        i = $("#interviewer_form_rows").find('.form-row').last().attr('data-form-num');
+        if (!i) {
+            i = 0;
+        }
+        i++;
+        tmp = $("#tmp_interviewers_form").html();
+        tmp = tmp.replaceAll('__name', 'interviewers[' + i + '][]');
+        tmp = tmp.replaceAll('__data-form-num', i);
+        tmp = tmp.replaceAll('__value1', '');
+        tmp = tmp.replaceAll('__value2', '');
+        $("#interviewer_form_rows").append(tmp);
 
 
-});
+    } else {
 
+        $("#interviewer_form_rows").empty();
+        $.each(interviewer, function (key, item) {
+            tmp = $("#tmp_interviewers_form").html();
+            tmp = tmp.replaceAll('__name', 'interviewers[' + key + '][]');
+
+            tmp = tmp.replaceAll('__data-form-num', key);
+            tmp = tmp.replaceAll('__value1', item[0]);
+            tmp = tmp.replaceAll('__value2', item[1]);
+            //$(tmp).find('input').val('dd');
+            $("#interviewer_form_rows").append(tmp);
+            //  append += tmp;
+        });
+
+    }
+
+}

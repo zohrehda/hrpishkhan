@@ -76,14 +76,14 @@ class RequisitionItems
                 'label' => 'working hours',
                 'type' => 'radio',
                 'required' => true,
-                'radios' => [0 => 'Part Time', 1 => 'Full Time'],
+                'radios' => ['0' => 'Part Time', '1' => 'Full Time'],
                 'validate_rules' => ['required']
             ],
             'is_new' => [
                 'label' => 'hiring type',
                 'type' => 'radio',
                 'required' => true,
-                'radios' => [1 => 'New hiring', 0 => 'Replacement',],
+                'radios' => [ '0' => 'Replacement','1' => 'New hiring'],
                 'validate_rules' => ['required']
             ],
             'replacement' => [

@@ -180,7 +180,7 @@ class RequisitionController extends Controller
                 'department' => 'required',
                 'position' => 'required',
                 'determiners.*' => 'distinct',
-                'competency.1' => 'required|array|min:2'
+                'competency.*' => 'required|array|min:2'
             ] + $this->common_validate_rules()
             , $messages);
 
