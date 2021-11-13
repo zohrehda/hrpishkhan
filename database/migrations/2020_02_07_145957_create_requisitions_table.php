@@ -21,7 +21,7 @@ class CreateRequisitionsTable extends Migration
             $table->text('fa_title');
             $table->integer('position_count');
             $table->string('location');
-            $table->string('direct_manger');
+            $table->string('direct_manager');
             $table->string('venture');
             $table->string('vertical')->nullable();
             $table->string('seniority');
