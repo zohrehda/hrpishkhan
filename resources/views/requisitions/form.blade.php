@@ -93,7 +93,7 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <button type="button" id="add_competency" class="btn btn-sm btn-success">add
+                <button type="button" id="add_competency" class="btn btn-sm btn-success">Add
                 </button>
             </div>
         </div>
@@ -108,7 +108,7 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <button type="button" id="add_interviewer" class="btn btn-sm btn-success">add
+                <button type="button" id="add_interviewer" class="btn btn-sm btn-success">Add
                 </button>
             </div>
         </div>
@@ -155,7 +155,7 @@
             <br>
             <div class="row">
                 <div class="col-12">
-                    <button type="button" id="add_receiver" class="btn btn-sm btn-success">add
+                    <button type="button" id="add_receiver" class="btn btn-sm btn-success">Add
                     </button>
                 </div>
             </div>
