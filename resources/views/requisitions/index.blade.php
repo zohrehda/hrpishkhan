@@ -4,11 +4,15 @@
             <div class="row">
                 @foreach($requisitions as $requisition)
                     <div class="col-md-4 form-space">
-                        <div class="card {{ $card_class }} text-white">
-                            <div class="card-header text-center">
+                        <div class="card {{ $card_class }}  text-white">
+                            <div class="card-header text-center"
+                                 data-toggle="collapse" type="button"  data-target="#card-{{$requisition->id}}">
                                 {{ $requisition->en_title }}
+                                <br>
+                                {{$requisition->owner->details()['name']}}
                             </div>
-                            <div class="card-body">
+
+                            <div class="card-body collapse multi-collapse"  id="card-{{$requisition->id}}" >
                                 @foreach($requisition->progresses as $progress)
                                     <p class="card-text">
                                         {{ $progress->role }} - {{ $progress->user->name }} - {{ $progress->status }}

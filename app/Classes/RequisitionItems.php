@@ -37,6 +37,7 @@ class RequisitionItems
             ],
             'position_count' => [
                 'type' => 'number',
+                'label'=>'Position Count' ,
                 'required' => true,
                 'validate_rules' => ['required']
             ],
@@ -106,6 +107,7 @@ class RequisitionItems
             'experience_year' => [
                 'type' => 'select',
                 'required' => true,
+                'label'=>'Experience (Year)' ,
                 'validate_rules' => ['required'],
                 'options' => [1 => 'Fresh Graduate', 2 => '1', 3 => '1-2', 4 => '2-4', 5 => '4-6', 6 => '6-10', 7 => 'More than 10']
             ],
@@ -129,7 +131,7 @@ class RequisitionItems
             ],
             'about' => [
                 'type' => 'textarea',
-                'required' => true,
+                'required' => false,
                 'placeholder' => '',
                 'validate_rules' => ['required'],
                 'title' => 'About the team'
@@ -143,7 +145,7 @@ class RequisitionItems
         foreach ($schema0 as $k => $v) {
 
             if (empty($v['label'])) {
-                $v['label'] = ucfirst(str_replace('_', ' ', $k));
+                $v['label'] = ucwords(str_replace('_', ' ', $k));
             }
 
             if (empty($v['dynamic'])) {
@@ -167,11 +169,11 @@ class RequisitionItems
     {
 
         return [
-            'Requisition information' => array_slice(self::getItems(), 0, 2),
+            'Requisition Information' => array_slice(self::getItems(), 0, 2),
 
-            'Position information' => array_slice(self::getItems(), 2, 12),
+            'Position Information' => array_slice(self::getItems(), 2, 12),
 
-            'Job requirements' => array_slice(self::getItems(), 14),
+            'Job Requirements' => array_slice(self::getItems(), 14),
 
         ];
 
