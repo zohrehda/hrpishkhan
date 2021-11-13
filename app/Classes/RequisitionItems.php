@@ -133,7 +133,7 @@ class RequisitionItems
                 'type' => 'textarea',
                 'required' => false,
                 'placeholder' => '',
-                'validate_rules' => ['required'],
+                'validate_rules' => ['nullable'],
                 'title' => 'About the team'
             ],
 

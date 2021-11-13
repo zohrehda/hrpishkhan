@@ -67,6 +67,7 @@
                                 @break
 
                                 @case('textarea')
+
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
                                 <textarea type="text" id="{{$name}}" name="{{$name}}"
