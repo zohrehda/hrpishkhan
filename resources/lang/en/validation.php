@@ -144,11 +144,20 @@ return [
 
         'hiring_type' => [
             'required' => 'Please select the type of hiring between New Hiring  and Replacement options'
-        ] ,
+        ],
 
-        'password'=>[
-            'regex'=> 'The password must have at least 1 lowercase AND 1 uppercase AND 1 number AND 1 symbol'
-        ]
+        'competency.*' => [
+            'min' => ' Please fill the competency completely',
+            'required' => 'The competency must have at least 5 items.'
+        ],
+
+        'password' => [
+            'regex' => 'The password must have at least 1 lowercase AND 1 uppercase AND 1 number AND 1 symbol'
+        ],
+        'determiners.*' => [
+            'distinct' => "Can't select same determiner on two or more progresses"
+        ],
+
 
     ],
 

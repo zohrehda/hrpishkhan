@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Adldap\Laravel\Commands\Import;
+use Adldap\Laravel\Facades\Adldap;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,6 +23,7 @@ class Requisition extends Model
     const ACCEPTED_STATUS = 1;
     const ASSIGN_STATUS = 2;
     const CLOSED_STATUS = 3;
+    const HOLDING_STATUS = 4;
 
     protected $appends = ['updated_at'];
 
@@ -73,6 +76,17 @@ class Requisition extends Model
     public function determiners()
     {
         return $this->belongsToMany(User::class, 'requisition_progresses', 'requisition_id', 'determiner_id');
+    }
+
+    public function is_last_progress()
+    {
+        $all_progresses_count = $this->progresses()->count();
+        $accepted_progresses_count = $this->accepted_progresses()->count();
+
+        if ($all_progresses_count - $accepted_progresses_count == 1) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -143,6 +157,32 @@ class Requisition extends Model
         $this->save();
     }
 
+    public function hold()
+    {
+        $this->update(
+            ['status' => self::HOLDING_STATUS
+            ]);
+        $this->save();
+    }
+    public function handle_hold()
+    {
+
+        $this->update(
+            ['status' => self::HOLDING_STATUS
+            ]);
+        $this->save();
+    }
+
+    public function close()
+    {
+
+        $this->update(
+            ['status' => self::CLOSED_STATUS
+            ]);
+        $this->save();
+
+    }
+
 
     /**
      * reject requisition
@@ -210,6 +250,7 @@ class Requisition extends Model
         return RequisitionItems::getItems('is_full_time')['radios'][$this->attributes['is_full_time']] ?? 'gg';
 
     }
+
     public function getIsNewAttribute()
     {
         return RequisitionItems::getItems('is_new')['radios'][$this->attributes['is_new']] ?? 'gg';
@@ -331,6 +372,117 @@ class Requisition extends Model
             'to' => $to,
             'type' => $type
         ]);
+    }
+
+    public function setInterviewersAttribute($value)
+    {
+        $interviewers = null;
+        if ($value) {
+
+            $array = [];
+            foreach ($value as $k => $v) {
+                if (!empty($v[0]) || !empty($v[1])) {
+                    $array[$k] = $v;
+                }
+            }
+            $interviewers = (count($array) > 0) ? json_encode($array) : null;
+        }
+
+        $this->attributes['interviewers'] = $interviewers;
+    }
+
+    public function setCompetencyAttribute($value)
+    {
+        $this->attributes['competency'] = json_encode($value);
+    }
+
+    public function ImportLdapToModel($userPrincipalName)
+    {
+        $user = Adldap::search()->users()->findBy('userPrincipalName', $userPrincipalName);
+        $credentials = [
+            'email' => $user->getEmail(),
+        ];
+
+// Create the importer:
+        $importer = new Import($user, new User(), $credentials);
+
+// Run the importer. The synchronized *unsaved* model will be returned:
+        $model = $importer->handle();
+
+// Save the returned model.
+        $model->save();
+    }
+
+    public static function getOrderedDeterminers($value)
+    {
+        $value = ($value) ?: [];
+
+        if ($value && $value[0] != User::hrAdmin()->id) {
+            array_unshift($value, User::hrAdmin()->id);
+        }
+
+        if (last($value) != User::hrAdmin()->id) {
+            $value[] = User::hrAdmin()->id;
+        }
+
+        return $value;
+    }
+
+    public function setDeterminerAttribute($value)
+    {
+        $determiners = self::getOrderedDeterminers($value);
+        $sender = User::find(Auth::id());
+
+        $determiner_id = array_values($determiners)[0];
+        $recipient = User::find(array_values($determiners)[0]);
+
+
+        if (config('app.users_provider') == 'ldap') {
+            $determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
+            $recipient = User::where('email', array_values($determiners)[0])->first();
+
+            foreach ($determiners as $d) {
+                $this->ImportLdapToModel($d);
+            }
+        }
+
+        event(new RequisitionSent($sender, $recipient));
+
+        $this->attributes['determiner_id'] = $determiner_id;
+
+    }
+
+    public function setDeterminerIdAttribute($value)
+    {
+        $determiner_id = $value;
+        if (config('app.users_provider') == 'ldap') {
+            $determiner_id = User::where('email', $value)->first()->id;
+        }
+        $this->attributes['determiner_id'] = $determiner_id;
+
+    }
+
+    public function approver_determiners()
+    {
+        return $this->belongsToMany(User::class, 'requisition_progresses', 'requisition_id', 'determiner_id')
+            ->where('requisition_progresses.role', 'approver');
+
+    }
+
+    public function holding_requisitions()
+    {
+        return $this->where('status', self::HOLDING_STATUS);
+    }
+
+    public function viewers()
+    {
+        return $this->belongsToMany(User::class, 'requisition_viewers', 'requisition_id', 'user_id');
+
+    }
+
+    public function requisition_viewers()
+    {
+        return $this->hasMany(RequisitionViewer::class, 'requisition_id');
     }
 
 

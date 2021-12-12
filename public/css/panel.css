@@ -1,39 +1,39 @@
 nav {
-  padding-bottom: 50px !important;
+    padding-bottom: 50px !important;
 }
 
 .outer {
-  display: table;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }
 
 .middle {
-  display: table-cell;
-  vertical-align: middle;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .inner {
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 .form-space {
-  margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .center {
-  text-align: center;
-  padding-top: 25px;
+    text-align: center;
+    padding-top: 25px;
 }
 
 .inline {
-  display: inline-block;
-  margin-right: 5px;
+    display: inline-block;
+    margin-right: 5px;
 }
 
 /*.bg-warning {
@@ -41,14 +41,16 @@ nav {
 }*/
 
 
-#form label.required:after  {
-    content:"*";
-    color:red;
+#form label.required:after {
+    content: "*";
+    color: red;
 }
-#form .replacement{
+
+#form .replacement {
     position: relative;
     top: -7px;
 }
+
 /*label:not(.optional):not(.custom-control-label):after {
   content:"*";
   color:red;
@@ -56,3 +58,122 @@ nav {
 .cursor-pointer {
     cursor: pointer;
 }
+
+.hover-buttons {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hover-buttons button {
+    margin-top: 10px;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.btn-green {
+    color: #FFFFFF;
+    background-color: #28a745;
+}
+
+.btn-green:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-red {
+    color: #FFFFFF;
+    background-color: #dc3545;
+}
+.btn-red:hover{
+    color: #FFFFFF;
+    background-color: #bb2d3b;
+}
+
+.btn-yellow {
+    color: #000000;
+    background-color: #ffcd39;
+}
+.btn-yellow:hover{
+    background-color: #eeb714;
+}
+
+.btn-purple {
+    color: #FFFFFF;
+    background-color: #A569BD;
+}
+.btn-purple:hover{
+    color: #FFFFFF;
+    background-color: #684277;
+}
+
+.btn-blue {
+    color: #FFFFFF;
+    background-color: #007bff;
+}
+
+.btn-blue:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-black {
+    color: #FFFFFF;
+    background-color: #343a40;
+}
+
+.btn-orange {
+    color: #FFFFFF;
+    background-color: #F39C12;
+}
+.btn-orange:hover{
+    color: #FFFFFF;
+    background-color: #DD8F12;
+}
+
+.btn-grey {
+    color: #FFFFFF;
+    background-color: #7F8C8D;
+}
+
+.btn-navy {
+    color: #FFFFFF;
+    background-color: #000080;
+}
+.btn-navy:hover{
+    color: #FFFFFF;
+    background-color: #000051;
+}
+
+.btn-pink {
+    color: #FFFFFF;
+    background-color: #DE3163;
+}
+.btn-pink:hover{
+    color: #FFFFFF;
+    background-color: #B0284F;
+}
+.card-btn-containers {
+    margin: 10px 0;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+}
+
+.card-btn-containers .btn {
+    margin: auto 1px;
+}
+
+
+

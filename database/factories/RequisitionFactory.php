@@ -7,24 +7,32 @@ use Faker\Generator as Faker;
 
 $factory->define(Requisition::class, function (Faker $faker) {
     return [
-        'department' => 0,
-        'level' => 0,
-        'fa_title' => $faker->title,
-        'en_title' => $faker->title,
+        'department' => 'product',
+        'level' => 'junior',
+        'fa_title' => $faker->words,
+        'en_title' => $faker->words,
         'position_count' => rand(1, 10),
-        'shift' => 1,
+        'location' => $faker->city,
+        'direct_manager_name' => $faker->name,
+        'direct_manager_position' => $faker->jobTitle,
+        'venture' => $faker->title,
+        'vertical' => $faker->title,
+        'shift' => null,
         'is_full_time' => 1,
         'is_new' => 1,
-        'report_to' => $faker->name,
-        'location' => $faker->city,
-        'field_of_study' => 'field_of_study',
+        'replacement' => null,
+        'field_of_study' => $faker->title,
         'degree' => 1,
-        'competency' => 'Competency',
-        'mission' => $faker->text,
-        'outcome' => $faker->text,
-        'about' => $faker->text,
         'experience_year' => rand(1, 10),
-        'determiner_id' => 3,
+        'mission' => $faker->text,
+        'competency' => json_encode([
+            ['dfd',1]
+        ]),
+        'outcome' => $faker->text,
+        'comment' => $faker->text,
+        'interviewers' => null,
         'owner_id' => 1,
+        'determiner_id' => 3,
+
     ];
 });

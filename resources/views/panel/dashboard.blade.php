@@ -18,4 +18,9 @@
     <h2>Closed</h2>
     <hr>
     @include('requisitions.index', ['requisitions' => $closed, 'card_class' => 'bg-secondary'])
+
+    <h2>Holding</h2>
+    <hr>
+    @include('requisitions.index', ['requisitions' => $holding, 'card_class' => 'bg-secondary'])
+
 @endsection

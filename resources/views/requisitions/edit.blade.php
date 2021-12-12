@@ -16,6 +16,6 @@
             </div>
         </div>
     </div>
-    @include('requisitions.footer')
+    @include('requisitions.footer',['requisition'=>$requisition])
 
 @stop

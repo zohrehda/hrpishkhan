@@ -15,16 +15,17 @@ class CreateRequisitionsTable extends Migration
     {
         Schema::create('requisitions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('department');
-            $table->string('position');
+            $table->string('department');
+            $table->string('level');
+            // $table->string('position');
             $table->text('en_title');
             $table->text('fa_title');
             $table->integer('position_count');
             $table->string('location');
-            $table->string('direct_manager');
+            $table->string('direct_manager_name');
+            $table->string('direct_manager_position');
             $table->string('venture');
             $table->string('vertical')->nullable();
-            $table->string('seniority');
             $table->integer('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
             $table->boolean('is_new')->default(0);
@@ -35,7 +36,7 @@ class CreateRequisitionsTable extends Migration
             $table->text('mission');
             $table->json('competency');
             $table->text('outcome');
-            $table->text('about')->nullable();
+            $table->text('comment')->nullable();
             $table->json('interviewers')->nullable();
             $table->unsignedBigInteger('owner_id');
             $table->foreign('owner_id')

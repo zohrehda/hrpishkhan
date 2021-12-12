@@ -26,104 +26,127 @@ use  App\Classes\RequisitionItems;
 
 class RequisitionController extends Controller
 {
-    private $common_validate_rules = [
-        'fa_title' => 'required',
-        'en_title' => 'required',
-        'competency' => 'required',
-        'is_full_time' => 'required',
-        'is_new' => 'required',
-        'replacement' => 'required_if:hiring_type,0',
-        'mission' => 'required',
-        'outcome' => 'required',
-        'position_count' => 'required',
-        //   'report_to' => 'required',
-        'location' => 'required',
-        //  'city' => 'required',
-        'direct_manger' => 'required',
-        'venture' => 'required',
-        'vertical' => 'required',
-        'seniority' => 'required',
-        'experience_year' => 'required',
-        'field_of_study' => 'required',
-        'degree' => 'required'];
-
-
-    private function common_validate_rules()
+    public function index()
     {
-        return array_map(function ($item) {
-            return $item['validate_rules'];
-        }, RequisitionItems::getCommonDb());
+        $pending = Auth::user()->pending_determiner_requisitions;
+
+        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
+
+        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions);
+
+        $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions);
+        //  ->merge(Auth::user()->user_assignments_do)->merge(Auth::user()->user_request_assignments);
+
+        $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
+
+        $holding = Auth::user()->holding_user_requisitions->merge(Auth::user()->holding_determiner_requisitions);
+      //  $holding = [];
+        $levels_array = $this->levels;
+        $departments = $this->departments;
+        $requisition_items = RequisitionItems::getItems();
+
+        return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
+            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding'));
     }
-
-    private function commonDb($requisition, $request)
-    {
-
-        $items = RequisitionItems::getCommonDb();
-        foreach ($items as $name => $value) {
-            $requisition->$name = $request->post($name);
-        }
-
-        /*$requisition->fa_title = $request->post('fa_title');
-        $requisition->en_title = $request->post('en_title');
-        $requisition->competency = $request->post('competency');
-        $requisition->mission = $request->post('mission');
-        $requisition->outcome = $request->post('outcome');
-        $requisition->shift = ($request->post('shift') == 0) ? null : $request->post('shift');
-        $requisition->position_count = $request->post('position_count');
-        $requisition->location = $request->post('location');
-        $requisition->direct_manger = $request->post('direct_manger');
-        $requisition->venture = $request->post('venture');
-        $requisition->vertical = $request->post('vertical', 'g');
-        $requisition->seniority = $request->post('seniority');
-        $requisition->experience_year = $request->post('experience_year');
-        $requisition->field_of_study = $request->post('field_of_study');
-        $requisition->degree = $request->post('degree');
-        $requisition->time = $request->post('time');
-        $requisition->is_new = $request->post('is_new');
-        $requisition->replacement = $request->post('replacement');
-        $requisition->about = $request->post('about');*/
-
-        $intw = $request->post('interviewers');
-        if (!$intw) {
-            $interviewers = null;
-        } else {
-            $array = [];
-            foreach ($intw as $k => $v) {
-                if (!empty($v[0]) || !empty($v[1])) {
-                    $array[$k] = $v;
-                }
-            }
-            $interviewers = (count($array) > 0) ? json_encode($array) : null;
-
-        }
-        $requisition->interviewers = $interviewers;
-        $requisition->competency = json_encode($request->post('competency'));
-
-    }
-
 
     public function create(Request $request)
     {
-
         $errors = $request->session()->get('errors');
-        if ($errors == null) {
+        if (!$errors) {
             session(['termAccepted' => 0]);
         }
 
-
-        $users = $this->determiners();
         $departments = StaffHierarchy::$departments;
-        //    $levels=['']
-        $hr_manager_user = User::hr_manager();
-        $drafts = Draft::where('user_id', Auth::user()->id)->get();
+        $drafts = Auth::user()->drafts;
+        $form_sections_items = RequisitionItems::getSections();
 
-        $form_sections_items = RequisitionItems::getPartsItems();
-
-        // dd($form_sections_items);
-
-        return view('requisitions.create', compact('users', 'hr_manager_user', 'departments', 'drafts', 'form_sections_items'));
+        return view('requisitions.create', compact('departments', 'drafts', 'form_sections_items'));
     }
 
+    public function store(Request $request)
+    {
+        $validation_rules = $this->get_validation_rules();
+        $validator = Validator::make($request->all(), $validation_rules);
+
+        if ($validator->fails()) {
+            session(['termAccepted' => 1]);
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $requisition = new Requisition();
+        $requisition = $this->set_requisition_items($requisition);
+        $requisition->owner_id = Auth::id();
+        $requisition->save();
+
+        $determiners = Requisition::getOrderedDeterminers($request->post('determiners', []));
+        $requisition->determiner_id = $determiners[0];
+
+        $this->send_email_to_determiner($determiners[0]);
+
+        $requisition = $this->set_requisition_progresses_determiners($requisition, $determiners);
+        $requisition->save();
+
+        $request->session()->flash('success', 'Requisition sent successfully.');
+        return redirect()->route('dashboard');
+
+    }
+
+    public function update(Request $request)
+    {
+
+        $requisition = Requisition::find($request->post('id'));
+
+        $validator = Validator::make($request->all(), $this->get_validation_rules());
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        if (Auth::user()->can('update_determiners', $requisition)) {
+
+            $this->update_determiners($requisition);
+            $requisition->save();
+        }
+
+        if (Auth::user()->can('accept', $requisition)) {
+            $this->determine($request, $requisition);
+
+        } else $requisition->reset_determiner_progresses();
+
+        $requisition = $this->set_requisition_items($requisition);
+        $requisition->save();
+
+        $request->session()->flash('success', 'Requisition updated successfully.');
+        return redirect()->route('dashboard');
+    }
+
+    private function update_determiners($requisition)
+    {
+        $determiners = Requisition::getOrderedDeterminers(request()->post('determiners', []));
+        unset($determiners[0]);
+        $this->delete_previous_determiners($requisition);
+        $this->set_requisition_progresses_determiners($requisition, $determiners);
+    }
+
+    private function delete_previous_determiners($requisition)
+    {
+        foreach ($requisition->progresses as $key => $progress) {
+            if ($key != 0) {
+                $progress->delete();
+            }
+        }
+    }
+
+    private function set_requisition_progresses_determiners($requisition, $determiners)
+    {
+        foreach ($determiners as $key => $value) {
+            $determiner_id = ((config('app.users_provider') == 'ldap')) ? User::where('email', $value)->first()->id : $value;
+            $requisition->progresses()->create([
+                'requisition_id' => $requisition->id,
+                'determiner_id' => $determiner_id,
+                'role' => ($determiner_id == User::hrAdmin()->id) ? 'hr_admin' : 'approver']);
+        }
+        return $requisition;
+    }
 
     public function customizeReceiver()
     {
@@ -168,124 +191,57 @@ class RequisitionController extends Controller
 
     }
 
-
-    public function store(Request $request)
+    private function get_validation_rules()
     {
-        // dd($request->all());
-        $determiners = $request->post('determiners', []);
-        $messages = [
-            'determiners.*.distinct' => "Can't select same determiner on two or more progresses"
-        ];
-        $validator = Validator::make($request->all(), [
-                'department' => 'required',
-                'position' => 'required',
-                'determiners.*' => 'distinct',
-                'determiners.0' => 'required',
-                'determiners.1' => 'required',
-                'competency.*' => 'required|array|min:2'
-            ] + $this->common_validate_rules()
-            , $messages);
+        return array_map(function ($item) {
+                return $item['validate_rules'];
+            }, RequisitionItems::getItems()) +
+            ['competency.*' => 'required|array|min:2'];
+    }
 
-        $validator->after(function ($validator) {
-            if (!request()->post('determiners')) {
-                $validator->errors()->add('determiner', 'choose one receiver');
-            }
-
-        });
-        if ($validator->fails()) {
-            session(['termAccepted' => 1]);
-            return redirect()->back()->withErrors($validator)->withInput();
-
-        }
-
-        //    $hr_manager = [5 => User::hr_manager()->id];
-        //  $hr_admin = [ User::hrAdmin()->id];
-
-        $determiners = $request->post('determiners', []);
-        $determiners = array_reverse($determiners);
-        array_push($determiners, User::hrAdmin()->id);
-        $determiners = array_reverse($determiners);
-        $determiners =  $determiners + [100 => User::hrAdmin()->id];
-     //   dd($determiners);
-        if (config('app.users_provider') == 'ldap') {
-            foreach ($determiners as $d) {
-                $this->ImportLdapToModel($d);
-            }
-        }
-
-
-        $requisition = new Requisition();
-        $this->commonDb($requisition, $request);
-        $requisition->department = $request->post('department');
-        $requisition->position = $request->post('position');
-        $requisition->owner_id = Auth::id();
-        $requisition->determiner_id = array_values($determiners)[0];
-        if (config('app.users_provider') == 'ldap') {
-            $requisition->determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
-        }
-        $requisition->save();
-
+    public function send_email_to_determiner($determiner)
+    {
         $sender = User::find(Auth::id());
-        $recipient = User::find(array_values($determiners)[0]);
-
-        if (config('app.users_provider') == 'ldap') {
-            $recipient = User::where('email', array_values($determiners)[0])->first();
-        }
-        $recipient = User::find(array_values($determiners)[0]);
-
+        $recipient = User::find($determiner);
         event(new RequisitionSent($sender, $recipient));
 
-        foreach ($determiners as $key => $value) {
-            $requisition->progresses()->create([
-                'requisition_id' => $requisition->id,
-                // 'determiner_id' => $value,
-                'determiner_id' => ((config('app.users_provider') == 'ldap')) ? User::where('email', $value)->first()->id : $value,
-                'role' => $key
-            ]);
-            //   $user=User::find()
-
-        }
-
-        $request->session()->flash('success', 'Requisition sent successfully.');
-        return redirect()->route('dashboard');
     }
 
-
-    public function update(Request $request)
+    private function updateOrCreateItems($requisition)
     {
-        $requisition = Requisition::find($request->post('id'));
-        $validator = Validator::make($request->all(), [
-                'competency.1' => 'required|array|min:2'
-            ] + $this->common_validate_rules());
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+        $items = RequisitionItems::getItems();
+        foreach ($items as $name => $value) {
+            if (!in_array($name, ['determiners'])) {
+                $requisition->$name = request()->post($name);
+            }
         }
-        $this->commonDb($requisition, $request);
-
-        if (Auth::user()->can('accept', $requisition)) {
-            $this->determine($request, $requisition);
-        } else $requisition->reset_determiner_progresses();
-
-        $requisition->save();
-
-        $request->session()->flash('success', 'Requisition updated successfully.');
-        return redirect()->route('dashboard');
+        return $requisition;
     }
 
+    private function set_requisition_items($requisition)
+    {
+        $items = RequisitionItems::getItems();
+        foreach ($items as $name => $value) {
+            if (!in_array($name, ['determiners'])) {
+                $requisition->$name = request()->post($name);
+            }
+        }
+        return $requisition;
+    }
 
     public function edit(Requisition $requisition)
     {
+
         $departments = $this->departments;
         $levels = $this->levels;
 
         // authorize user to view edit page
         $this->authorize('edit', $requisition);
-        $form_sections_items = RequisitionItems::getPartsItems();
+        $form_sections_items = RequisitionItems::getSections();
 
 
         return view('requisitions.edit', compact('requisition', 'departments', 'levels', 'form_sections_items'));
     }
-
 
     public function destroy(Requisition $requisition)
     {
@@ -298,53 +254,37 @@ class RequisitionController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function close(Requisition $requisition)
-    {
-        $requisition->update([
-            'status' => Requisition::CLOSED_STATUS
-        ]);
-        return redirect()->route('dashboard');
-    }
-
     public function determine(Request $request, Requisition $requisition)
     {
         if ($request->post('progress_result') == RequisitionProgress::ACCEPTED_STATUS) {
+
             $requisition->accept($request->post('determiner_comment'));
 
+        } elseif ($request->post('progress_result') == Requisition::ASSIGN_STATUS) {
+         //   echo RequisitionProgress::ASSIGN_STATUS ;
+          //  dd($request->post('progress_result'));
 
-        } elseif ($request->post('progress_result') == RequisitionProgress::ASSIGN_STATUS) {
             $request->validate([
                 'user_id' => 'required'
             ]);
             $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-        } else $requisition->reject($request->post('determiner_comment'));
+        } elseif ($request->post('progress_result') == RequisitionProgress::REJECTED_STATUS) {
+            $requisition->reject($request->post('determiner_comment'));
+
+        } elseif ($request->post('progress_result') == Requisition::HOLDING_STATUS) {
+            $requisition->hold();
+        } elseif ($request->post('progress_result') == Requisition::CLOSED_STATUS) {
+            $requisition->close();
+        }
+
 
         $request->session()->flash('success', 'Requisition updated successfully.');
+
+
         return redirect()->route('dashboard');
     }
 
-    public function index()
-    {
-
-        $pending = Auth::user()->pending_determiner_requisitions;
-        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
-
-        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions)
-            ->merge(Auth::user()->determiner_assignedd_requisitions)->merge(Auth::user()->accepted_user_requisitions);
-
-        $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions);
-        //  ->merge(Auth::user()->user_assignments_do)->merge(Auth::user()->user_request_assignments);
-
-        $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
-
-        $levels_array = $this->levels;
-        $departments = $this->departments;
-        $requisition_items = RequisitionItems::getItems();
-
-        return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
-            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items'));
-    }
 
     public function determiners()
     {

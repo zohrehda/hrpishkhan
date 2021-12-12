@@ -73,11 +73,12 @@ class DraftsController extends Controller
 
     public function store_in_mysql(Request $request)
     {
+        //dd($request->input('draft_public')??'f');
         Draft::updateOrCreate([
             'name' => $request->input('draft_name'),
             'user_id' => Auth::user()->id,
         ], [
-            'public' => $request->input('draft_public'),
+            'public' => $request->input('draft_public')??'0',
             'draft' => json_encode($request->except(['_token']))
         ]);
         return [

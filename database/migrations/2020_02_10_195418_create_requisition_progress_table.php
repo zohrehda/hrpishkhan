@@ -28,7 +28,7 @@ class CreateRequisitionProgressTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->text('determiner_comment')->nullable();
-            $table->integer('role');
+            $table->enum('role',['hr_admin','approver']);
             $table->integer('status')->default(0);
         });
     }

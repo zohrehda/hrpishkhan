@@ -6,16 +6,20 @@
                     <div class="col-md-4 form-space">
                         <div class="card {{ $card_class }}  text-white">
                             <div class="card-header text-center"
-                                 data-toggle="collapse" type="button"  data-target="#card-{{$requisition->id}}-{{$card_class}}">
+                                 data-toggle="collapse" type="button"
+                                 data-target="#card-{{$requisition->id}}-{{$card_class}}">
                                 {{ $requisition->en_title }}
                                 <br>
                                 {{$requisition->owner->details()['name']}}
                             </div>
 
-                            <div class="card-body collapse multi-collapse"  id="card-{{$requisition->id}}-{{$card_class}}" >
+                            <div class="card-body collapse multi-collapse"
+                                 id="card-{{$requisition->id}}-{{$card_class}}">
                                 @foreach($requisition->progresses as $progress)
                                     <p class="card-text">
-                                        {{ $progress->role }} - {{ $progress->user->name }} - {{ $progress->status }}
+
+                                        {{ $progress->user->role=='hr_admin'?'Hr Admin - ':'' }}  {{ $progress->user->name }}
+                                        - {{ $progress->status }}
                                         @if($progress->determiner_comment)
                                             -
                                             <a class="btn btn-sm btn-dark" data-toggle="collapse"
@@ -48,48 +52,73 @@
                                     <br>
                                 </div>
 
-
                                 <div>
 
-                                    <div class="mb-2 text-right">
-                                        @can('edit', $requisition)
-                                            <a href="{{ route('requisitions.edit', $requisition->id) }}"
-                                               class="btn btn-sm btn-dark border-light">Details</a>
-                                        @endcan
-                                        @can('accept', $requisition)
-                                            <form
-                                                action="{{ Route('requisitions.determine', $requisition->id) }}"
-                                                method="POST" class="inline">
-                                                @csrf
-                                                <div class="inline">
+                                    <form
+                                        action="{{ Route('requisitions.determine', $requisition->id) }}"
+                                        method="POST" class="inline w-100">
+                                        <div class="  text-right card-btn-containers   ">
+                                            @csrf
+                                            <div class="">
+                                                @can('edit', $requisition)
+                                                    <a href="{{ route('requisitions.edit', $requisition->id) }}"
+                                                       class="btn btn-sm btn-purple ">Details</a>
+                                                @endcan</div>
+                                            @can('accept', $requisition)
+                                                <div class="">
                                                     <button
-                                                        name="progress_result" value="2"
-                                                        class="btn btn-sm btn-warning border-light">Reject
+                                                        name="progress_result"
+                                                        value="{{App\RequisitionProgress::REJECTED_STATUS}}"
+                                                        class="btn btn-sm btn-yellow">Reject
                                                     </button>
                                                 </div>
+
+                                                <div class="">
+                                                    <button
+                                                        name="progress_result"
+                                                        value="{{App\RequisitionProgress::ACCEPTED_STATUS}}"
+                                                        class="btn btn-sm btn-green">Accept
+                                                    </button>
+                                                </div>
+
+                                            @endcan
+                                            @can('close', $requisition)
+                                                <div class="">
+                                                    <button
+                                                        name="progress_result"
+                                                        value="{{App\Requisition::CLOSED_STATUS}}"
+                                                        onclick="return confirm('Are you sure to close the requisition?')"
+                                                        class="btn btn-sm btn-black">Close
+                                                    </button>
+                                                </div>
+                                            @endcan
+
+                                            @can('destroy', $requisition)
+                                                <div class="">
+                                                    <a href="{{ route('requisitions.destroy', $requisition->id) }}"
+                                                       class="btn btn-sm btn-red"
+                                                       onclick="return confirm('Are you sure?')">delete</a>
+                                                </div>
+
+                                            @endcan
+
+                                            @can('hold', $requisition??null)
                                                 <button
-                                                    name="progress_result" value="1"
-                                                    class="btn btn-sm btn-success border-light">Accept
+                                                    name="progress_result"
+                                                    value="{{App\Requisition::HOLDING_STATUS}}"
+                                                    class="btn btn-sm btn-orange">Hold
                                                 </button>
-                                            </form>
-                                        @endcan
-                                        @can('destroy', $requisition)
-                                            <a href="{{ route('requisitions.destroy', $requisition->id) }}"
-                                               class="btn btn-sm btn-danger border-light"
-                                               onclick="return confirm('Are you sure?')">delete</a>
-                                        @endcan
-                                        @can('view', $requisition)
-                                            <button data-toggle="modal"
-                                                    data-target="#preview-{{$requisition->id}}"
-                                                    class="btn btn-sm btn-light border-light">view
-                                            </button>
-                                        @endcan
-                                        @can('close', $requisition)
-                                            <a href="{{ route('requisitions.close', $requisition->id) }}"
-                                               class="btn btn-sm btn-danger"
-                                               onclick="return confirm('Are you sure to close the requisition?')">close</a>
-                                        @endcan
-                                    </div>
+                                            @endcan
+                                            @can('view', $requisition)
+                                                <div class="">
+                                                    <button data-toggle="modal" type="button"
+                                                            data-target="#preview-{{$requisition->id}}"
+                                                            class="btn btn-sm btn-grey  ">view
+                                                    </button>
+                                                </div>
+                                            @endcan
+                                        </div>
+                                    </form>
 
 
                                     @if($requisition->assignments->count())

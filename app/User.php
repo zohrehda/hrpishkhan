@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\Ldap;
 use App\Extract\StaffInfo;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -123,6 +124,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return self::where('role', 'hr_admin')->first();
     }
 
+    public function isHrAdmin()
+    {
+        if (Auth::user()->role == 'hr_admin') {
+            return true;
+        }
+        return false;
+
+    }
+
 
     public function user_assigned_requisitions()
     {
@@ -144,7 +154,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function user_closed_requisitions()
     {
         return $this->hasMany(Requisition::class, 'owner_id')
-        ->where('status', '=', Requisition::CLOSED_STATUS);
+            ->where('status', '=', Requisition::CLOSED_STATUS);
     }
 
     public function determiner_closed_requisitions()
@@ -158,9 +168,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')
             ->where('requisitions.status', '=', Requisition::CLOSED_STATUS);
-        // determiner_assignedd_requisitions
     }
-
 
 
     public function user_assigned_to_assign_requisitions()
@@ -170,5 +178,34 @@ class User extends Authenticatable implements MustVerifyEmail
 
     }
 
+    public function holding_user_requisitions()
+    {
+        return $this->hasMany(Requisition::class,'owner_id')
+            ->where('requisitions.status', Requisition::HOLDING_STATUS);
+    }
+
+    public function holding_determiner_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+            ->where('requisitions.status', Requisition::HOLDING_STATUS);
+
+    }
+
+    public static function byProvider($value)
+    {
+
+        if (config('app.users_provider') == 'ldap') {
+            $ldap = new Ldap();
+            $ldap->ImportLdapToModel($value);
+
+            return self::where('email', $value)->first();
+        }
+        return self::find($value);
+    }
+
+    public function drafts()
+    {
+        return $this->hasMany(Draft::class, 'user_id');
+    }
 
 }

@@ -4,27 +4,48 @@ namespace App\Classes;
 
 class StaffHierarchy
 {
-    public static $departments = ['Tech', 'Product'
-        , 'Business Development', 'Commercial', 'Finance', ' General Services', 'Call Center', 'Human Resources',
-        'Legal', 'Management', 'Marketing', 'Operations', 'Other'
+    public static $departments = [
+        'tech' => 'Tech',
+        'product' => 'Product',
+        'product_design' => 'Product Design',
+        'business_development' => 'Business Development',
+        'commercial' => 'Commercial',
+        'finance' => 'Finance',
+        'general_services' => ' General Services',
+        'call_center' => 'Call Center',
+        'human_resources' => 'Human Resources',
+        'legal' => 'Legal',
+        'management' => 'Management',
+        'marketing' => 'Marketing',
+        'operations' => 'Operations',
+        'other' => 'Other'
     ];
     public static $levels = [
-        0 => 'Trainee',
-        1 => 'Junior',
-        2 => 'Mid',
-        3 => 'Senior',
-        4 => 'Lead',
-        5 => 'Analyst',
-        6 => 'Associate Product Manager',
-        7 => 'Product Manager',
-        8 => 'Senior Product Manager',
-        9 => 'Associate Director',
-        10 => 'Director',
-        11 => 'Senior Director',
-        12 => 'Specialist',
-        13 => 'Senior Specialist',
-        14 => 'Manager',
-        15 => 'Senior Manager'
+        'trainee' => 'Trainee',
+        'junior' => 'Junior',
+        'mid' => 'Mid',
+        'senior' => 'Senior',
+        'principal' => 'Principal',
+        'senior_principal' => 'Senior Principal',
+        'engineering_manager' => 'Engineering Manager',
+        'senior_engineering_manager' => 'Senior Engineering Manager',
+        'associate_director' => 'Associate Director',
+        'associate' => 'Associate',
+        'director' => 'Director',
+        'senior_director' => 'Senior Director',
+        'cto' => 'CTO',
+        'cpo' => 'CPO',
+        'cxo' => 'CXO',
+
+        'lead' => 'Lead',
+        'manager' => 'Manager',
+        'senior_manager' => 'Senior Manager',
+        'specialist' => 'Specialist',
+        'analyst' => 'Analyst',
+        'associate_product_manager' => 'Associate Product Manager',
+        'product_manager' => 'Product Manager',
+        'senior_product_manager' => 'Senior Product Manager',
+        'senior_specialist' => 'Senior Specialist',
     ];
     public static $Approver = [
         1 => 'CPO',
@@ -59,6 +80,29 @@ class StaffHierarchy
             10 => [4, 5, 6],
             11 => [4, 5, 6],
 
+        ]
+    ];
+
+    public static $departments_levels = [
+        'tech' => [
+            'trainee', 'junior', 'mid', 'senior', 'principal', 'engineering_manager'
+            , 'senior_engineering_manager', 'associate_director', 'director', 'senior_director'
+            , 'senior_director', 'cto'
+        ],
+
+        'product' => [
+            'trainee', 'associate', 'mid', 'senior', 'principal',
+            'associate_director', 'director', 'senior_director'
+            , 'cpo'
+        ],
+        'product_design' => [
+            'trainee', 'junior', 'mid', 'senior', 'principal', 'senior_principal',
+            'lead', 'manager'
+        ],
+        'ect' => [
+            'trainee', 'junior', 'specialist', 'mid', 'senior', 'lead', 'senior_manager'
+            , 'director', 'senior_director', 'principal'
+            , 'cxo'
         ]
     ];
 

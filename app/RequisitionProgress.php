@@ -9,9 +9,10 @@ class RequisitionProgress extends Model
 {
     const PENDING_STATUS = 0;
     const ACCEPTED_STATUS = 1;
-    const REJECTED_STATUS = 2;
-    const ASSIGN_STATUS = 3;
-protected $table='requisition_progresses' ;
+    const ASSIGN_STATUS = 2;
+    const REJECTED_STATUS = 5;
+
+    protected $table = 'requisition_progresses';
     protected $guarded = [];
 
     public $timestamps = false;
@@ -30,46 +31,6 @@ protected $table='requisition_progresses' ;
         } else return "rejected";
     }
 
-    /**
-     * convert role into human friendly string
-     */
-    public function getRoleAttribute()
-    {
-      /*  if ($this->attributes['role'] == 1) {
-            return "Hiring manager";
-        } elseif ($this->attributes['role'] == 2) {
-            return "Head of hiring manager";
-        } elseif ($this->attributes['role'] == 3) {
-            return "Department manager";
-        } elseif ($this->attributes['role'] == 4) {
-            return "cxo";
-        } else return "HR manager";*/
-
-
-
-        switch($this->attributes['role'])
-        {
-
-           case 1: $result='CPO' ;
-            break ;
-             case 2: $result='CTO' ;
-            break ;
-             case 3: $result='Director/VP' ;
-            break ;
-             case 4: $result='CXO' ;
-              break ;
-           case 5: $result='HRBP' ;
-            break ;
-             case 6: $result='HR Director' ;
-            break ;
-             default:  $result='Hr admin' ;
-        }
-
-       return $result ;
-
-
-
-    }
 
     /**
      * get progress's user
@@ -86,4 +47,6 @@ protected $table='requisition_progresses' ;
     {
         return $this->hasOne(Requisition::class, 'id', 'requisition_id');
     }
+
+
 }

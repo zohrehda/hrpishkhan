@@ -1,14 +1,12 @@
 @foreach($form_sections_items as $section_title=>$section_content)
-    <h3>{{$section_title}}</h3>
+
+    <h3>{{$section_content['title']}}</h3>
     <div class="card form-space">
         <div class="card-header">
-
             <div class="row">
-                @foreach($section_content as $name=>$schema)
-
-                    <div class="col-12">
-                        @if(1)
-                            @switch($schema['type'])
+                @foreach($section_content['items'] as $name=>$schema)
+                    <div class="col-{{$schema['grid_col']}}">
+                        @switch($schema['type'])
                                 @case('text')
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
@@ -30,13 +28,11 @@
                                 @case('select')
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
-
-
-                                <select id="{{$name}}" name="{{$name}}"
-
+                            <select id="{{$name}}" name="{{$name}}"
                                         class="form-space custom-select">
                                     @if($schema['required'] )
-                                        <option @if( old($name)=='' || !isset($requisition)  ) selected @endif disabled>
+                                        <option @if( old($name)=='' || !isset($requisition)  ) selected @endif disabled
+                                                value="empty">
                                             Empty
                                         </option>
                                     @endif
@@ -49,34 +45,37 @@
                                 </select>
                                 @break
 
+                                @case('multiple')
 
-                                @case('radio')
-
-                                <label class="pr-1 @if($schema['required']) required @endif"></label>
-
-                                @foreach($schema['radios'] as $value=>$radio)
-                                    <div class="custom-control custom-radio custom-control-inline ">
-                                        <input type="radio" id="{{$radio}}" name="{{$name}}" value="{{$value}}"
-                                               class="custom-control-input"
-                                               @if((string)old($name,isset($requisition)?$requisition->getOriginal($name):'f' )==(string)$value) checked @endif >
-                                        <label class="custom-control-label" for="{{$radio}}">{{$radio}}</label>
-
-                                    </div>
-                                @endforeach
+                                @include('requisitions.multiples.'.$name,['data'=>$schema['data']   ,'requisition' =>$requisition??null  ] )
 
                                 @break
+                                @case('radio')
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <label class="pr-1 @if($schema['required']) required @endif"></label>
+                                            @foreach($schema['radios'] as $value=>$radio)
+                                                <div class="custom-control custom-radio custom-control-inline col ">
+                                                    <input type="radio" id="{{$radio}}" name="{{$name}}" value="{{$value}}"
+                                                           class="custom-control-input"
+                                                           @if((string)old($name,isset($requisition)?$requisition->getOriginal($name):'f' )==(string)$value) checked @endif >
+                                                    <label class="custom-control-label" for="{{$radio}}">{{$radio}}</label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
 
+                                </div>
+                                @break
                                 @case('textarea')
-
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
                                 <textarea type="text" id="{{$name}}" name="{{$name}}"
                                           placeholder="{{$schema['placeholder']}}" rows="3"
                                           class="form-control form-space">{{ old($name,$requisition->$name??'')}}</textarea>
                                 @break
-
                             @endswitch
-                        @endif
                     </div>
                 @endforeach
             </div>
@@ -87,90 +86,9 @@
 
 
 
-<h3>Competency</h3>
-<div class="card form-space">
-    <div class="card-header">
-        <div id="competency_form_row">
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <button type="button" id="add_competency" class="btn btn-sm btn-success">Add
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<h3>Interviewers</h3>
-<div class="card form-space">
-    <div class="card-header">
-
-        <div id="interviewer_form_rows">
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <button type="button" id="add_interviewer" class="btn btn-sm btn-success">Add
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<h3>Receiver Selection</h3>
-<div class="card form-space">
-    <div class="card-header">
-
-        @if(isset($requisition))
-
-            <div class="row">
-                @foreach($requisition->determiners as $determiner)
-                    <div class="col-md-6">
-                        <label for="determiners">Receiver</label>
-                        <select id="" name="determiners[]"
-                                class="form-space form-control " disabled>
-                            <option selected disabled>{{$determiner->email}}</option>
-
-                        </select>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="row form-receivers-part">
-                <div class="col-md-6">
-                    <label for="determiners">Receiver</label>
-                    <select id="" name="determiners[]"
-                            class="form-space form-control select2 approver">
-                        <option selected disabled>Empty</option>
-
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="determiners">Receiver</label>
-                    <select id="" name="determiners[]"
-                            class="form-space form-control select2 approver">
-                        <option selected disabled>Empty</option>
-
-                    </select>
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-12">
-                    <button type="button" id="add_receiver" class="btn btn-sm btn-success">Add
-                    </button>
-                </div>
-            </div>
-
-        @endif
 
 
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <a href="#" onclick="return false;" class="clear">clear</a>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 
 @can('accept',$requisition??null)
@@ -187,9 +105,9 @@
 <div class="center">
     @if($form=='edit')
         @can('accept',$requisition??null)
-            <button name="progress_result" value="1" type="submit" class="btn btn-success">Accept
+            <button name="progress_result" value="1" type="submit" class="btn btn-green">Accept
             </button>
-            <button name="progress_result" value="2" type="submit" class="btn btn-dark">Reject
+            <button name="progress_result" value="2" type="submit" class="btn btn-yellow">Reject
             </button>
         @elsecannot('accept',$requisition??null)
             <button type="submit" class="btn btn-success" onclick="return confirm('Updating will result in status reset on progresses\n' +
@@ -199,20 +117,49 @@
     @endif
 
     @if($form=='create')
-        <button type="submit" id='submit-requisition' class="btn btn-success">Submit</button>
+        <button type="submit" id='submit-requisition' class="btn btn-green">Submit</button>
     @endif
 
+
+
+</div>
+
+<div class="hover-buttons">
     <button type="button"
             data-toggle="modal" data-target="#DraftNameModal"
-            id='draft-requisition' class="btn btn-primary">Draft
+            id='draft-requisition' class="btn btn-blue">Draft
     </button>
 
     <button type="button"
             data-toggle="modal" data-target="#DraftImportModal"
-            id='import-requisition' class="btn btn-warning">Import
+            id='import-requisition' class="btn btn-navy">Template
     </button>
 
+    @can('add_viewer',$requisition??null)
+    <button type="button"
+            data-toggle="modal" data-target="#AddViewer"
+            id='import-requisition' class="btn btn-pink">Add Viewer
+    </button>
+    @endcan
+    @can('hold', $requisition??null)
+        <button
+            name="progress_result"
+            value="{{App\Requisition::HOLDING_STATUS}}"
+            class="btn   btn-orange">Hold
+        </button>
+    @endcan
+    @can('close', $requisition??null)
+        <button
+            name="progress_result"
+            value="{{App\Requisition::CLOSED_STATUS}}"
+            onclick="return confirm('Are you sure to close the requisition?')"
+            class="btn btn-sm btn-black">Close
+
+        </button>
+    @endcan
+
 </div>
+
 @section('script')
     <script>
         $(function () {
@@ -222,8 +169,9 @@
                 competency_html(competency)
             } else {
                 var competency = @json(old('competency')) ;
-                competency_html(competency)
-               // $("#add_competency").trigger('click');
+                for (i=0;i<=5;i++){
+                    competency_html(competency)
+                }
             }
 
             var interviewer = @json($requisition->interviewers??null) ;
@@ -235,8 +183,17 @@
                 var interviewers = @json(old('interviewers')) ;
                 interviewer_html(interviewers)
 
-             //   $("#add_interviewer").trigger('click')
+                //   $("#add_interviewer").trigger('click')
             }
+
+
+            var level = @json($requisition->level??null) ;
+
+            if(level){
+                $('select#level').val(level)
+            }
+console.log($('select#level').val())
+
 
         });
 

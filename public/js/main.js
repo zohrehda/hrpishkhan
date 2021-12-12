@@ -1,14 +1,44 @@
 $(document).ready(function () {
 
+    function getLevelOptions() {
+        return $.ajax({
+            'url': '/panel/setting/levels',
+            'type': 'get',
+            'dataType': 'json',
+            'async': false,
+            success: function (response) {
+                return response;
+            }
+        }).responseJSON;
+    }
+
+    function getSetting() {
+        return $.ajax({
+            'url': '/panel/setting',
+            'type': 'get',
+            'dataType': 'json',
+            'async': false,
+            success: function (response) {
+                return response;
+            }
+        }).responseJSON;
+    }
+
+
     var draftForm = $('#form-draft'),
+        viewerForm = $('#form-viewer'),
         saveDraft = draftForm.find('#save-draft-requisition'),
         draftUpdate = draftForm.find('input[name="draft_update"]'),
         draftDelete = $("#draft_delete"),
         DraftImportModal = $('#DraftImportModal'),
         DraftNameModal = $('#DraftNameModal'),
         departmentInput = $("select[name='department']"),
-        isNewInput = $("input[name='is_new']")
-    ;
+        isNewInput = $("input[name='is_new']"),
+        getLevels = getLevelOptions(),
+        shiftCheckbox = $("#shift_checkbox"),
+        setting = getSetting(),
+        formItemsSetting = setting['form_items'];
+
 
     function appendDrafts() {
         $.ajax({
@@ -49,6 +79,55 @@ $(document).ready(function () {
         });
     }
 
+
+    /***** customise level select option depending on selected department *****/
+
+    $('#department').on('change', function (event) {
+
+        department = $('#department').val();
+        departments_level = getLevels['departments_level'][department];
+        levels = getLevels['levels'];
+
+        if (department){
+
+            if (typeof departments_level == "undefined") {
+                departments_level = getLevels['departments_level']['ect'];
+            }
+
+            $('select#level').empty();
+
+            $.each(departments_level, function (key, value) {
+                html = "<option value=" + value + ">" + levels[value] + "</option>";
+                $('select#level').append(html);
+            });
+
+        }else {
+            html = "<option>Empty</option>";
+            $('select#level').append(html);
+        }
+    });
+
+
+    /***** shift *****/
+    $(shiftCheckbox).on('change', function () {
+
+        if ($(shiftCheckbox).is(':checked')) {
+            $("#shift_select").prop('disabled', false);
+            $("input[name='shift']").val('');
+            console.log(  $("input[name='shift']").val())
+          //    alert('f') ;
+        } else {
+          //  alert('aa') ;
+            $("#shift_select").prop('disabled', true);
+            $("#shift_select").val('empty');
+            $("input[name='shift']").val(0);
+        }
+    });
+    $("#shift_select").on('change', function () {
+        $("input[name='shift']").val($("#shift_select").val());
+    });
+    $(shiftCheckbox).trigger('change');
+
     /***** store requisition draft *****/
     draftForm.on('submit', function (event) {
         event.preventDefault();
@@ -70,6 +149,29 @@ $(document).ready(function () {
                 if (response.success) {
                     //alert('ff') ;
                     $('#DraftNameModal').modal('hide');
+
+                }
+            }
+
+        });
+
+    });
+
+    /***** store requisition viewers *****/
+
+    viewerForm.on('submit', function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: '/panel/requisitions/viewers',
+            type: 'post',
+            dataType: 'json',
+            data: $('#form-viewer').serialize(),
+            complete: function (response) {
+
+                if (response) {
+                    //alert('ff') ;
+                    $('#AddViewer').modal('hide');
 
                 }
             }
@@ -130,9 +232,8 @@ $(document).ready(function () {
             success: function (response) {
                 draft = JSON.parse(response.drafts.draft);
                 userId = response.user_id;
-                //    $("#form").find('textarea[name="' + index + '"]').text('item');
-                //   console.log()
 
+                //level
                 $.each(draft, function (index, item) {
 
                     if (index == 'interviewers') {
@@ -146,13 +247,21 @@ $(document).ready(function () {
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
                     $("#form").find('textarea[name="' + index + '"]').html(item).val(item);
-
                     $("#form").find('select[name="' + index + '"]').val(item);
                     $("#form").find('input[type="radio"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
+                    $("#form").find('input[type="checkbox"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
                     isNewInput.trigger('change');
                     departmentInput.trigger('change');
 
+                    if (index=='department'){
+                        console.log(draft.level) ;
+                        console.log($("#form").find('select[name="level"]').val()) ;
+                        $("#form").find('select[name="level"]').val(draft.level);
+                        $("#form").find('select[name="vertical"]').val(draft.vertical);
+                        console.log($("#form").find('select[name="level"]').val()) ;
+                    }
                 });
+                $(shiftCheckbox).trigger('change');
 
                 DraftNameModal.find('#draft_update').attr('data-draft-name', response.drafts.name);
                 if (userId == response.drafts.user_id) {
@@ -197,6 +306,7 @@ $(document).ready(function () {
             }
         });
     }
+
     initializeSelect2($('.approver'));
 
     /***** select user form *****/
@@ -247,12 +357,13 @@ $(document).ready(function () {
 
 
     }
+
     insertUsersForm('.select-user', 'user_id', null, 'select user');
 
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
         var radio_val = isNewInput.filter(':checked').val();
-        console.log(radio_val) ;
+        //  console.log(radio_val);
         if (radio_val == 0) {
 
             $("input[name='replacement']").prop('disabled', false);
@@ -267,29 +378,27 @@ $(document).ready(function () {
     departmentInput.on('change', function () {
         value = $(departmentInput).val();
 
-        if (value == 1 || value == 2) {
-            $("input[name='vertical']").prop('disabled', false);
+        departmentsRequiresVertical = Object.values(formItemsSetting.vertical.required_if)[0];
+        if (departmentsRequiresVertical.indexOf(value) !== -1) {
+            $("*[name='vertical']").prop('disabled', false);
         } else {
-            $("input[name='vertical']").prop('disabled', true) ;
+            $("*[name='vertical']").prop('disabled', true);
+            $("*[name='vertical']").val('empty');
         }
     });
     departmentInput.trigger('change');
 
 
     /***** add receiver select input *****/
+    i = 0;
     $("#add_receiver").on('click', function () {
-        ee = '<div class="col-md-6">\n' +
-            '                                    <label for="determiners">Receiver</label>\n' +
-            '                                    <select id="" name="determiners[]"\n' +
-            '                                            class="form-space form-control select2 approver">\n' +
-            '                                        <option selected disabled>Empty</option>\n' +
-            '\n' +
-            '                                    </select>\n' +
-            '                                </div>';
+        i++;
 
-        $(".form-receivers-part").append(ee);
+        tmp = $("#tmp_determiners_form").html();
+        tmp = tmp.replaceAll('__approver_index', i);
+
+        $(".form-receivers-part").append(tmp);
         initializeSelect2($('.approver'));
-
     });
 
     /***** add competency input *****/
@@ -297,7 +406,12 @@ $(document).ready(function () {
         competency_html();
     });
 
-
+    /***** disable submit button after click *****/
+    $("#submit-requisition").click(function (e) {
+        e.preventDefault();
+        $(this).prop('disabled', true);
+        $('#form').submit();
+    });
 
 });
 
@@ -305,9 +419,11 @@ function competency_html(competency = null) {
 
     if (!competency) {
         i = $("#competency_form_row").find('.form-row').last().attr('data-row-num');
+
         if (!i) {
             i = 0;
         }
+
         i++;
 
         tmp = $("#tmp_competency_form").html();
@@ -316,7 +432,7 @@ function competency_html(competency = null) {
         tmp = tmp.replaceAll('__radio_id1', 'radio1' + i);
         tmp = tmp.replaceAll('__radio_id2', 'radio2' + i);
         $("#competency_form_row").append(tmp);
-        if (i != 1) {
+        if (i > 5) {
             $("#competency_form_row").find('.competency-row').eq(i - 1).find('.card-header').removeClass('d-none');
         }
 
@@ -365,8 +481,9 @@ function interviewer_html(interviewer = null) {
             tmp = tmp.replaceAll('__name', 'interviewers[' + key + '][]');
 
             tmp = tmp.replaceAll('__data-form-num', key);
-            tmp = tmp.replaceAll('__value1', item[0]);
-            tmp = tmp.replaceAll('__value2', item[1]);
+
+            tmp = tmp.replaceAll('__value1', (item[0]!=null)?item[0]:'' );
+            tmp = tmp.replaceAll('__value2', (item[1]!=null)?item[1]:'');
             //$(tmp).find('input').val('dd');
             $("#interviewer_form_rows").append(tmp);
             //  append += tmp;
