@@ -88,7 +88,7 @@ $(document).ready(function () {
         departments_level = getLevels['departments_level'][department];
         levels = getLevels['levels'];
 
-        if (department){
+        if (department) {
 
             if (typeof departments_level == "undefined") {
                 departments_level = getLevels['departments_level']['ect'];
@@ -101,12 +101,34 @@ $(document).ready(function () {
                 $('select#level').append(html);
             });
 
-        }else {
+        } else {
             html = "<option>Empty</option>";
             $('select#level').append(html);
         }
     });
 
+    /***** handle approver section depending on department and is new *****/
+
+    function DisplayApprover() {
+        is_new = $("input[name='is_new']");
+        var radio_val = is_new.filter(':checked').val();
+        department = $("select[name='department']").val();
+
+        if (radio_val == 0 && department == 'tech') {
+            return false;
+        }
+        return true;
+    }
+
+    $('#department , input[name="is_new"]').on('change', function (event) {
+        display_status = DisplayApprover();
+        if (display_status) {
+            $("#determiners").show();
+        } else {
+            $("#determiners").hide();
+        }
+
+    });
 
     /***** shift *****/
     $(shiftCheckbox).on('change', function () {
@@ -114,10 +136,10 @@ $(document).ready(function () {
         if ($(shiftCheckbox).is(':checked')) {
             $("#shift_select").prop('disabled', false);
             $("input[name='shift']").val('');
-            console.log(  $("input[name='shift']").val())
-          //    alert('f') ;
+            console.log($("input[name='shift']").val())
+            //    alert('f') ;
         } else {
-          //  alert('aa') ;
+            //  alert('aa') ;
             $("#shift_select").prop('disabled', true);
             $("#shift_select").val('empty');
             $("input[name='shift']").val(0);
@@ -253,12 +275,12 @@ $(document).ready(function () {
                     isNewInput.trigger('change');
                     departmentInput.trigger('change');
 
-                    if (index=='department'){
-                        console.log(draft.level) ;
-                        console.log($("#form").find('select[name="level"]').val()) ;
+                    if (index == 'department') {
+                        console.log(draft.level);
+                        console.log($("#form").find('select[name="level"]').val());
                         $("#form").find('select[name="level"]').val(draft.level);
                         $("#form").find('select[name="vertical"]').val(draft.vertical);
-                        console.log($("#form").find('select[name="level"]').val()) ;
+                        console.log($("#form").find('select[name="level"]').val());
                     }
                 });
                 $(shiftCheckbox).trigger('change');
@@ -390,12 +412,16 @@ $(document).ready(function () {
 
 
     /***** add receiver select input *****/
-    i = 0;
+    j = 0;
+   // console.log(i)
     $("#add_receiver").on('click', function () {
-        i++;
+   //     console.log('i')
+     //   console.log(i)
+        j++;
+
 
         tmp = $("#tmp_determiners_form").html();
-        tmp = tmp.replaceAll('__approver_index', i);
+        tmp = tmp.replaceAll('__approver_index', j);
 
         $(".form-receivers-part").append(tmp);
         initializeSelect2($('.approver'));
@@ -482,8 +508,8 @@ function interviewer_html(interviewer = null) {
 
             tmp = tmp.replaceAll('__data-form-num', key);
 
-            tmp = tmp.replaceAll('__value1', (item[0]!=null)?item[0]:'' );
-            tmp = tmp.replaceAll('__value2', (item[1]!=null)?item[1]:'');
+            tmp = tmp.replaceAll('__value1', (item[0] != null) ? item[0] : '');
+            tmp = tmp.replaceAll('__value2', (item[1] != null) ? item[1] : '');
             //$(tmp).find('input').val('dd');
             $("#interviewer_form_rows").append(tmp);
             //  append += tmp;

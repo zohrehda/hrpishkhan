@@ -15,5 +15,4 @@ class RequisitionAssignment extends Model
     public $timestamps = true;
 
 
-
 }

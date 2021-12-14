@@ -57,7 +57,7 @@ class RequisitionPolicy
     public function close(User $user, Requisition $requisition)
     {
         if ($requisition->status == Requisition::ASSIGN_STATUS) {
-            if ($user->id == User::hrAdmin()->id) {
+            if ($user->isHrAdmin()) {
                 return true;
             }
 
@@ -67,14 +67,14 @@ class RequisitionPolicy
 
     public function hold(User $user, Requisition $requisition)
     {
-        if (Auth::user()->isHrAdmin() && !in_array($requisition->status,[Requisition::HOLDING_STATUS,Requisition::CLOSED_STATUS]) ) {
+        if ($user->isHrAdmin() && in_array($requisition->status,[Requisition::PENDING_STATUS,Requisition::ACCEPTED_STATUS,Requisition::ASSIGN_STATUS]) ) {
             return true;
         }
     }
 
     public function add_viewer(User $user, Requisition $requisition)
     {
-        if (Auth::user()->isHrAdmin()) {
+        if ($user->isHrAdmin()) {
             return true;
         }
     }
@@ -82,18 +82,17 @@ class RequisitionPolicy
     public function assign_assign(User $user, Requisition $requisition)
     {
         //if ($requisition->status == Requisition::ACCEPTED_STATUS) {
+
         if (in_array($requisition->status, [Requisition::ACCEPTED_STATUS, Requisition::ASSIGN_STATUS])) {
             if ($user->id == User::hrAdmin()->id) {
                 return true;
             }
-
         }
 
     }
 
     public function assign_do(User $user, Requisition $requisition)
     {
-
         if ($requisition->status == Requisition::ASSIGN_STATUS) {
 
             if ($user->user_assigned_to_assign_requisitions->whereIn('id', $requisition->id)->count()) {

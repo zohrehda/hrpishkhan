@@ -101,7 +101,7 @@ class RequisitionItems
                     'safety' => 'Safety & Support',
                     'baly' => 'Baly',
                     'driver_ride_experience' => 'Driver Ride Experience',
-                    'none_vertical' => 'None vertical',
+                    'none_vertical' => 'None-vertical',
                     'other' => 'Other',
 
                 ],

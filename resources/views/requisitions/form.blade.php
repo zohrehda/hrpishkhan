@@ -1,12 +1,13 @@
 @foreach($form_sections_items as $section_title=>$section_content)
 
-    <h3>{{$section_content['title']}}</h3>
-    <div class="card form-space">
-        <div class="card-header">
-            <div class="row">
-                @foreach($section_content['items'] as $name=>$schema)
-                    <div class="col-{{$schema['grid_col']}}">
-                        @switch($schema['type'])
+    <div id="{{$section_title}}">
+        <h3>{{$section_content['title']}}</h3>
+        <div class="card form-space">
+            <div class="card-header">
+                <div class="row">
+                    @foreach($section_content['items'] as $name=>$schema)
+                        <div class="col-{{$schema['grid_col']}}">
+                            @switch($schema['type'])
                                 @case('text')
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
@@ -28,7 +29,7 @@
                                 @case('select')
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
-                            <select id="{{$name}}" name="{{$name}}"
+                                <select id="{{$name}}" name="{{$name}}"
                                         class="form-space custom-select">
                                     @if($schema['required'] )
                                         <option @if( old($name)=='' || !isset($requisition)  ) selected @endif disabled
@@ -47,7 +48,7 @@
 
                                 @case('multiple')
 
-                                @include('requisitions.multiples.'.$name,['data'=>$schema['data']   ,'requisition' =>$requisition??null  ] )
+                                @include('requisitions.partials.'.$name,['data'=>$schema['data']   ,'requisition' =>$requisition??null  ] )
 
                                 @break
                                 @case('radio')
@@ -76,18 +77,15 @@
                                           class="form-control form-space">{{ old($name,$requisition->$name??'')}}</textarea>
                                 @break
                             @endswitch
-                    </div>
-                @endforeach
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
 
+
 @endforeach
-
-
-
-
-
 
 
 

@@ -164,6 +164,7 @@ class Requisition extends Model
             ]);
         $this->save();
     }
+
     public function handle_hold()
     {
 
@@ -417,7 +418,7 @@ class Requisition extends Model
     {
         $value = ($value) ?: [];
 
-        if ($value && $value[0] != User::hrAdmin()->id) {
+        if ($value && $value[0] != User::hrAdmin()->id && !Auth::user()->isHrAdmin()) {
             array_unshift($value, User::hrAdmin()->id);
         }
 

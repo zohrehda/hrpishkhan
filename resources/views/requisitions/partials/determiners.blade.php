@@ -1,3 +1,6 @@
+<label >
+please select the ones who need to approve your request in order.
+</label>
 @if(isset($requisition))
     <div class="row form-receivers-part">
         @foreach($requisition->approver_determiners as $k=>$determiner)
@@ -24,18 +27,6 @@
     </div>
 @else
     <div class="row form-receivers-part">
-        <div class="col-md-6">
-            <div class="alert alert-dismissible fade show p-0" role="alert">
-                <label>Approver 1</label>
-                <select id="" name="determiners[]"
-                        class="form-space form-control select2 approver">
-                    <option selected disabled>Empty</option>
-                </select>
-                <button type="button" class="close p-0 " data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
 
     </div>
     <br>
