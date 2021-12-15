@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Requisition;
-use App\RequisitionProgress;
+use App\RequisitionApprovalProgress;
 use App\User;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -97,7 +97,7 @@ class RequisitionTest extends TestCase
 
         $request->assertSessionHasNoErrors();
         foreach ($requisition->progresses as $progress) {
-            $this->assertEquals(RequisitionProgress::PENDING_STATUS, $progress->getOriginal('status'));
+            $this->assertEquals(RequisitionApprovalProgress::PENDING_STATUS, $progress->getOriginal('status'));
         }
     }
 

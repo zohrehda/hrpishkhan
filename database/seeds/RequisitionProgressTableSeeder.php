@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\RequisitionProgress;
+use App\RequisitionApprovalProgress;
 
 class RequisitionProgressTableSeeder extends Seeder
 {
@@ -12,9 +12,9 @@ class RequisitionProgressTableSeeder extends Seeder
      */
     public function run()
     {
-        $ee = factory(RequisitionProgress::class)->create(['determiner_id' => 3]);
-        factory(RequisitionProgress::class)->create(['requisition_id' => $ee->requisition_id]);
-        factory(RequisitionProgress::class)->create(['determiner_id' => 3, 'requisition_id' => $ee->requisition_id]);
+        $ee = factory(RequisitionApprovalProgress::class)->create(['determiner_id' => 3]);
+        factory(RequisitionApprovalProgress::class)->create(['requisition_id' => $ee->requisition_id]);
+        factory(RequisitionApprovalProgress::class)->create(['determiner_id' => 3, 'requisition_id' => $ee->requisition_id]);
 
     }
 }

@@ -280,7 +280,7 @@
                             <button name="progress_result" value="2" type="submit" class="btn btn-dark">Reject
                             </button>
                         @elsecannot('accept',$requisition)
-                            <button type="submit" class="btn btn-success" onclick="return confirm('Updating will result in status reset on progresses\n' +
+                            <button type="submit" class="btn btn-success" onclick="return confirm('Updating will result in status reset on approval_progresses\n' +
                              'Are you sure?')">Update
                             </button>
                         @endcan

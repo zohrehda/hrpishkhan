@@ -91,7 +91,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function determiner_assigned_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', Requisition::PENDING_STATUS)
             ->where('requisitions.determiner_id', '!=', $this->attributes['id']);
     }
@@ -101,13 +101,13 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function determiner_accepted_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', Requisition::ACCEPTED_STATUS);
     }
 
     public function determiner_assignedd_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', Requisition::ASSIGN_STATUS);
     }
 
@@ -159,7 +159,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function determiner_closed_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', Requisition::CLOSED_STATUS);
         // determiner_assignedd_requisitions
     }
@@ -186,7 +186,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function holding_determiner_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_progresses', 'determiner_id')
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', Requisition::HOLDING_STATUS);
 
     }

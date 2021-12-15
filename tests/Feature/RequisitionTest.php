@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Requisition;
-use App\RequisitionProgress;
+use App\RequisitionApprovalProgress;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

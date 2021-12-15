@@ -155,7 +155,7 @@ return [
             'regex' => 'The password must have at least 1 lowercase AND 1 uppercase AND 1 number AND 1 symbol'
         ],
         'determiners.*' => [
-            'distinct' => "Can't select same determiner on two or more progresses"
+            'distinct' => "Can't select same determiner on two or more approval_progresses"
         ],
 
 

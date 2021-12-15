@@ -15,7 +15,7 @@
 
                             <div class="card-body collapse multi-collapse"
                                  id="card-{{$requisition->id}}-{{$card_class}}">
-                                @foreach($requisition->progresses as $progress)
+                                @foreach($requisition->approval_progresses as $progress)
                                     <p class="card-text">
 
                                         {{ $progress->user->role=='hr_admin'?'Hr Admin - ':'' }}  {{ $progress->user->name }}
@@ -67,7 +67,7 @@
                                                 <div class="">
                                                     <button
                                                         name="progress_result"
-                                                        value="{{App\RequisitionProgress::REJECTED_STATUS}}"
+                                                        value="{{App\RequisitionApprovalProgress::REJECTED_STATUS}}"
                                                         class="btn btn-sm btn-yellow">Reject
                                                     </button>
                                                 </div>
@@ -75,7 +75,7 @@
                                                 <div class="">
                                                     <button
                                                         name="progress_result"
-                                                        value="{{App\RequisitionProgress::ACCEPTED_STATUS}}"
+                                                        value="{{App\RequisitionApprovalProgress::ACCEPTED_STATUS}}"
                                                         class="btn btn-sm btn-green">Accept
                                                     </button>
                                                 </div>

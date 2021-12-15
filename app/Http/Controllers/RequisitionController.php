@@ -7,7 +7,7 @@ use App\Draft;
 use App\Events\RequisitionSent;
 use App\Requisition;
 use App\RequisitionAssignment;
-use App\RequisitionProgress;
+use App\RequisitionApprovalProgress;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -129,7 +129,7 @@ class RequisitionController extends Controller
 
     private function delete_previous_determiners($requisition)
     {
-        foreach ($requisition->progresses as $key => $progress) {
+        foreach ($requisition->approval_progresses as $key => $progress) {
             if ($key != 0) {
                 $progress->delete();
             }
@@ -140,7 +140,7 @@ class RequisitionController extends Controller
     {
         foreach ($determiners as $key => $value) {
             $determiner_id = ((config('app.users_provider') == 'ldap')) ? User::where('email', $value)->first()->id : $value;
-            $requisition->progresses()->create([
+            $requisition->approval_progresses()->create([
                 'requisition_id' => $requisition->id,
                 'determiner_id' => $determiner_id,
                 'role' => ($determiner_id == User::hrAdmin()->id) ? 'hr_admin' : 'approver']);
@@ -256,7 +256,7 @@ class RequisitionController extends Controller
 
     public function determine(Request $request, Requisition $requisition)
     {
-        if ($request->post('progress_result') == RequisitionProgress::ACCEPTED_STATUS) {
+        if ($request->post('progress_result') == RequisitionApprovalProgress::ACCEPTED_STATUS) {
 
             $requisition->accept($request->post('determiner_comment'));
 
@@ -269,7 +269,7 @@ class RequisitionController extends Controller
             ]);
             $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-        } elseif ($request->post('progress_result') == RequisitionProgress::REJECTED_STATUS) {
+        } elseif ($request->post('progress_result') == RequisitionApprovalProgress::REJECTED_STATUS) {
             $requisition->reject($request->post('determiner_comment'));
 
         } elseif ($request->post('progress_result') == Requisition::HOLDING_STATUS) {

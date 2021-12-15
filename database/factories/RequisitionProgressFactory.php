@@ -2,12 +2,12 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\RequisitionProgress;
+use App\RequisitionApprovalProgress;
 use Faker\Generator as Faker;
 use \App\Requisition;
 use \App\User;
 
-$factory->define(RequisitionProgress::class, function (Faker $faker) {
+$factory->define(RequisitionApprovalProgress::class, function (Faker $faker) {
     $user = factory(User::class)->create();
     return [
         'requisition_id' => factory(Requisition::class)->create()->id,
