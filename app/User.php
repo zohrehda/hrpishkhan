@@ -181,7 +181,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function holding_user_requisitions()
     {
-        return $this->hasMany(Requisition::class,'owner_id')
+        return $this->hasMany(Requisition::class, 'owner_id')
             ->where('requisitions.status', RequisitionStatus::HOLDING_STATUS);
     }
 
@@ -207,6 +207,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function drafts()
     {
         return $this->hasMany(Draft::class, 'user_id');
+    }
+
+    public function user_viewable_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers','user_id','requisition_id') ;
+
     }
 
 }

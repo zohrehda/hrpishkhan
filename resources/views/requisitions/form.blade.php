@@ -142,14 +142,14 @@
     @can('hold', $requisition??null)
         <button
             name="progress_result"
-            value="{{App\Requisition::HOLDING_STATUS}}"
+            value="{{RequisitionStatus::HOLDING_STATUS}}"
             class="btn   btn-orange">Hold
         </button>
     @endcan
     @can('close', $requisition??null)
         <button
             name="progress_result"
-            value="{{App\Requisition::CLOSED_STATUS}}"
+            value="{{RequisitionStatus::CLOSED_STATUS}}"
             onclick="return confirm('Are you sure to close the requisition?')"
             class="btn btn-sm btn-black">Close
 

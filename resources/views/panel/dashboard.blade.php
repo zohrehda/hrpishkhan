@@ -23,4 +23,8 @@
     <hr>
     @include('requisitions.index', ['requisitions' => $holding, 'card_class' => 'bg-secondary'])
 
+    <h2>View</h2>
+    <hr>
+    @include('requisitions.index', ['requisitions' => $view, 'card_class' => 'bg-secondary'])
+
 @endsection

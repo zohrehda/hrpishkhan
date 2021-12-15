@@ -42,13 +42,15 @@ class RequisitionController extends Controller
         $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
 
         $holding = Auth::user()->holding_user_requisitions->merge(Auth::user()->holding_determiner_requisitions);
-        //  $holding = [];
+
+        $view = Auth::user()->user_viewable_requisitions;;
+
         $levels_array = $this->levels;
         $departments = $this->departments;
         $requisition_items = RequisitionItems::getItems();
 
         return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
-            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding'));
+            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding','view' ));
     }
 
     public function create(Request $request)
