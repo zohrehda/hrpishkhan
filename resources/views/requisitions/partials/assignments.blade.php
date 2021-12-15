@@ -46,7 +46,7 @@
             <br>
             <div class=" text-cene">
                 <button
-                    name="progress_result" value="{{\App\Requisition::ASSIGN_STATUS}}"
+                    name="progress_result" value="{{RequisitionStatus::ASSIGN_STATUS}}"
                     class="btn btn-sm btn-primary">assign
                 </button>
             </div>
@@ -75,7 +75,7 @@
             <br>
             <div class="text-center">
                 <button
-                    name="progress_result" value="{{\App\Requisition::ASSIGN_STATUS}}"
+                    name="progress_result" value="{{RequisitionStatus::ASSIGN_STATUS}}"
                     class="btn btn-sm btn-primary">assign
                 </button>
             </div>

@@ -247,8 +247,7 @@ return [
 //        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class ,
         'Adldap' => Adldap\Laravel\Facades\Adldap::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-
-
+        'RequisitionStatus' => App\RequisitionStatus::class,
     ],
 
 ];

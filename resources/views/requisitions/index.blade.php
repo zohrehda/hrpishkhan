@@ -67,7 +67,7 @@
                                                 <div class="">
                                                     <button
                                                         name="progress_result"
-                                                        value="{{App\RequisitionApprovalProgress::REJECTED_STATUS}}"
+                                                        value="{{RequisitionStatus::REJECTED_STATUS}}"
                                                         class="btn btn-sm btn-yellow">Reject
                                                     </button>
                                                 </div>
@@ -75,7 +75,7 @@
                                                 <div class="">
                                                     <button
                                                         name="progress_result"
-                                                        value="{{App\RequisitionApprovalProgress::ACCEPTED_STATUS}}"
+                                                        value="{{RequisitionStatus::ACCEPTED_STATUS}}"
                                                         class="btn btn-sm btn-green">Accept
                                                     </button>
                                                 </div>
@@ -85,7 +85,7 @@
                                                 <div class="">
                                                     <button
                                                         name="progress_result"
-                                                        value="{{App\Requisition::CLOSED_STATUS}}"
+                                                        value="{{RequisitionStatus::CLOSED_STATUS}}"
                                                         onclick="return confirm('Are you sure to close the requisition?')"
                                                         class="btn btn-sm btn-black">Close
                                                     </button>
@@ -104,10 +104,19 @@
                                             @can('hold', $requisition??null)
                                                 <button
                                                     name="progress_result"
-                                                    value="{{App\Requisition::HOLDING_STATUS}}"
+                                                    value="{{RequisitionStatus::HOLDING_STATUS}}"
                                                     class="btn btn-sm btn-orange">Hold
                                                 </button>
                                             @endcan
+
+                                            @can('open', $requisition??null)
+                                                <button
+                                                    name="progress_result"
+                                                    value="{{RequisitionStatus::OPEN_STATUS}}"
+                                                    class="btn btn-sm btn-orange">Open
+                                                </button>
+                                            @endcan
+
                                             @can('view', $requisition)
                                                 <div class="">
                                                     <button data-toggle="modal" type="button"

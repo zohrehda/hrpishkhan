@@ -22,7 +22,7 @@ class CreateRequisitionProgressTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->string('status');
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

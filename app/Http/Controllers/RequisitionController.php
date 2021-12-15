@@ -8,6 +8,8 @@ use App\Events\RequisitionSent;
 use App\Requisition;
 use App\RequisitionAssignment;
 use App\RequisitionApprovalProgress;
+use App\RequisitionProgress;
+use App\RequisitionStatus;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -40,7 +42,7 @@ class RequisitionController extends Controller
         $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
 
         $holding = Auth::user()->holding_user_requisitions->merge(Auth::user()->holding_determiner_requisitions);
-      //  $holding = [];
+        //  $holding = [];
         $levels_array = $this->levels;
         $departments = $this->departments;
         $requisition_items = RequisitionItems::getItems();
@@ -86,6 +88,7 @@ class RequisitionController extends Controller
         $requisition = $this->set_requisition_progresses_determiners($requisition, $determiners);
         $requisition->save();
 
+        $requisition->create_progress(RequisitionStatus::PENDING_STATUS);
         $request->session()->flash('success', 'Requisition sent successfully.');
         return redirect()->route('dashboard');
 
@@ -256,26 +259,28 @@ class RequisitionController extends Controller
 
     public function determine(Request $request, Requisition $requisition)
     {
-        if ($request->post('progress_result') == RequisitionApprovalProgress::ACCEPTED_STATUS) {
+        if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
 
             $requisition->accept($request->post('determiner_comment'));
 
-        } elseif ($request->post('progress_result') == Requisition::ASSIGN_STATUS) {
-         //   echo RequisitionProgress::ASSIGN_STATUS ;
-          //  dd($request->post('progress_result'));
+        } elseif ($request->post('progress_result') == RequisitionStatus::ASSIGN_STATUS) {
+            //   echo RequisitionProgress::ASSIGN_STATUS ;
+            //  dd($request->post('progress_result'));
 
             $request->validate([
                 'user_id' => 'required'
             ]);
             $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-        } elseif ($request->post('progress_result') == RequisitionApprovalProgress::REJECTED_STATUS) {
+        } elseif ($request->post('progress_result') == RequisitionStatus::REJECTED_STATUS) {
             $requisition->reject($request->post('determiner_comment'));
 
-        } elseif ($request->post('progress_result') == Requisition::HOLDING_STATUS) {
+        } elseif ($request->post('progress_result') == RequisitionStatus::HOLDING_STATUS) {
             $requisition->hold();
-        } elseif ($request->post('progress_result') == Requisition::CLOSED_STATUS) {
+        } elseif ($request->post('progress_result') == RequisitionStatus::CLOSED_STATUS) {
             $requisition->close();
+        } elseif ($request->post('progress_result') == RequisitionStatus::OPEN_STATUS) {
+            $requisition->open();
         }
 
 

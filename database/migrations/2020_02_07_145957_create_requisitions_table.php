@@ -50,7 +50,7 @@ class CreateRequisitionsTable extends Migration
                 ->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->integer('status')->default(0);
+            $table->string('status')->default('pending');
             $table->softDeletes();
             $table->timestamps();
         });
