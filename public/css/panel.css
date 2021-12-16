@@ -80,6 +80,9 @@ nav {
     color: #FFFFFF;
     background-color: #28a745;
 }
+.bg-green{
+    background-color: #28a745;
+}
 
 .btn-green:hover {
     color: #fff;
@@ -91,7 +94,11 @@ nav {
     color: #FFFFFF;
     background-color: #dc3545;
 }
-.btn-red:hover{
+.bg-red{
+    background-color: #dc3545;
+}
+
+.btn-red:hover {
     color: #FFFFFF;
     background-color: #bb2d3b;
 }
@@ -100,15 +107,21 @@ nav {
     color: #000000;
     background-color: #ffcd39;
 }
-.btn-yellow:hover{
+
+.btn-yellow:hover {
     background-color: #eeb714;
+}
+.bg-yellow{
+    background-color: #ffcd39;
+
 }
 
 .btn-purple {
     color: #FFFFFF;
     background-color: #A569BD;
 }
-.btn-purple:hover{
+
+.btn-purple:hover {
     color: #FFFFFF;
     background-color: #684277;
 }
@@ -117,37 +130,65 @@ nav {
     color: #FFFFFF;
     background-color: #007bff;
 }
+.bg-blue{
+    background-color: #007bff;
 
+}
 .btn-blue:hover {
     color: #fff;
     background-color: #0069d9;
     border-color: #0062cc;
 }
+.bg-assign{
+    background-color: #0000CD
 
+;
+}
 .btn-black {
     color: #FFFFFF;
     background-color: #343a40;
 }
 
+.btn-black:hover {
+    color: #FFFFFF;
+    background-color: #000000;
+}
+.bg-black{
+    background-color: #000000;
+
+}
 .btn-orange {
     color: #FFFFFF;
     background-color: #F39C12;
 }
-.btn-orange:hover{
+.bg-orange{
+    background-color: #F39C12;
+}
+
+.btn-orange:hover {
     color: #FFFFFF;
     background-color: #DD8F12;
 }
 
+.btn-coral{
+    color: #FFFFFF;
+    background-color:#FF7F50 ;
+}
 .btn-grey {
     color: #FFFFFF;
     background-color: #7F8C8D;
+}
+.btn-grey:hover {
+    color: #FFFFFF;
+    background-color: #5E6768;
 }
 
 .btn-navy {
     color: #FFFFFF;
     background-color: #000080;
 }
-.btn-navy:hover{
+
+.btn-navy:hover {
     color: #FFFFFF;
     background-color: #000051;
 }
@@ -156,13 +197,18 @@ nav {
     color: #FFFFFF;
     background-color: #DE3163;
 }
-.btn-pink:hover{
+.bg-pink{
+    background-color: #DE3163;
+
+}
+.btn-pink:hover {
     color: #FFFFFF;
     background-color: #B0284F;
 }
+
 .card-btn-containers {
     margin: 10px 0;
-    background-color: #fff;
+  /*  background-color: #fff;*/
     padding: 10px;
     border-radius: 5px;
     display: flex;
@@ -172,8 +218,20 @@ nav {
 }
 
 .card-btn-containers .btn {
-    margin: auto 1px;
+    margin: auto 2px;
+    border:2px solid #FFFFFF;
 }
 
+.preview {
+    font-size: 18px;
+}
 
+.ribbon{
+    background-color: red;
+    position: absolute;
+    transform: rotate(45deg);
+    width: 180px;
+    top: 18px;
+    right: -57px;
+}
 

@@ -248,6 +248,7 @@ return [
         'Adldap' => Adldap\Laravel\Facades\Adldap::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'RequisitionStatus' => App\RequisitionStatus::class,
+        'RequisitionItems' => App\Classes\RequisitionItems::class,
     ],
 
 ];

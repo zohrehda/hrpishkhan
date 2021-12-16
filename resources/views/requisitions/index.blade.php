@@ -4,13 +4,19 @@
             <div class="row">
                 @foreach($requisitions as $requisition)
                     <div class="col-md-4 form-space">
-                        <div class="card {{ $card_class }}  text-white">
-                            <div class="card-header text-center"
+
+                        <div class="card {{ $card_class }}  text-white overflow-hidden">
+                            <div class="card-header text-center "
                                  data-toggle="collapse" type="button"
                                  data-target="#card-{{$requisition->id}}-{{$card_class}}">
                                 {{ $requisition->en_title }}
                                 <br>
                                 {{$requisition->owner->details()['name']}}
+                                <br>
+                                <div class="ribbon">
+                                    {{$requisition->label}}
+                                </div>
+
                             </div>
 
                             <div class="card-body collapse multi-collapse"
@@ -56,7 +62,7 @@
                                     <form
                                         action="{{ Route('requisitions.determine', $requisition->id) }}"
                                         method="POST" class="inline w-100">
-                                        <div class="  text-right card-btn-containers   ">
+                                        <div class="  text-right card-btn-containers  ">
                                             @csrf
                                             <div class="">
                                                 @can('edit', $requisition)
@@ -113,7 +119,7 @@
                                                 <button
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::OPEN_STATUS}}"
-                                                    class="btn btn-sm btn-orange">Open
+                                                    class="btn btn-sm btn-coral">Open
                                                 </button>
                                             @endcan
 
@@ -137,10 +143,10 @@
                         </div>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="preview-{{$requisition->id}}" tabindex="-1"
+                        <div class="modal  fade" id="preview-{{$requisition->id}}" tabindex="-1"
                              aria-labelledby="preview"
                              aria-hidden="true">
-                            <div class="modal-dialog  modal-xl">
+                            <div class="modal-dialog modal-dialog-scrollable  modal-xl">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="exampleModalLabel">preview</h5>
@@ -149,42 +155,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="row text-info">
-                                                        <div class="col-md-3 col-6 "> request from</div>
-                                                        <div class="col-md-3 col-6 ">{{$requisition->owner->name}}</div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="col-md-6">
-                                                    <div class="row text-warning">
-                                                        <div class="col-6 "> request date</div>
-                                                        <div class="col-6">{{$requisition->created_at}}</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="row text-warning">
-                                                        <div class="col-6 "> accept date</div>
-                                                        <div
-                                                            class="col-6">{{$requisition->getOriginal('updated_at')}}</div>
-                                                    </div>
-                                                </div>
-
-                                                @foreach($requisition_items as $name=>$item)
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <div class="col-6 text-muted"> {{$item['label']}}</div>
-                                                            <div
-                                                                class="col-6">{{$requisition->$name }}</div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
+                                        @include('requisitions.partials.preview',['requisition_items'=>$requisition_items ,'requisition'=>$requisition])
 
 
                                     </div>

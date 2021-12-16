@@ -8,7 +8,7 @@
             <div class="col-md-9">
                 <form action="{{ route('requisitions.store') }}" method="POST" id="form">
                     @csrf
-                    @include('requisitions.form',['form_sections_items'=>$form_sections_items ,'form'=>'create'])
+                    @include('requisitions.form',['form_sections_items'=>$form_sections_items])
                 </form>
             </div>
         </div>
@@ -26,7 +26,6 @@
             }
         </script>
     @endif
-
 
 @stop
 

@@ -71,12 +71,14 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('status', '=', RequisitionStatus::ACCEPTED_STATUS);
     }
 
-    public function assigned_user_requisitions()
+    public function user_viewable_accpeted_requisitions()
     {
-        return $this->hasMany(Requisition::class, 'owner_id')
-            ->where('status', '=', RequisitionStatus::ASSIGN_STATUS);
+
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
+            ->where('requisitions.status', RequisitionStatus::ACCEPTED_STATUS);
 
     }
+
 
     /**
      * get determiner pending requisitions to accept
@@ -90,7 +92,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * get determiner involved requisitions
      */
-    public function determiner_assigned_requisitions()
+    public function determiner_requisitions()
     {
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', RequisitionStatus::PENDING_STATUS)
@@ -104,12 +106,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', RequisitionStatus::ACCEPTED_STATUS);
-    }
-
-    public function determiner_assignedd_requisitions()
-    {
-        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
-            ->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS);
     }
 
     public function details()
@@ -145,11 +141,33 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS);
     }
 
-
-    public function hr_admin_closed_requisition()
+    public function assigned_user_requisitions()
     {
-        return Requisition::where('status', '=', RequisitionStatus::CLOSED_STATUS)->get();
-        //  return $this->hasMany(Requisition::class)->where('status', '=', Requisition::CLOSED_STATUS);
+        return $this->hasMany(Requisition::class, 'owner_id')
+            ->where('status', '=', RequisitionStatus::ASSIGN_STATUS);
+
+    }
+
+    public function determiner_assigned_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'requisition_id')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS);
+
+    }
+
+    public function user_viewable_assignment()
+    {
+
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
+            ->where('requisitions.status', RequisitionStatus::ASSIGN_STATUS);
+
+    }
+
+
+    public function user_assigned_to_assign_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS)
+            ->where('type', 'assign');
+
     }
 
     public function user_closed_requisitions()
@@ -162,7 +180,6 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', RequisitionStatus::CLOSED_STATUS);
-        // determiner_assignedd_requisitions
     }
 
     public function closed_user_assignment_requisitions()
@@ -171,13 +188,13 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('requisitions.status', '=', RequisitionStatus::CLOSED_STATUS);
     }
 
-
-    public function user_assigned_to_assign_requisitions()
+    public function user_viewable_closed_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS)
-            ->where('type', 'assign');
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
+            ->where('requisitions.status', '=', RequisitionStatus::CLOSED_STATUS);
 
     }
+
 
     public function holding_user_requisitions()
     {
@@ -189,6 +206,17 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', RequisitionStatus::HOLDING_STATUS);
+    }
+
+    public function holding_user_assignment_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')
+            ->where('requisitions.status', '=', RequisitionStatus::HOLDING_STATUS);
+    }
+    public function user_viewable_holding_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
+            ->where('requisitions.status', RequisitionStatus::HOLDING_STATUS);;
 
     }
 
@@ -211,7 +239,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function user_viewable_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_viewers','user_id','requisition_id') ;
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id');
 
     }
 

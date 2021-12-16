@@ -129,7 +129,7 @@ class RequisitionItems
                 //  'label' => 'Shift (Only for Call Center Positions)',
                 'required' => false,
                 //  'options' => [0 => 'Empty', 1 => 'Morning (Women)', 2 => 'Evening & Night (Men)', 3 => 'Holiday (Women)', 4 => 'Holiday (Men)'],
-                'validate_rules' => ['required']
+                'validate_rules' => ['nullable']
             ],
             'is_full_time' => [
                 'label' => 'working hours',
@@ -167,7 +167,7 @@ class RequisitionItems
                 'required' => true,
                 'grid_col' => 6,
                 'validate_rules' => ['required'],
-                'options' => [1 => 'Diploma', 2 => 'B.A/BSc.', 3 => 'M.A/MSc.', 4 => 'PHD']
+                'options' => ['diploma' => 'Diploma', 'B.A/BSc' => 'B.A/BSc.', 'M.A/MSc' => 'M.A/MSc.', 'phd' => 'PHD']
             ],
             'experience_year' => [
                 'type' => 'select',
@@ -199,30 +199,27 @@ class RequisitionItems
                 'validate_rules' => ['nullable'],
                 'title' => 'About the team'
             ],
-
-            // competency
             'competency' => [
                 'type' => 'multiple',
                 'required' => true,
                 'data' => [],
                 'grid_col' => 12,
                 'validate_rules' => ['required', 'array', 'min:5'],
-             ],
-// 'interviewers'
+            ],
             'interviewers' => [
                 'type' => 'multiple',
                 'required' => false,
                 'data' => [],
                 'grid_col' => 12,
                 'validate_rules' => [],
-             ],
+            ],
             'determiners' => [
                 'type' => 'multiple',
                 'required' => false,
                 'data' => [],
                 'grid_col' => 12,
                 'validate_rules' => ['array'],
-             ],
+            ],
 
         ];
         $schema = [];
@@ -251,6 +248,16 @@ class RequisitionItems
             return $schema[$item];
         }
         return $schema;
+    }
+
+    public static function shortValueItems()
+    {
+        return array_slice(self::getItems(), 0, 17);
+    }
+
+    public static function longValueItems()
+    {
+        return array_slice(self::getItems(), 17, 3);
     }
 
     public static function getPartsItems()
@@ -293,7 +300,7 @@ class RequisitionItems
             'interviewers' => [
                 'title' => 'Interviewers',
                 'items' => array_slice(self::getItems(), 21, 1),
-            ]   ,
+            ],
             'determiners' => [
                 'title' => 'Approver Selection',
                 'items' => array_slice(self::getItems(), 22, 1),

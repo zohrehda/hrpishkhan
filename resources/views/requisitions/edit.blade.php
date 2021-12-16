@@ -10,7 +10,7 @@
                     @csrf
                     <input type="hidden" name="id" value="{{$requisition->id}}">
 
-                    @include('requisitions.form',['form_sections_items'=>$form_sections_items ,'form'=>'edit'])
+                    @include('requisitions.form',['form_sections_items'=>$form_sections_items])
 
                 </form>
             </div>

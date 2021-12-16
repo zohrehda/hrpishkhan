@@ -3,27 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Classes\StaffHierarchy;
-use App\Draft;
 use App\Events\RequisitionSent;
 use App\Requisition;
-use App\RequisitionAssignment;
-use App\RequisitionApprovalProgress;
-use App\RequisitionProgress;
 use App\RequisitionStatus;
 use App\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
 use Adldap\Laravel\Facades\Adldap;
-use Illuminate\Support\Str;
 use Adldap\Laravel\Commands\Import;
-use Maatwebsite\Excel\Facades\Excel;
-use \App\Extract\StaffInfo;
 use  App\Classes\RequisitionItems;
 
 class RequisitionController extends Controller
@@ -32,25 +20,37 @@ class RequisitionController extends Controller
     {
         $pending = Auth::user()->pending_determiner_requisitions;
 
-        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_assigned_requisitions);
+        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_requisitions);
 
-        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions);
+        $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions)->merge(Auth::user()->user_viewable_accpeted_requisitions);
 
-        $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions);
+        $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions)
+            ->merge(Auth::user()->user_viewable_assignment)
+            ->merge(Auth::user()->determiner_assigned_requisitions)
+            ->merge(Auth::user()->assigned_user_requisitions)
+        ;
         //  ->merge(Auth::user()->user_assignments_do)->merge(Auth::user()->user_request_assignments);
 
-        $closed = Auth::user()->user_closed_requisitions->merge(Auth::user()->determiner_closed_requisitions)->merge(Auth::user()->closed_user_assignment_requisitions);
+        $closed = Auth::user()->user_closed_requisitions
+            ->merge(Auth::user()->determiner_closed_requisitions)
+            ->merge(Auth::user()->closed_user_assignment_requisitions)
+            ->merge(Auth::user()->user_viewable_closed_requisitions)
+        ;
 
-        $holding = Auth::user()->holding_user_requisitions->merge(Auth::user()->holding_determiner_requisitions);
+        $holding = Auth::user()->holding_user_requisitions
+            ->merge(Auth::user()->holding_determiner_requisitions)
+            ->merge(Auth::user()->user_viewable_holding_requisitions)
+            ->merge(Auth::user()->holding_user_assignment_requisitions)
+        ;
 
-        $view = Auth::user()->user_viewable_requisitions;;
+       // $view = Auth::user()->user_viewable_requisitions;;
 
         $levels_array = $this->levels;
         $departments = $this->departments;
         $requisition_items = RequisitionItems::getItems();
 
         return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
-            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding','view' ));
+            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding' ));
     }
 
     public function create(Request $request)
@@ -69,8 +69,8 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
-        $validation_rules = $this->get_validation_rules();
-        $validator = Validator::make($request->all(), $validation_rules);
+       // dd($request->all());
+        $validator = Validator::make($request->all(), $this->get_validation_rules());
 
         if ($validator->fails()) {
             session(['termAccepted' => 1]);
@@ -90,7 +90,7 @@ class RequisitionController extends Controller
         $requisition = $this->set_requisition_progresses_determiners($requisition, $determiners);
         $requisition->save();
 
-        $requisition->create_progress(RequisitionStatus::PENDING_STATUS);
+        $requisition->create_progress(RequisitionStatus::ADMIN_PRIMARY_PENDING);
         $request->session()->flash('success', 'Requisition sent successfully.');
         return redirect()->route('dashboard');
 
@@ -106,8 +106,8 @@ class RequisitionController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if (Auth::user()->can('update_determiners', $requisition)) {
 
+        if (Auth::user()->can('update_determiners', $requisition)) {
             $this->update_determiners($requisition);
             $requisition->save();
         }
@@ -127,6 +127,7 @@ class RequisitionController extends Controller
     private function update_determiners($requisition)
     {
         $determiners = Requisition::getOrderedDeterminers(request()->post('determiners', []));
+     //   dd($determiners);
         unset($determiners[0]);
         $this->delete_previous_determiners($requisition);
         $this->set_requisition_progresses_determiners($requisition, $determiners);
@@ -264,10 +265,9 @@ class RequisitionController extends Controller
         if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
 
             $requisition->accept($request->post('determiner_comment'));
+        //  $requisition->current_approval_progress->determiner_id  ==
 
         } elseif ($request->post('progress_result') == RequisitionStatus::ASSIGN_STATUS) {
-            //   echo RequisitionProgress::ASSIGN_STATUS ;
-            //  dd($request->post('progress_result'));
 
             $request->validate([
                 'user_id' => 'required'
@@ -291,7 +291,6 @@ class RequisitionController extends Controller
 
         return redirect()->route('dashboard');
     }
-
 
     public function determiners()
     {

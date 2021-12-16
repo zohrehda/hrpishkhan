@@ -13,15 +13,6 @@ class RequisitionPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-
-    }
 
     public function edit(User $user, Requisition $requisition)
     {
@@ -42,6 +33,7 @@ class RequisitionPolicy
 
     public function view(User $user, Requisition $requisition)
     {
+        return true;
         if (in_array($requisition->status, [RequisitionStatus::ASSIGN_STATUS, RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::CLOSED_STATUS])) {
             return true;
         }
@@ -69,14 +61,14 @@ class RequisitionPolicy
 
     public function hold(User $user, Requisition $requisition)
     {
-        if ($user->isHrAdmin() && in_array($requisition->status,[RequisitionStatus::PENDING_STATUS,RequisitionStatus::ACCEPTED_STATUS,RequisitionStatus::ASSIGN_STATUS]) ) {
+        if ($user->isHrAdmin() && in_array($requisition->status, [RequisitionStatus::PENDING_STATUS, RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::ASSIGN_STATUS])) {
             return true;
         }
     }
 
     public function open(User $user, Requisition $requisition)
     {
-        if ($user->isHrAdmin() && $requisition->current_progress()->status==RequisitionStatus::HOLDING_STATUS  ) {
+        if ($user->isHrAdmin() && $requisition->current_progress()->status == RequisitionStatus::HOLDING_STATUS) {
             return true;
         }
     }
@@ -117,7 +109,7 @@ class RequisitionPolicy
     public function add_determiners(User $user, Requisition $requisition)
     {
         //return true;
-        if ((Auth::user()->id == User::hrAdmin()->id) ||  !$requisition  ) {
+        if ((Auth::user()->id == User::hrAdmin()->id) || !$requisition) {
             return true;
         }
     }
@@ -131,13 +123,12 @@ class RequisitionPolicy
 
     public function update_determiners(User $user, Requisition $requisition)
     {
-        if (Auth::user()->isHrAdmin()  && !$requisition->is_last_progress() ) {
+        if (Auth::user()->isHrAdmin() &&
+            $requisition->current_progress()->status == RequisitionStatus::ADMIN_PRIMARY_PENDING) {
             return true;
         }
 
     }
-
-
 
 
 }

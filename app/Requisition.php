@@ -4,6 +4,7 @@ namespace App;
 
 use Adldap\Laravel\Commands\Import;
 use Adldap\Laravel\Facades\Adldap;
+use App\Classes\StaffHierarchy;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -28,6 +29,130 @@ class Requisition extends Model
     public function getUpdatedAtAttribute()
     {
         return Carbon::createFromTimeStamp(strtotime($this->attributes['updated_at']))->diffForHumans();
+    }
+
+    public function getDepartmentAttribute()
+    {
+        return RequisitionItems::getItems('department')['options'][$this->attributes['department']] ?? $this->attributes['department'];
+
+    }
+
+    public function getLevelAttribute()
+    {
+        return StaffHierarchy::$levels[$this->attributes['level']] ?? $this->attributes['level'];
+    }
+
+    public function getIsFullTimeAttribute()
+    {
+        return RequisitionItems::getItems('is_full_time')['radios'][$this->attributes['is_full_time']] ?? $this->attributes['is_full_time'];
+
+    }
+
+    public function getIsNewAttribute()
+    {
+        return RequisitionItems::getItems('is_new')['radios'][$this->attributes['is_new']] ?? $this->attributes['is_new'];
+
+    }
+
+    public function getShiftAttribute()
+    {
+        return RequisitionItems::getItems('shift')['data']['options'][$this->attributes['shift']] ?? $this->attributes['shift'];
+    }
+
+    public function getDegreeAttribute()
+    {
+        return RequisitionItems::getItems('degree')['options'][$this->attributes['degree']] ?? $this->attributes['degree'];
+
+    }
+
+    public function getExperienceYearAttribute()
+    {
+        return RequisitionItems::getItems('experience_year')['options'][$this->attributes['experience_year']] ?? $this->attributes['experience_year'];
+
+    }
+
+    public function getCompetencyAttribute($value)
+    {
+        return array_map(function ($value) {
+            return [
+                'text' => $value[0],
+                'status' => $value[1]
+            ];
+        }, json_decode($value, true));
+    }
+
+    public function setCompetencyAttribute($value)
+    {
+        $this->attributes['competency'] = json_encode($value);
+    }
+
+    public function getInterviewersAttribute($value)
+    {
+        return json_decode($value, true) ?? [];
+    }
+
+    public function setInterviewersAttribute($value)
+    {
+        $interviewers = null;
+        if ($value) {
+
+            $array = [];
+            foreach ($value as $k => $v) {
+                if (!empty($v[0]) || !empty($v[1])) {
+                    $array[$k] = $v;
+                }
+            }
+            $interviewers = (count($array) > 0) ? json_encode($array) : null;
+        }
+
+        $this->attributes['interviewers'] = $interviewers;
+    }
+
+    public function setDeterminerAttribute($value)
+    {
+        $determiners = self::getOrderedDeterminers($value);
+        $sender = User::find(Auth::id());
+
+        $determiner_id = array_values($determiners)[0];
+        $recipient = User::find(array_values($determiners)[0]);
+
+
+        if (config('app.users_provider') == 'ldap') {
+            $determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
+            $recipient = User::where('email', array_values($determiners)[0])->first();
+
+            foreach ($determiners as $d) {
+                $this->ImportLdapToModel($d);
+            }
+        }
+
+        event(new RequisitionSent($sender, $recipient));
+
+        $this->attributes['determiner_id'] = $determiner_id;
+
+    }
+
+    public function setDeterminerIdAttribute($value)
+    {
+        $determiner_id = $value;
+        if (config('app.users_provider') == 'ldap') {
+            $determiner_id = User::where('email', $value)->first()->id;
+        }
+        $this->attributes['determiner_id'] = $determiner_id;
+
+    }
+
+    public function getLabelAttribute()
+    {
+        $label = '';
+        if (Auth::user()->user_viewable_requisitions()->get()->where('id', $this->id)->count()) {
+            $label = 'only view';
+        }
+        if (Auth::user()->user_assigned_to_requisitions()->get()->where('id', $this->id)->count()) {
+            $label = 'your assignment';
+        }
+
+        return $label;
     }
 
 
@@ -57,6 +182,7 @@ class Requisition extends Model
         return $this->pending_approval_progresses()->first();
     }
 
+
     /**
      * get accepted progressed for requisition
      */
@@ -74,16 +200,6 @@ class Requisition extends Model
         return $this->belongsToMany(User::class, 'requisition_approval_progresses', 'requisition_id', 'determiner_id');
     }
 
-    public function is_last_progress()
-    {
-        $all_progresses_count = $this->approval_progresses()->count();
-        $accepted_progresses_count = $this->accepted_approval_progresses()->count();
-
-        if ($all_progresses_count - $accepted_progresses_count == 1) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * get remaining determiners for requisition
@@ -128,8 +244,10 @@ class Requisition extends Model
         if ($this->current_progress()->status == RequisitionStatus::HOLDING_STATUS) {
             $this->current_progress()->delete();
         }
+
         $this->update([
-            'status' => $this->current_progress()->status
+            'status' => (in_array($this->current_progress()->status, RequisitionStatus::PENDING_GROUP)) ? RequisitionStatus::PENDING_STATUS : $this->current_progress()->status
+            // 'status' =>
         ]);
         $this->save();
     }
@@ -141,7 +259,6 @@ class Requisition extends Model
     {
         $c = $this->current_approval_progress()->id;
 
-        // update progress to accepted status.
         $this->current_approval_progress()->update([
             'status' => RequisitionStatus::ACCEPTED_STATUS,
             'determiner_comment' => $comment
@@ -155,12 +272,17 @@ class Requisition extends Model
             $this->create_progress(RequisitionStatus::ACCEPTED_STATUS);
 
         } else {
-
             // send the requisition to next determiner.
             $this->determiner_id = $this->current_approval_progress()->determiner_id;
             $sender = User::find(Auth::id());
             $recipient = User::find($this->current_approval_progress()->determiner_id);
             event(new RequisitionSent($sender, $recipient));
+
+            $status = RequisitionStatus::DETERMINERS_PENDING;
+            if ($this->determiner_id == User::hrAdmin()->id) {
+                $status = RequisitionStatus::ADMIN_FINAL_PENDING;
+            }
+            $this->create_progress($status);
 
         }
         $this->save();
@@ -168,8 +290,8 @@ class Requisition extends Model
 
 
     public function create_progress($status)
-    {
-        $this->progresses()->firstOrCreate([
+    { //firstOrCreate
+        $this->progresses()->create([
             'requisition_id' => $this->id,
             'status' => $status
         ]);
@@ -211,8 +333,8 @@ class Requisition extends Model
             'determiner_comment' => $comment
         ]);
 
-      //  if ($this->accepted_approval_progresses()->isNotEmpty()) {
-        if ($this->accepted_approval_progresses()) {
+        //  if ($this->accepted_approval_progresses()->isNotEmpty()) {
+        if ($this->accepted_approval_progresses()->count()) {
             // update requisition's last progress to pending
             $this->accepted_approval_progresses->last()->update([
                 'status' => RequisitionStatus::PENDING_STATUS,
@@ -225,27 +347,80 @@ class Requisition extends Model
         $sender = User::find(Auth::id());
 
 
-        if ($this->progress_status() == 0) {
+        if ($this->approval_progress_status() == 0) {
             $recipient = User::find($this->current_approval_progress()->determiner_id);
 
             event(new RequisitionSent($sender, $recipient));
 
-        } elseif ($this->progress_status() == 2) {
+        } elseif ($this->approval_progress_status() == 2) {
             $recipient = $this->owner;
             event(new RequisitionRejected($sender, $recipient));
         }
 
+        if ($this->current_progress()->status != RequisitionStatus::ADMIN_PRIMARY_PENDING)
+            $this->current_progress()->delete();
 
         $this->save();
     }
+
+    public function current_progress_status()
+    {
+        return $this->get_approval_progress_status($this->current_approval_progress());
+    }
+
+    public function previous_progress_status()
+    {
+        return $this->get_approval_progress_status($this->previous_approval_progress());
+
+    }
+
+    public function previous_approval_progress()
+    {
+        return $this->approval_progresses()->where('requisition_id', $this->current_approval_progress()->requisition_id)
+            ->where('id', '<', $this->current_approval_progress()->id)->orderBy('id', 'desc')->first();
+    }
+
+    public function get_approval_progress_status($approval_progress)
+    {
+        $status = RequisitionStatus::DETERMINERS_PENDING;
+        if ($this->is_first_approval_progress($approval_progress)) {
+            $status = RequisitionStatus::ADMIN_PRIMARY_PENDING;
+
+        } elseif ($this->is_last_approval_progress($approval_progress)) {
+            $status = RequisitionStatus::ADMIN_FINAL_PENDING;
+        }
+        return $status;
+
+    }
+
+    public function is_first_approval_progress($approval_progress)
+    {
+        $ee = $approval_progress->id ?? null;
+        if ($this->approval_progresses()->first()->id == $ee
+            && $approval_progress->determiner_id ?? null == User::hrAdmin()->id) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public function is_last_approval_progress($approval_progress)
+    {
+        if ($this->approval_progresses()->get()->last()->id == $approval_progress->id ?? null
+            && $approval_progress->determiner_id ?? null == User::hrAdmin()->id) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * reset status on every requisition progress status
      */
     public function reset_determiner_progresses()
     {
-        // requisition creator editing
-        // send requisition to first determiner
+
         $this->determiner_id = $this->approval_progresses()->first()->determiner_id;
         // update all approval_progresses to pending status.
         $this->approval_progresses()->update([
@@ -255,43 +430,7 @@ class Requisition extends Model
     }
 
 
-    public function getDepartmentAttribute()
-    {
-        return RequisitionItems::getItems('department')['options'][$this->attributes['department']] ?? 'gg';
-
-    }
-
-    public function getIsFullTimeAttribute()
-    {
-        return RequisitionItems::getItems('is_full_time')['radios'][$this->attributes['is_full_time']] ?? 'gg';
-
-    }
-
-    public function getIsNewAttribute()
-    {
-        return RequisitionItems::getItems('is_new')['radios'][$this->attributes['is_new']] ?? 'gg';
-
-    }
-
-    public function getShiftAttribute()
-    {
-        return RequisitionItems::getItems('shift')['options'][$this->attributes['shift']] ?? 'gg';
-    }
-
-    public function getDegreeAttribute()
-    {
-        return RequisitionItems::getItems('degree')['options'][$this->attributes['degree']] ?? 'gg';
-
-    }
-
-    public function getExperienceYearAttribute()
-    {
-        return RequisitionItems::getItems('experience_year')['options'][$this->attributes['experience_year']] ?? 'gg';
-
-    }
-
-
-    public function progress_status()
+    public function approval_progress_status()
     {
         $status_array = $this->approval_progresses()->getResults()->map(function ($item) {
             return $item->getOriginal('status');
@@ -390,27 +529,6 @@ class Requisition extends Model
         ]);
     }
 
-    public function setInterviewersAttribute($value)
-    {
-        $interviewers = null;
-        if ($value) {
-
-            $array = [];
-            foreach ($value as $k => $v) {
-                if (!empty($v[0]) || !empty($v[1])) {
-                    $array[$k] = $v;
-                }
-            }
-            $interviewers = (count($array) > 0) ? json_encode($array) : null;
-        }
-
-        $this->attributes['interviewers'] = $interviewers;
-    }
-
-    public function setCompetencyAttribute($value)
-    {
-        $this->attributes['competency'] = json_encode($value);
-    }
 
     public function ImportLdapToModel($userPrincipalName)
     {
@@ -444,39 +562,6 @@ class Requisition extends Model
         return $value;
     }
 
-    public function setDeterminerAttribute($value)
-    {
-        $determiners = self::getOrderedDeterminers($value);
-        $sender = User::find(Auth::id());
-
-        $determiner_id = array_values($determiners)[0];
-        $recipient = User::find(array_values($determiners)[0]);
-
-
-        if (config('app.users_provider') == 'ldap') {
-            $determiner_id = User::where('email', array_values($determiners)[0])->first()->id;
-            $recipient = User::where('email', array_values($determiners)[0])->first();
-
-            foreach ($determiners as $d) {
-                $this->ImportLdapToModel($d);
-            }
-        }
-
-        event(new RequisitionSent($sender, $recipient));
-
-        $this->attributes['determiner_id'] = $determiner_id;
-
-    }
-
-    public function setDeterminerIdAttribute($value)
-    {
-        $determiner_id = $value;
-        if (config('app.users_provider') == 'ldap') {
-            $determiner_id = User::where('email', $value)->first()->id;
-        }
-        $this->attributes['determiner_id'] = $determiner_id;
-
-    }
 
     public function approver_determiners()
     {

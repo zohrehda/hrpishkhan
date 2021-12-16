@@ -26,12 +26,12 @@ class CreateRequisitionsTable extends Migration
             $table->string('direct_manager_position');
             $table->string('venture');
             $table->string('vertical')->nullable();
-            $table->integer('shift')->nullable();
+            $table->string('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
             $table->boolean('is_new')->default(0);
             $table->string('replacement')->nullable();
             $table->string('field_of_study');
-            $table->integer('degree');
+            $table->string('degree');
             $table->integer('experience_year');
             $table->text('mission');
             $table->json('competency');

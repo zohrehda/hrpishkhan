@@ -24,7 +24,6 @@ $(document).ready(function () {
         }).responseJSON;
     }
 
-
     var draftForm = $('#form-draft'),
         viewerForm = $('#form-viewer'),
         saveDraft = draftForm.find('#save-draft-requisition'),
@@ -127,7 +126,6 @@ $(document).ready(function () {
         } else {
             $("#determiners").hide();
         }
-
     });
 
     /***** shift *****/
@@ -135,14 +133,14 @@ $(document).ready(function () {
 
         if ($(shiftCheckbox).is(':checked')) {
             $("#shift_select").prop('disabled', false);
-            $("input[name='shift']").val('');
-            console.log($("input[name='shift']").val())
-            //    alert('f') ;
+            $("input[name='shift']").val(null);
+            $("#shift_select").trigger('change') ;
+
         } else {
-            //  alert('aa') ;
+         //   alert('ff')
             $("#shift_select").prop('disabled', true);
             $("#shift_select").val('empty');
-            $("input[name='shift']").val(0);
+            $("input[name='shift']").val(null);
         }
     });
     $("#shift_select").on('change', function () {
@@ -256,6 +254,7 @@ $(document).ready(function () {
                 userId = response.user_id;
 
                 //level
+                console.log(draft)
                 $.each(draft, function (index, item) {
 
                     if (index == 'interviewers') {
@@ -265,8 +264,14 @@ $(document).ready(function () {
                         competency_html(item);
                     }
 
+                //    $("#form").find('input[type="hidden"][name="shift"]').val('gg');
+                    if (index=='shift'){
+//                        $("input[name='shift']").val('gg');
+                    }
+
 
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
+  //                  $("#form").find('input[type="hidden"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
                     $("#form").find('textarea[name="' + index + '"]').html(item).val(item);
                     $("#form").find('select[name="' + index + '"]').val(item);
@@ -283,6 +288,7 @@ $(document).ready(function () {
                         console.log($("#form").find('select[name="level"]').val());
                     }
                 });
+
                 $(shiftCheckbox).trigger('change');
 
                 DraftNameModal.find('#draft_update').attr('data-draft-name', response.drafts.name);
@@ -413,10 +419,10 @@ $(document).ready(function () {
 
     /***** add receiver select input *****/
     j = 0;
-   // console.log(i)
+    // console.log(i)
     $("#add_receiver").on('click', function () {
-   //     console.log('i')
-     //   console.log(i)
+        //     console.log('i')
+        //   console.log(i)
         j++;
 
 
