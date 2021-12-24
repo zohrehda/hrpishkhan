@@ -25,7 +25,7 @@ class CreateRequisitionsTable extends Migration
             $table->string('direct_manager_name');
             $table->string('direct_manager_position');
             $table->string('venture');
-            $table->string('poirot')->nullable();
+            $table->string('vertical')->nullable();
             $table->string('shift')->nullable();
             $table->boolean('is_full_time')->default(0);
             $table->boolean('is_new')->default(0);

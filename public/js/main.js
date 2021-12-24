@@ -288,7 +288,7 @@ $(document).ready(function () {
                         console.log(draft.level);
                         console.log($("#form").find('select[name="level"]').val());
                         $("#form").find('select[name="level"]').val(draft.level);
-                        $("#form").find('select[name="poirot"]').val(draft.poirot);
+                        $("#form").find('select[name="vertical"]').val(draft.vertical);
                         console.log($("#form").find('select[name="level"]').val());
                     }
                 });
@@ -406,16 +406,16 @@ $(document).ready(function () {
     isNewInput.trigger('change');
 
 
-    /***** disable & enable poirot input depending on value of department input *****/
+    /***** disable & enable vertical input depending on value of department input *****/
     departmentInput.on('change', function () {
         value = $(departmentInput).val();
 
-        departmentsRequirespoirot = Object.values(formItemsSetting.poirot.required_if)[0];
-        if (departmentsRequirespoirot.indexOf(value) !== -1) {
-            $("*[name='poirot']").prop('disabled', false);
+        departmentsRequiresvertical = Object.values(formItemsSetting.vertical.required_if)[0];
+        if (departmentsRequiresvertical.indexOf(value) !== -1) {
+            $("*[name='vertical']").prop('disabled', false);
         } else {
-            $("*[name='poirot']").prop('disabled', true);
-            $("*[name='poirot']").val('empty');
+            $("*[name='vertical']").prop('disabled', true);
+            $("*[name='vertical']").val('empty');
         }
     });
     departmentInput.trigger('change');

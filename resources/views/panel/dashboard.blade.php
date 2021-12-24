@@ -19,7 +19,7 @@
     <hr>
     @include('requisitions.index', ['requisitions' => $closed, 'card_class' => 'bg-dark'])
 
-    <h2>Holding</h2>
+    <h2>Hold</h2>
     <hr>
     @include('requisitions.index', ['requisitions' => $holding, 'card_class' => 'bg-orange'])
 

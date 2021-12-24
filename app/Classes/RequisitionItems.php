@@ -72,7 +72,7 @@ class RequisitionItems
                 'grid_col' => 6,
                 'validate_rules' => ['required']
             ],
-            'poirot' => [
+            'vertical' => [
                 'type' => 'select',
                 'grid_col' => 6,
                 'options' => [
@@ -94,7 +94,7 @@ class RequisitionItems
                     'pricing' => 'Pricing',
                     'pwa' => 'PWA',
                     'ride_life_cycle' => 'Ride Life Cycle',
-                    'poriot' => 'Poriot',
+                    'poirot' => 'poirot',
                     'shared_service' => 'Shared Service',
                     'supper_app' => 'Supper App',
                     'users' => 'Users',
