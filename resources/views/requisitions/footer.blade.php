@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">terms and conditions</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Terms and Conditions</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -32,7 +32,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal">accept</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Accept</button>
 
             </div>
         </div>
@@ -53,7 +53,7 @@
                         <label class="custom-control-label" for="draft_update">update</label>
                     </div>
 
-                    @if(auth()->user()->id==App\User::hrAdmin()->id)
+                    @if(auth()->user()->id==App\User::hr_admin()->id)
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" name="draft_public" value="1"
                                    id="draft-public">
@@ -62,7 +62,7 @@
                     @endif
 
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label optional">name the draft:</label>
+                        <label for="recipient-name" class="col-form-label optional">Name the Draft:</label>
                         <input type="text" class="form-control " id="draft-name" name="draft_name" required>
                     </div>
 
@@ -173,8 +173,8 @@
 </template>
 
 <template id="tmp_determiners_form">
-    <div class="col-md-6">
-        <div class="alert alert-dismissible fade show p-0" role="alert">
+
+        <div class="col-md-6 alert alert-dismissible fade show pr-0" role="alert">
             <label>Approver <span>__approver_index</span></label>
             <select id="" name="determiners[]"
                     class="form-space form-control select2 approver">
@@ -183,6 +183,6 @@
             <button type="button" class="close p-0 " data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
-        </div>
+
     </div>
 </template>

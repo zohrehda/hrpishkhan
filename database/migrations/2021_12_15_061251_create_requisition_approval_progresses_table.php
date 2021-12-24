@@ -28,8 +28,11 @@ class CreateRequisitionApprovalProgressesTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->text('determiner_comment')->nullable();
-            $table->enum('role',['hr_admin','approver']);
+//            $table->enum('role',['hr_admin','approver']);
+            $table->string('type');
+            $table->unsignedBigInteger('role');
             $table->string('status')->default('pending');
+
         });
     }
 

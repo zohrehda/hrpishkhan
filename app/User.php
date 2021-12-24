@@ -89,6 +89,13 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('status', '=', RequisitionStatus::PENDING_STATUS);
     }
 
+    public function user_viewable_pending_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
+            ->where('status', '=', RequisitionStatus::PENDING_STATUS);
+
+    }
+
     /**
      * get determiner involved requisitions
      */
@@ -116,12 +123,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     }
 
-    public static function hrAdmin()
+    public static function hr_admin()
     {
         return self::where('role', 'hr_admin')->first();
     }
 
-    public function isHrAdmin()
+    public function is_hr_admin()
     {
         if (Auth::user()->role == 'hr_admin') {
             return true;
@@ -150,7 +157,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function determiner_assigned_requisitions()
     {
-        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'requisition_id')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS);
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')->where('requisitions.status', '=', RequisitionStatus::ASSIGN_STATUS);
 
     }
 
@@ -213,6 +220,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_assignments', 'to')
             ->where('requisitions.status', '=', RequisitionStatus::HOLDING_STATUS);
     }
+
     public function user_viewable_holding_requisitions()
     {
         return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id')
@@ -220,9 +228,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     }
 
-    public static function byProvider($value)
+    // get id or email of user
+    public static function by_provider($value)
     {
-
         if (config('app.users_provider') == 'ldap') {
             $ldap = new Ldap();
             $ldap->ImportLdapToModel($value);

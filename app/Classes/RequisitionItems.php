@@ -72,7 +72,7 @@ class RequisitionItems
                 'grid_col' => 6,
                 'validate_rules' => ['required']
             ],
-            'vertical' => [
+            'poirot' => [
                 'type' => 'select',
                 'grid_col' => 6,
                 'options' => [

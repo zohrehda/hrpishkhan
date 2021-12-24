@@ -20,37 +20,35 @@ class RequisitionController extends Controller
     {
         $pending = Auth::user()->pending_determiner_requisitions;
 
-        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_requisitions);
+        $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_requisitions)
+            ->merge(Auth::user()->user_viewable_pending_requisitions);
 
         $accepted = Auth::user()->accepted_user_requisitions->merge(Auth::user()->determiner_accepted_requisitions)->merge(Auth::user()->user_viewable_accpeted_requisitions);
 
         $assignment = Auth::user()->user_assigned_to_requisitions->merge(Auth::user()->user_assigned_requisitions)
             ->merge(Auth::user()->user_viewable_assignment)
             ->merge(Auth::user()->determiner_assigned_requisitions)
-            ->merge(Auth::user()->assigned_user_requisitions)
-        ;
+            ->merge(Auth::user()->assigned_user_requisitions);
         //  ->merge(Auth::user()->user_assignments_do)->merge(Auth::user()->user_request_assignments);
 
         $closed = Auth::user()->user_closed_requisitions
             ->merge(Auth::user()->determiner_closed_requisitions)
             ->merge(Auth::user()->closed_user_assignment_requisitions)
-            ->merge(Auth::user()->user_viewable_closed_requisitions)
-        ;
+            ->merge(Auth::user()->user_viewable_closed_requisitions);
 
         $holding = Auth::user()->holding_user_requisitions
             ->merge(Auth::user()->holding_determiner_requisitions)
             ->merge(Auth::user()->user_viewable_holding_requisitions)
-            ->merge(Auth::user()->holding_user_assignment_requisitions)
-        ;
+            ->merge(Auth::user()->holding_user_assignment_requisitions);
 
-       // $view = Auth::user()->user_viewable_requisitions;;
+        // $view = Auth::user()->user_viewable_requisitions;;
 
         $levels_array = $this->levels;
         $departments = $this->departments;
         $requisition_items = RequisitionItems::getItems();
 
         return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
-            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding' ));
+            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding'));
     }
 
     public function create(Request $request)
@@ -69,7 +67,7 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
-       // dd($request->all());
+        // dd($request->all());
         $validator = Validator::make($request->all(), $this->get_validation_rules());
 
         if ($validator->fails()) {
@@ -82,15 +80,16 @@ class RequisitionController extends Controller
         $requisition->owner_id = Auth::id();
         $requisition->save();
 
-        $determiners = Requisition::getOrderedDeterminers($request->post('determiners', []));
-        $requisition->determiner_id = $determiners[0];
-
-        $this->send_email_to_determiner($determiners[0]);
+        $determiners = $this->get_ordered_determiners($request->post('determiners', []), $requisition);
+        $current_determiner_id = $determiners[0];
+        $requisition->determiner_id = $current_determiner_id;
+        $this->send_email_to_determiner($current_determiner_id);
 
         $requisition = $this->set_requisition_progresses_determiners($requisition, $determiners);
         $requisition->save();
 
         $requisition->create_progress(RequisitionStatus::ADMIN_PRIMARY_PENDING);
+
         $request->session()->flash('success', 'Requisition sent successfully.');
         return redirect()->route('dashboard');
 
@@ -98,18 +97,17 @@ class RequisitionController extends Controller
 
     public function update(Request $request)
     {
-
         $requisition = Requisition::find($request->post('id'));
-
         $validator = Validator::make($request->all(), $this->get_validation_rules());
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $requisition = $this->set_requisition_items($requisition);
+
         if (Auth::user()->can('update_determiners', $requisition)) {
-            $this->update_determiners($requisition);
-            $requisition->save();
+            $requisition = $this->update_determiners($requisition);
         }
 
         if (Auth::user()->can('accept', $requisition)) {
@@ -117,7 +115,6 @@ class RequisitionController extends Controller
 
         } else $requisition->reset_determiner_progresses();
 
-        $requisition = $this->set_requisition_items($requisition);
         $requisition->save();
 
         $request->session()->flash('success', 'Requisition updated successfully.');
@@ -126,32 +123,83 @@ class RequisitionController extends Controller
 
     private function update_determiners($requisition)
     {
-        $determiners = Requisition::getOrderedDeterminers(request()->post('determiners', []));
-     //   dd($determiners);
-        unset($determiners[0]);
-        $this->delete_previous_determiners($requisition);
-        $this->set_requisition_progresses_determiners($requisition, $determiners);
-    }
-
-    private function delete_previous_determiners($requisition)
-    {
-        foreach ($requisition->approval_progresses as $key => $progress) {
-            if ($key != 0) {
-                $progress->delete();
-            }
-        }
+        $requisition->rest_approval_progress()->delete();
+        $determiners = $this->get_ordered_determiners(request()->post('determiners', []));
+        return $this->set_requisition_progresses_determiners($requisition, $determiners);
     }
 
     private function set_requisition_progresses_determiners($requisition, $determiners)
     {
-        foreach ($determiners as $key => $value) {
-            $determiner_id = ((config('app.users_provider') == 'ldap')) ? User::where('email', $value)->first()->id : $value;
+        foreach ($determiners as $key => $determiner_id) {
+
+            $type = RequisitionStatus::DETERMINERS_PENDING;
+            if (!$key && $determiner_id == User::hr_admin()->id) {
+                $type = RequisitionStatus::ADMIN_PRIMARY_PENDING;
+            } elseif ($key + 1 == count($determiners) && $determiner_id == User::hr_admin()->id) {
+                $type = RequisitionStatus::ADMIN_FINAL_PENDING;
+            }
+            $last_pending_approval_progress = $requisition->pending_approval_progresses()->get()->last();
+            $role = ($last_pending_approval_progress) ? $last_pending_approval_progress->role + 1 : 1;
+
+
+            //     dd($requisition->pending_approval_progresses()->latest());
             $requisition->approval_progresses()->create([
                 'requisition_id' => $requisition->id,
                 'determiner_id' => $determiner_id,
-                'role' => ($determiner_id == User::hrAdmin()->id) ? 'hr_admin' : 'approver']);
+                'role' => $role,
+                'type' => $type
+            ]);
         }
         return $requisition;
+    }
+
+    private function get_ordered_determiners($determiners, $requisition)
+    {
+        $determiners = $determiners ?? [];
+        return $this->add_hr_admin_determiner($this->add_details_to_determiners($determiners), $requisition);
+    }
+
+    private function add_details_to_determiners($determiners)
+    {
+        $determiners_array = [];
+        foreach ($determiners as $determiner) {
+            $determiners_array[] = User::by_provider($determiner)->id;
+        }
+        return $determiners_array;
+    }
+
+    private function add_hr_admin_determiner($determiners, $requisition)
+    {
+        if ($this->can_prepend_hr_admin_determiner($determiners, $requisition)) {
+            array_unshift($determiners, User::hr_admin()->id);
+        }
+
+        if ($this->can_append_hr_admin_determiner($determiners)) {
+            array_push($determiners, User::hr_admin()->id);
+
+        }
+
+        return $determiners;
+    }
+
+    private function can_prepend_hr_admin_determiner($determiners, $requisition)
+    {
+        if ($requisition->owner->id==User::hr_admin()->id && !count($determiners)) {
+            return true;
+        }
+        if ((Auth::user()->is_hr_admin()) || (count($determiners) && $determiners[0] == User::hr_admin()->id)) {
+            return false;
+        }
+        return true;
+    }
+
+    private function can_append_hr_admin_determiner($determiners)
+    {
+
+        if (!count($determiners) || (count($determiners) && last($determiners) == User::hr_admin()->id)) {
+            return false;
+        }
+        return true;
     }
 
     public function customizeReceiver()
@@ -213,17 +261,6 @@ class RequisitionController extends Controller
 
     }
 
-    private function updateOrCreateItems($requisition)
-    {
-        $items = RequisitionItems::getItems();
-        foreach ($items as $name => $value) {
-            if (!in_array($name, ['determiners'])) {
-                $requisition->$name = request()->post($name);
-            }
-        }
-        return $requisition;
-    }
-
     private function set_requisition_items($requisition)
     {
         $items = RequisitionItems::getItems();
@@ -263,9 +300,7 @@ class RequisitionController extends Controller
     public function determine(Request $request, Requisition $requisition)
     {
         if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
-
             $requisition->accept($request->post('determiner_comment'));
-        //  $requisition->current_approval_progress->determiner_id  ==
 
         } elseif ($request->post('progress_result') == RequisitionStatus::ASSIGN_STATUS) {
 

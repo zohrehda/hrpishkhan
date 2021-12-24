@@ -157,6 +157,9 @@ return [
         'determiners.*' => [
             'distinct' => "Can't select same determiner on two or more approval_progresses"
         ],
+        'users.*'=>[
+            'not_in'=>'dddd'
+        ]
 
 
     ],

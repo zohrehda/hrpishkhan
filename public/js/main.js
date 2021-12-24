@@ -134,10 +134,10 @@ $(document).ready(function () {
         if ($(shiftCheckbox).is(':checked')) {
             $("#shift_select").prop('disabled', false);
             $("input[name='shift']").val(null);
-            $("#shift_select").trigger('change') ;
+            $("#shift_select").trigger('change');
 
         } else {
-         //   alert('ff')
+            //   alert('ff')
             $("#shift_select").prop('disabled', true);
             $("#shift_select").val('empty');
             $("input[name='shift']").val(null);
@@ -187,14 +187,18 @@ $(document).ready(function () {
             type: 'post',
             dataType: 'json',
             data: $('#form-viewer').serialize(),
-            complete: function (response) {
-
-                if (response) {
-                    //alert('ff') ;
+            success: function (response) {
+                if($.isEmptyObject(response.error)){
+                    alert(response.success);
                     $('#AddViewer').modal('hide');
-
+                }else{
+                 //   console.log(response.error)
+                    alert(response.error);
+                    $('#AddViewer').modal('hide');
                 }
-            }
+            },
+
+
 
         });
 
@@ -264,14 +268,14 @@ $(document).ready(function () {
                         competency_html(item);
                     }
 
-                //    $("#form").find('input[type="hidden"][name="shift"]').val('gg');
-                    if (index=='shift'){
+                    //    $("#form").find('input[type="hidden"][name="shift"]').val('gg');
+                    if (index == 'shift') {
 //                        $("input[name='shift']").val('gg');
                     }
 
 
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
-  //                  $("#form").find('input[type="hidden"][name="' + index + '"]').val(item);
+                    //                  $("#form").find('input[type="hidden"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
                     $("#form").find('textarea[name="' + index + '"]').html(item).val(item);
                     $("#form").find('select[name="' + index + '"]').val(item);
@@ -284,7 +288,7 @@ $(document).ready(function () {
                         console.log(draft.level);
                         console.log($("#form").find('select[name="level"]').val());
                         $("#form").find('select[name="level"]').val(draft.level);
-                        $("#form").find('select[name="vertical"]').val(draft.vertical);
+                        $("#form").find('select[name="poirot"]').val(draft.poirot);
                         console.log($("#form").find('select[name="level"]').val());
                     }
                 });
@@ -402,32 +406,32 @@ $(document).ready(function () {
     isNewInput.trigger('change');
 
 
-    /***** disable & enable vertical input depending on value of department input *****/
+    /***** disable & enable poirot input depending on value of department input *****/
     departmentInput.on('change', function () {
         value = $(departmentInput).val();
 
-        departmentsRequiresVertical = Object.values(formItemsSetting.vertical.required_if)[0];
-        if (departmentsRequiresVertical.indexOf(value) !== -1) {
-            $("*[name='vertical']").prop('disabled', false);
+        departmentsRequirespoirot = Object.values(formItemsSetting.poirot.required_if)[0];
+        if (departmentsRequirespoirot.indexOf(value) !== -1) {
+            $("*[name='poirot']").prop('disabled', false);
         } else {
-            $("*[name='vertical']").prop('disabled', true);
-            $("*[name='vertical']").val('empty');
+            $("*[name='poirot']").prop('disabled', true);
+            $("*[name='poirot']").val('empty');
         }
     });
     departmentInput.trigger('change');
 
 
     /***** add receiver select input *****/
-    j = 0;
-    // console.log(i)
-    $("#add_receiver").on('click', function () {
-        //     console.log('i')
-        //   console.log(i)
-        j++;
+    //   j = 0;
 
+    $("#add_receiver").on('click', function () {
+
+        // j++;
+        last_index = $(".form-receivers-part").children().last().index();
+        j = (last_index) ? 1 : last_index + 2;
 
         tmp = $("#tmp_determiners_form").html();
-        tmp = tmp.replaceAll('__approver_index', j);
+        tmp = tmp.replaceAll('__approver_index', '');
 
         $(".form-receivers-part").append(tmp);
         initializeSelect2($('.approver'));

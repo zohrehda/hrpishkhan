@@ -26,7 +26,7 @@ class RequisitionPolicy
 
     public function accept(User $user, Requisition $requisition)
     {
-        if ($user->id == $requisition->determiner_id) {
+        if ($user->id == $requisition->determiner_id && $requisition->status==RequisitionStatus::PENDING_STATUS ) {
             return true;
         }
     }
@@ -34,9 +34,7 @@ class RequisitionPolicy
     public function view(User $user, Requisition $requisition)
     {
         return true;
-        if (in_array($requisition->status, [RequisitionStatus::ASSIGN_STATUS, RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::CLOSED_STATUS])) {
-            return true;
-        }
+
     }
 
     public function destroy(User $user, Requisition $requisition)
@@ -51,7 +49,7 @@ class RequisitionPolicy
     public function close(User $user, Requisition $requisition)
     {
         if ($requisition->status == RequisitionStatus::ASSIGN_STATUS) {
-            if ($user->isHrAdmin()) {
+            if ($user->is_hr_admin()) {
                 return true;
             }
 
@@ -61,21 +59,21 @@ class RequisitionPolicy
 
     public function hold(User $user, Requisition $requisition)
     {
-        if ($user->isHrAdmin() && in_array($requisition->status, [RequisitionStatus::PENDING_STATUS, RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::ASSIGN_STATUS])) {
+        if ($user->is_hr_admin() && in_array($requisition->status, [RequisitionStatus::PENDING_STATUS, RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::ASSIGN_STATUS])) {
             return true;
         }
     }
 
     public function open(User $user, Requisition $requisition)
     {
-        if ($user->isHrAdmin() && $requisition->current_progress()->status == RequisitionStatus::HOLDING_STATUS) {
+        if ($user->is_hr_admin() && $requisition->current_progress()->status == RequisitionStatus::HOLDING_STATUS) {
             return true;
         }
     }
 
     public function add_viewer(User $user, Requisition $requisition)
     {
-        if ($user->isHrAdmin()) {
+        if ($user->is_hr_admin()) {
             return true;
         }
     }
@@ -86,7 +84,7 @@ class RequisitionPolicy
 
 
         if (in_array($requisition->status, [RequisitionStatus::ACCEPTED_STATUS, RequisitionStatus::ASSIGN_STATUS])) {
-            if ($user->id == User::hrAdmin()->id) {
+            if ($user->id == User::hr_admin()->id) {
                 return true;
             }
         }
@@ -106,28 +104,20 @@ class RequisitionPolicy
 
     }
 
-    public function add_determiners(User $user, Requisition $requisition)
+    /*public function hr_admin()
     {
-        //return true;
-        if ((Auth::user()->id == User::hrAdmin()->id) || !$requisition) {
+        if (Auth::user()->id == User::hr_admin()->id) {
             return true;
         }
-    }
-
-    public function hr_admin()
-    {
-        if (Auth::user()->id == User::hrAdmin()->id) {
-            return true;
-        }
-    }
+    }*/
 
     public function update_determiners(User $user, Requisition $requisition)
     {
-        if (Auth::user()->isHrAdmin() &&
+
+        if (Auth::user()->is_hr_admin() &&
             $requisition->current_progress()->status == RequisitionStatus::ADMIN_PRIMARY_PENDING) {
             return true;
         }
-
     }
 
 
