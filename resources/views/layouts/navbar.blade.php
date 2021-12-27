@@ -55,7 +55,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link top-link cursor-pointer "
-                        >requisitions </a>
+                        >Requisitions </a>
                         <ul class="d-none">
                             <li>
                                 <a class="nav-link bottom-link  {{ (request()->is('panel/dashboard')) ? 'active' : '' }}"
