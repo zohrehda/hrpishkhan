@@ -124,7 +124,7 @@ class RequisitionController extends Controller
     private function update_determiners($requisition)
     {
         $requisition->rest_approval_progress()->delete();
-        $determiners = $this->get_ordered_determiners(request()->post('determiners', []));
+        $determiners = $this->get_ordered_determiners(request()->post('determiners', []),$requisition );
         return $this->set_requisition_progresses_determiners($requisition, $determiners);
     }
 
