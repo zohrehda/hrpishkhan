@@ -98,6 +98,16 @@
                                                 </div>
                                             @endcan
 
+                                            @can('add_viewer',$requisition)
+                                            <div>
+                                            <button type="button"
+                data-toggle="modal" data-target="#AddViewer"
+                id='import-requisition' class="btn  btn-sm btn-pink">Add Viewer
+        </button>
+                                            </div>
+      
+    @endcan
+
                                             @can('destroy', $requisition)
                                                 <div class="">
                                                     <a href="{{ route('requisitions.destroy', $requisition->id) }}"
@@ -167,7 +177,11 @@
                                 </div>
                             </div>
                         </div>
+
+                        @include('requisitions.footer',['requisition'=>$requisition])
+
                     </div>
+
                 @endforeach
             </div>
         </div>

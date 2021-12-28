@@ -21,7 +21,7 @@ class RequisitionViewersController extends Controller
 
             $requisition = Requisition::find($request->input('requisition_id'));
             $ids = $requisition->determiners->pluck('id')->merge($requisition->owner_id)->toArray();
-            $ee = array_intersect($request->input('users'), $ids);
+            $ee = array_intersect($request->input('users',[]), $ids);
             if (count($ee)) {
                 $validator->errors()->add('users', 'You can not select determiners and requester of the requisition as viewer');
             }
@@ -31,7 +31,7 @@ class RequisitionViewersController extends Controller
             return response()->json(['error'=>$validator->errors()->all()]);
         }
 
-        $viewers = $request->input('users');
+        $viewers = $request->input('users',[]);
         $requisition_id = $request->input('requisition_id');
 
         Requisition::find($requisition_id)->requisition_viewers()->delete();
@@ -43,7 +43,7 @@ class RequisitionViewersController extends Controller
             ];
             RequisitionViewer::create($credentials);
         }
-        return response()->json(['success'=>'Viewers added']);
+        return response()->json(['success'=>'Done']);
 
 
     }
