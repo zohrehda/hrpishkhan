@@ -20,6 +20,8 @@ class RequisitionController extends Controller
     {
         $pending = Auth::user()->pending_determiner_requisitions;
 
+        $rejected=Auth::user()->determiner_rejected_requisitions->merge(Auth::user()->rejected_user_requisitions);
+
         $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_requisitions)
             ->merge(Auth::user()->user_viewable_pending_requisitions);
 
@@ -48,7 +50,7 @@ class RequisitionController extends Controller
         $requisition_items = RequisitionItems::getItems();
 
         return view('panel.dashboard', compact('departments', 'levels_array', 'pending',
-            'in_progress', 'accepted', 'assignment', 'closed', 'requisition_items', 'holding'));
+            'in_progress', 'accepted', 'assignment', 'rejected', 'closed', 'requisition_items', 'holding'));
     }
 
     public function create(Request $request)

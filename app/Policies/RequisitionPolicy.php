@@ -26,7 +26,11 @@ class RequisitionPolicy
 
     public function accept(User $user, Requisition $requisition)
     {
-        if ($user->id == $requisition->determiner_id && $requisition->status==RequisitionStatus::PENDING_STATUS ) {
+        if ($user->id == $requisition->determiner_id && 
+        ($requisition->status==RequisitionStatus::PENDING_STATUS || 
+        $requisition->status==RequisitionStatus::REJECTED_STATUS
+        )
+        ) {
             return true;
         }
     }

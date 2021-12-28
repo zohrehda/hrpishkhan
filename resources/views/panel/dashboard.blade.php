@@ -23,5 +23,12 @@
     <hr>
     @include('requisitions.index', ['requisitions' => $holding, 'card_class' => 'bg-orange'])
 
+    <h2>rejected</h2>
+    <hr>
+    @include('requisitions.index', ['requisitions' => $rejected, 'card_class' => 'bg-secondary'])
+
+
+
+    
 
 @endsection

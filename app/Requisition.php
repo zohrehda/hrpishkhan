@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RequisitionSent;
 use App\Events\RequisitionAccepted;
+use App\Events\RequisitionRejected;
+
+
 use App\Classes\RequisitionItems;
 
 
@@ -255,7 +258,7 @@ class Requisition extends Model
     public function accept($comment = null)
     {
         $c = $this->current_approval_progress()->id;
-
+        $this->status = RequisitionStatus::PENDING_STATUS;
         $this->current_approval_progress()->update([
             'status' => RequisitionStatus::ACCEPTED_STATUS,
             'determiner_comment' => $comment
@@ -342,17 +345,23 @@ class Requisition extends Model
 
         $sender = User::find(Auth::id());
 
-
-        if ($this->approval_progress_status() == 0) {
-            $recipient = User::find($this->current_approval_progress()->determiner_id);
-
-            event(new RequisitionSent($sender, $recipient));
-
-        } elseif ($this->approval_progress_status() == 2) {
-            $recipient = $this->owner;
-            event(new RequisitionRejected($sender, $recipient));
+        if($this->approval_progresses()->first()->status==RequisitionStatus::REJECTED_STATUS  ){
+            $this->update([
+                'status'=>RequisitionStatus::REJECTED_STATUS ,
+            ]) ;
         }
 
+        if($this->status==RequisitionStatus::REJECTED_STATUS){
+            $recipient = $this->owner;
+            
+            event(new RequisitionRejected($sender, $recipient));
+
+        }else{
+            $recipient = User::find($this->current_approval_progress()->determiner_id);
+   event(new RequisitionSent($sender, $recipient));
+        }
+
+ 
         if ($this->current_progress()->status != RequisitionStatus::ADMIN_PRIMARY_PENDING)
             $this->current_progress()->delete();
 
@@ -410,11 +419,14 @@ class Requisition extends Model
 
     public function approval_progress_status()
     {
+        
         $status_array = $this->approval_progresses()->getResults()->map(function ($item) {
             return $item->getOriginal('status');
         })->toArray();
 
-        if (count(array_unique($status_array)) == 1) {
+
+
+        if (count(array_unique($status_array)) == RequisitionStatus::ACCEPTED_STATUS) {
             $status = array_unique($status_array) [0];
 
         } else {
@@ -471,6 +483,12 @@ class Requisition extends Model
     {
         return $this->belongsToMany(User::class, 'requisition_assignments', 'requisition_id', 'to')
             ->where('requisition_assignments.from', Auth::user()->id)->first();;
+    }
+
+    public function user_assigned()
+    {
+        return $this->belongsToMany(User::class, 'requisition_assignments', 'requisition_id', 'to')
+            ;
     }
 
     public function assignment_time()

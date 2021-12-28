@@ -64,13 +64,14 @@
                                         method="POST" class="inline w-100">
                                         <div class="  text-right card-btn-containers  ">
                                             @csrf
-                                            <div class="">
+                                            <div class="pb-1">
                                                 @can('edit', $requisition)
                                                     <a href="{{ route('requisitions.edit', $requisition->id) }}"
                                                        class="btn btn-sm btn-purple ">Details</a>
                                                 @endcan</div>
+
                                             @can('accept', $requisition)
-                                                <div class="">
+                                                <div class="pb-1">
                                                     <button
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::REJECTED_STATUS}}"
@@ -78,7 +79,7 @@
                                                     </button>
                                                 </div>
 
-                                                <div class="">
+                                                <div class="pb-1">
                                                     <button
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::ACCEPTED_STATUS}}"
@@ -88,7 +89,7 @@
 
                                             @endcan
                                             @can('close', $requisition)
-                                                <div class="">
+                                                <div class="pb-1">
                                                     <button
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::CLOSED_STATUS}}"
@@ -99,7 +100,7 @@
                                             @endcan
 
                                             @can('add_viewer',$requisition)
-                                            <div>
+                                            <div class="pb-1">
                                             <button type="button"
                 data-toggle="modal" data-target="#AddViewer"
                 id='import-requisition' class="btn  btn-sm btn-pink">Add Viewer
@@ -109,7 +110,7 @@
     @endcan
 
                                             @can('destroy', $requisition)
-                                                <div class="">
+                                                <div class="pb-1">
                                                     <a href="{{ route('requisitions.destroy', $requisition->id) }}"
                                                        class="btn btn-sm btn-red"
                                                        onclick="return confirm('Are you sure?')">delete</a>
@@ -118,23 +119,28 @@
                                             @endcan
 
                                             @can('hold', $requisition??null)
-                                                <button
+                                            <div class="pb-1">
+                                            <button
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::HOLDING_STATUS}}"
                                                     class="btn btn-sm btn-orange">Hold
                                                 </button>
+                                            </div>
+                                                
                                             @endcan
 
                                             @can('open', $requisition??null)
+                                            <div class="pb-1">
                                                 <button
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::OPEN_STATUS}}"
                                                     class="btn btn-sm btn-coral">Open
                                                 </button>
+                                            </div>
                                             @endcan
 
                                             @can('view', $requisition)
-                                                <div class="">
+                                                <div class="pb-1">
                                                     <button data-toggle="modal" type="button"
                                                             data-target="#preview-{{$requisition->id}}"
                                                             class="btn btn-sm btn-grey  ">view

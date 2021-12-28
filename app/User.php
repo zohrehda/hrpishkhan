@@ -88,6 +88,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Requisition::class, 'determiner_id')
             ->where('status', '=', RequisitionStatus::PENDING_STATUS);
     }
+    
 
     public function user_viewable_pending_requisitions()
     {
@@ -113,6 +114,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', RequisitionStatus::ACCEPTED_STATUS);
+    }
+
+    public function determiner_rejected_requisitions()
+    {
+        return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
+            ->where('requisitions.status', '=', RequisitionStatus::REJECTED_STATUS);
+    }
+    public function rejected_user_requisitions()
+    {
+        return $this->hasMany(Requisition::class, 'owner_id')
+            ->where('status', '=', RequisitionStatus::REJECTED_STATUS);
+
     }
 
     public function details()
