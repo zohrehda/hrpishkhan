@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => (config('app.users_provider')=='ldap')?'ldap':'web',
         'passwords' => 'users',
     ],
 
@@ -39,6 +39,11 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'eloquent',
+        ],
+
+        'ldap' => [
+            'driver' => 'session',
+            'provider' => 'ldap',
         ],
 
         'api' => [
@@ -66,7 +71,7 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'ldap' => [
             'driver' => 'ldap',
             'model' => App\User::class,
         ],
