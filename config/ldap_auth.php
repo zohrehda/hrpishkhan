@@ -236,7 +236,7 @@ return [
         |
         */
 
-        'sync' => env('LDAP_PASSWORD_SYNC', true),
+        'sync' => env('LDAP_PASSWORD_SYNC', false),
 
         /*
         |--------------------------------------------------------------------------
@@ -270,7 +270,7 @@ return [
     |
     */
 
-    'login_fallback' => env('LDAP_LOGIN_FALLBACK', true),
+    'login_fallback' => env('LDAP_LOGIN_FALLBACK', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -292,10 +292,10 @@ return [
 
     'sync_attributes' => [
 
-        'email' => 'userprincipalname',
+//        'email' => 'userprincipalname',
 
-        'name' => 'cn',
-        
+  //      'name' => 'cn',
+  App\Classes\Ldap::class,    
 
     ],
 
