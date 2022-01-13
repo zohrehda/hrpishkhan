@@ -41,10 +41,21 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    const ROLE_HR_ADMIN='hr_admin' ;
+    const ROLE_USER='user' ;
+
     /**
      * get Human Resources manager user
      *
      */
+
+     public static function hr_admin_setup(){
+
+        if(self::where('role',self::ROLE_HR_ADMIN)->first()){
+            return true ;
+        }
+        return false;
+     }
 
 
     public static function hr_manager()

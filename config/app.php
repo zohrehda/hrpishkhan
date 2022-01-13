@@ -127,6 +127,8 @@ return [
 
     'users_provider' => env('USERS_PROVIDER'),
 
+    'hr_admin_email'=>env('HR_ADMIN_EMAIL') ,
+
     'mongodb' => env('DB_MONGODB'),
 
     'draft_db' => env('DRAFT_DB_CONNECTION'),

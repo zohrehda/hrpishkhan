@@ -14,6 +14,7 @@ return [
     */
 
     'failed' => 'These credentials do not match our records.',
+    'hr_admin_setup'=>'This HR Admin email does not match application configurations',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

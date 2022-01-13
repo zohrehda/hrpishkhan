@@ -6,7 +6,18 @@
 
 @section('title', 'Login')
 
+
+
+
 @section('content')
+
+@if(!HrAdminSetup())
+<div class="container alert alert-warning  font-weight-bold show">
+     Welcome , to start using application, first Hr Admin login.
+    </div>
+    @endif 
+
+    
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-7">
@@ -22,9 +33,24 @@
                                        class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="email" type="email"
+
+                                @if(!HrAdminSetup())
+
+                                <input id="email" type="email"
+                                           class="form-control" name="fake"
+                disabled
+                                           value="{{config('app.hr_admin_email')}}" required autocomplete="email"  autofocus>
+                                           <input type="hidden" name="email"  value="{{config('app.hr_admin_email')}}"  >
+
+
+                                @else
+
+                                <input id="email" type="email"
                                            class="form-control" name="email"
+                
                                            value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                @endif
+
                                 </div>
                             </div>
 

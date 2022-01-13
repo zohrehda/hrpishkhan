@@ -1,7 +1,15 @@
 <?php
 
-Auth::routes(['verify' => false, 'register' => false, 'reset' => false]);
+// Auth::routes(['verify' => false, 'register' => false, 'reset' => false]);
+// // Authentication Routes...
+// $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
+// $this->post('login', 'Auth\LoginController@login');
+// $this->post('logout', 'Auth\LoginController@logout')->name('logout');
+
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@initialLogin');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
+
 
 Route::redirect('/', 'login');
 

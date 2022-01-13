@@ -62,5 +62,8 @@ function colle($array)
     }
     collect($array);
 }
+function HrAdminSetup(){
+    return App\User::hr_admin_setup() ;
+}
 
 ?>
