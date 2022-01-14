@@ -266,7 +266,7 @@ class Requisition extends Model
             'status' => RequisitionStatus::ACCEPTED_STATUS,
             'determiner_comment' => $comment
         ]);
-        $this->current_approval_progress()->save() ;
+       // $this->current_approval_progress()->save() ;
 
          if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
             $this->determiner_id = null;
@@ -335,14 +335,14 @@ class Requisition extends Model
             'status' => RequisitionStatus::REJECTED_STATUS,
             'determiner_comment' => $comment
         ]);
-        $this->current_approval_progress()->save() ;
+      //  $this->current_approval_progress()->save() ;
         //  if ($this->accepted_approval_progresses()->isNotEmpty()) {
         if ($this->accepted_approval_progresses()->count()) {
             // update requisition's last progress to pending
             $this->accepted_approval_progresses->last()->update([
                 'status' => RequisitionStatus::PENDING_STATUS,
             ]);
-            $this->accepted_approval_progresses->last()->save() ;
+           // $this->accepted_approval_progresses->last()->save() ;
         }
 
         // send the requisition to last determiner.
