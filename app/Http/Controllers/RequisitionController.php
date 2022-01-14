@@ -403,10 +403,11 @@ class RequisitionController extends Controller
 
     public function staff(Request $request)
     {
-      //  return $this->getLdapEloquentUsers($request) ;
+      
         $users_provider = config('app.users_provider');
 
         if ($users_provider == 'ldap') {
+            return $this->getLdapEloquentUsers($request) ;
             return $this->getLdapUsers($request);
 
         } elseif ($users_provider == 'mysql') {

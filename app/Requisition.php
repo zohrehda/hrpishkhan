@@ -342,6 +342,7 @@ class Requisition extends Model
             $this->accepted_approval_progresses->last()->update([
                 'status' => RequisitionStatus::PENDING_STATUS,
             ]);
+            $this->accepted_approval_progresses->last()->save() ;
         }
 
         // send the requisition to last determiner.
@@ -353,6 +354,7 @@ class Requisition extends Model
             $this->update([
                 'status'=>RequisitionStatus::REJECTED_STATUS ,
             ]) ;
+            $this->save() ;
         }
 
         if($this->status==RequisitionStatus::REJECTED_STATUS){
@@ -418,7 +420,7 @@ class Requisition extends Model
             'status' => RequisitionStatus::PENDING_STATUS,
             'determiner_comment' => null
         ]);
-        $this->approval_progresses()->save() ;
+      //  $this->approval_progresses()->save() ;
      }
 
 
@@ -522,6 +524,7 @@ class Requisition extends Model
         $this->update([
             'status' => RequisitionStatus::ASSIGN_STATUS
         ]);
+        $this->save() ;
         RequisitionAssignment::updateOrCreate([
             'requisition_id' => $this->id,
             'from' => Auth::user()->id,
