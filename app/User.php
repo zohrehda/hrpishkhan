@@ -141,9 +141,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function details()
     {
-        $this->email = 'maryam.delbari@snapp.cab';
+       // $this->email = 'maryam.delbari@snapp.cab';
         // return StaffInfo::get() ;
-        return StaffInfo::get()->where('email', $this->email)->first();
+        return StaffInfo::get()->where('email', $this->email)->first()??[
+            'name'=>$this->name ,
+            'email'=>$this->email 
+        ];
 
     }
 
@@ -259,9 +262,11 @@ class User extends Authenticatable implements MustVerifyEmail
             $ldap = new Ldap();
             $ldap->ImportLdapToModel($value);
 
-            return self::where('email', $value)->first();
+            
         }
-        return self::find($value);
+        return self::where('email', $value)->first();
+        
+       // return self::find($value);
     }
 
     public function drafts()
@@ -274,5 +279,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id');
 
     }
+
+
+
+
+
+
+
+
+
+
 
 }

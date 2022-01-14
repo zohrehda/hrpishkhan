@@ -352,17 +352,9 @@ class RequisitionController extends Controller
         $model->save();
     }
 
-    public function getLdapUsers($userPrincipalName)
+    public function getLdapUsers(Request $request)
     {
 
-        // $users = Adldap::search()->users()->get();
-        $user = Adldap::search()->users()->findBy('userPrincipalName', $userPrincipalName);
-
-        return $user;
-    }
-
-    public function ldapUsers(Request $request)
-    {
         $term = $request->input('term');
         $users = Adldap::search()->where('userPrincipalName', '!=', Auth::user()->email)->whereStartsWith('userPrincipalName', $term)->get();
         $users = $users->map(function ($item, $key) {
@@ -379,12 +371,43 @@ class RequisitionController extends Controller
         return json_encode($result);
     }
 
+    public function ldapUsers(Request $request)
+    {
+        $term = $request->input('term');
+        $users = Adldap::search()->where('userPrincipalName', '!=', Auth::user()->email)->whereStartsWith('userPrincipalName', $term)->get()
+       ->map(function ($item, $key) {
+            return $item->userPrincipalName [0];
+        })->toArray();
+
+        return $users ;
+
+    }
+    public function formatUsers($users){
+
+        $result['results'] = [];
+        foreach ($users as $k => $v) {
+            $record = [];
+            $record['id'] = $v;
+            $record['text'] = $v;
+            $result['results'][] = $record;
+        }
+        return json_encode($result);
+    }
+
+    public function getLdapEloquentUsers(Request $request){
+
+        $users=array_merge($this->ldapUsers($request), $this->eloquentUsers($request) ) ;
+        return $this->formatUsers($users) ;
+     //   strtolower
+    }
+
     public function staff(Request $request)
     {
+      //  return $this->getLdapEloquentUsers($request) ;
         $users_provider = config('app.users_provider');
 
         if ($users_provider == 'ldap') {
-            return $this->ldapUsers($request);
+            return $this->getLdapUsers($request);
 
         } elseif ($users_provider == 'mysql') {
 
@@ -392,6 +415,15 @@ class RequisitionController extends Controller
         }
     }
 
+    public function eloquentUsers(Request $request)
+    {
+        $term = $request->input('term');
+
+        $users = User::where('email', 'like', "%$term%")->where('email', '!=', Auth::user()->email)->pluck('email')->toArray();
+
+        return $users ;
+
+    }
     public function mysqlUsers(Request $request)
     {
         $term = $request->input('term');
@@ -401,7 +433,7 @@ class RequisitionController extends Controller
         $result['results'] = [];
         foreach ($users as $k => $v) {
             $record = [];
-            $record['id'] = $v->id;
+            $record['id'] = $v->email;
             $record['text'] = $v->email;
             $result['results'][] = $record;
         }

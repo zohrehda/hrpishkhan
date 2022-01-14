@@ -13,8 +13,11 @@ class Ldap
     public function ImportLdapToModel($userPrincipalName)
     {
         $user = Adldap::search()->users()->findBy('userPrincipalName', $userPrincipalName);
+        if(!$user){
+            return ;
+        }
         $credentials = [
-            'email' => $user->getEmail(),
+            'email' => strtolower($user->getEmail()),
         ];
 
 // Create the importer:
@@ -30,11 +33,17 @@ class Ldap
 
     public function handle(LdapUser $ldapUser, EloquentUser $eloquentUser)
     {
-        $eloquentUser->name = $ldapUser->getCommonName();
-        $eloquentUser->email = $ldapUser->getEmail();
-        $eloquentUser->role = (!HrAdminSetup()
-            &&  $ldapUser->getEmail()==config('app.hr_admin_email')
-         )?(EloquentUser::ROLE_HR_ADMIN):(EloquentUser::ROLE_USER);
+        $ldap_email=strtolower($ldapUser->getEmail()) ;
+        $user=EloquentUser::where('email',$ldap_email)->first() ;
+
+        if(!$user){
+            $eloquentUser->name = $ldapUser->getCommonName();
+            $eloquentUser->email = $ldap_email;
+            $eloquentUser->role = (!HrAdminSetup()
+                &&  $ldap_email==config('app.hr_admin_email')
+             )?(EloquentUser::ROLE_HR_ADMIN):(EloquentUser::ROLE_USER);
+        }
+      
 
     }
 }

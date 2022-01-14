@@ -22,7 +22,9 @@ class RequisitionViewersController extends Controller
             $requisition = Requisition::find($request->input('requisition_id'));
             $ids = $requisition->determiners->pluck('id')->merge($requisition->owner_id)
             ->merge($requisition->user_assigned->pluck('id'))->toArray();
+            
             $ee = array_intersect($request->input('users',[]), $ids);
+
             if (count($ee)) {
                 $validator->errors()->add('users', 'You can not select determiners and requester of the requisition as viewer');
             }

@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
             'name' => 'user1',
             'email' => 'user1@snapp.cab',
             'password' => app('hash')->make('password'),
-            'role'=>'hr_admin',
+            'role'=>(config('app.users_provider')=='mysql')?'hr_admin':'user',
             'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
