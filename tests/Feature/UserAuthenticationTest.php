@@ -2,62 +2,40 @@
 
 namespace Tests\Feature;
 
-use App\User;
-use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
+use App\User ;
 
 class UserAuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
-
-/*    public function test_an_user_can_register()
+   // use RefreshDatabase ;
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+    use RefreshDatabase ;
+    public function setUp(): void
     {
-        $response = $this->post('/register', [
-            'name' => 'Afshin',
-            'email' => 'test@gmail.com',
-            'password' => 'password',
-            'password_confirmation' => 'password'
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertSessionHasNoErrors();
-        $this->assertCount(1, User::get());
-    }*/
-
+        parent::setUp();
+        
+        $this->seed('UsersTableSeeder');
+    }
+    
     public function test_an_user_can_login()
     {
-        $this->withoutExceptionHandling();
-        $user = factory(User::class)->create();
-
-        $response = $this->post('login', [
-            'email' => $user->email,
-            'password' => 'password' ,
-            'role'=>1 ,
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertSessionHasNoErrors();
+    
+        $user=factory(User::class)->create() ;
+        $this->post('/login',[
+             'email'=>$user->email ,
+             'password'=>'password'
+         ]);
+    
+         $this->assertTrue(auth()->check()) ;
+         $this->assertTrue($user->is(auth()->user())) ;
+  //      $this->assertTrue(true) ;
+      
     }
 
-    public function test_an_user_can_reset_password()
-    {
-        $user = factory(User::class)->create();
 
-        $request = $this->post('/password/reset', [
-            'token' => Password::broker()->createToken($user),
-            'email' => $user->email,
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-        ]);
-
-        $user->refresh();
-
-        $request->assertSessionHasNoErrors();
-        $this->assertTrue(Hash::check('newpassword', $user->password));
-    }
 }
