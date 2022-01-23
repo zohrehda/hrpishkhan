@@ -25,7 +25,7 @@ $(document).ready(function () {
     }
 
     var draftForm = $('#form-draft'),
-        viewerForm = $('#form-viewer'),
+        viewerForm = $('.form-viewer'),
         saveDraft = draftForm.find('#save-draft-requisition'),
         draftUpdate = draftForm.find('input[name="draft_update"]'),
         draftDelete = $("#draft_delete"),
@@ -182,19 +182,22 @@ $(document).ready(function () {
     viewerForm.on('submit', function (event) {
         event.preventDefault();
 
+        formData=$(this) ;
+        modal=$(this).parents('.AddViewer')
+
         $.ajax({
             url: '/panel/requisitions/viewers',
             type: 'post',
             dataType: 'json',
-            data: $('#form-viewer').serialize(),
+            data: formData.serialize(),
             success: function (response) {
                 if($.isEmptyObject(response.error)){
                     alert(response.success);
-                    $('#AddViewer').modal('hide');
+                    modal.modal('hide');
                 }else{
                  //   console.log(response.error)
                     alert(response.error);
-                    $('#AddViewer').modal('hide');
+                    modal.modal('hide');
                 }
             },
 

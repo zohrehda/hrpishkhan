@@ -139,15 +139,20 @@ class Requisition extends Model
 
     }
 
+    
+
     public function getLabelAttribute()
     {
         $label = '';
+
+
         if (Auth::user()->user_viewable_requisitions()->get()->where('id', $this->id)->count()) {
-            $label = 'only view';
+            $label = 'viewable';
         }
         if (Auth::user()->user_assigned_to_requisitions()->get()->where('id', $this->id)->count()) {
             $label = 'assignment';
         }
+        
 
         return $label;
     }

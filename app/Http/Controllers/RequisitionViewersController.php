@@ -14,18 +14,24 @@ class RequisitionViewersController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->input('requisition_id')) ;
         $validator = Validator::make($request->all(), [
             'users' => 'array',
         ]);
         $validator->after(function ($validator) use ($request) {
 
             $requisition = Requisition::find($request->input('requisition_id'));
-            $ids = $requisition->determiners->pluck('id')->merge($requisition->owner_id)
-            ->merge($requisition->user_assigned->pluck('id'))->toArray();
+            $forbidden_users = $requisition->determiners->pluck('email')->merge($requisition->owner->email)
+            ->merge($requisition->user_assigned->pluck('email'))
+            ->merge($requisition->requisition_viewers->pluck('email'))
+            ->toArray();
             
-            $ee = array_intersect($request->input('users',[]), $ids);
+           
+            $has_forbidden_user = array_intersect($request->input('users',[]), $forbidden_users);
+           
 
-            if (count($ee)) {
+            if (count($has_forbidden_user)) {
+
                 $validator->errors()->add('users', 'You can not select determiners and requester of the requisition as viewer');
             }
 
@@ -35,11 +41,13 @@ class RequisitionViewersController extends Controller
         }
 
         $viewers = $request->input('users',[]);
+       // dd($viewers) ;
         $requisition_id = $request->input('requisition_id');
 
         Requisition::find($requisition_id)->requisition_viewers()->delete();
 
         foreach ($viewers as $viewer) {
+           // echo $viewer ;
             $credentials = [
                 'user_id' => User::by_provider($viewer)->id,
                 'requisition_id' => $requisition_id

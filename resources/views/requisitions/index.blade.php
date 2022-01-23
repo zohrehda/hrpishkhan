@@ -102,7 +102,7 @@
                                             @can('add_viewer',$requisition)
                                             <div class="pb-1">
                                             <button type="button"
-                data-toggle="modal" data-target="#AddViewerr-{{$requisition->id}}"
+                data-toggle="modal" data-target="#AddViewer-{{$requisition->id}}"
                 id='import-requisition' class="btn  btn-sm btn-pink">Add Viewer
         </button>
                                             </div>
@@ -158,70 +158,11 @@
                             </div>
                         </div>
 
-                        <!-- Modal -->
-                        <div class="modal  fade" id="preview-{{$requisition->id}}" tabindex="-1"
-                             aria-labelledby="preview"
-                             aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-scrollable  modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">preview</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        @include('requisitions.partials.preview',['requisition_items'=>$requisition_items ,'requisition'=>$requisition])
-
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="AddViewerr-{{$requisition->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="form-viewer">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-
-                                <label>select viewer</label>
-                                <select class="form-space form-control approver" name="users[]" multiple>
-
-                                    @foreach($requisition->viewers??[] as $viewer)
-                                        <option value="{{$viewer->id}}" selected>{{$viewer->name}}</option>
-                                    @endforeach
-
-                                </select>
-                                <input type="hidden" name="requisition_id" value="{{$requisition->id??null}}">
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" id="save-draft-requisition" class="btn btn-primary">Save</button>
-                </div>
-            </div>
-
-        </form>
-    </div>
-</div>
-
-
-                        @include('requisitions.footer',['requisition'=>$requisition])
-
+                      
+                        @include('requisitions.modals.preview',['requisition'=>$requisition])
+                        @include('requisitions.modals.add_viewer',['requisition'=>$requisition])
+  
+ 
                     </div>
 
                 @endforeach
