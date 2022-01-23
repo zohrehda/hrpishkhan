@@ -73,6 +73,7 @@
                                             @can('accept', $requisition)
                                                 <div class="pb-1">
                                                     <button
+                                                    type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::REJECTED_STATUS}}"
                                                         class="btn btn-sm btn-yellow">Reject
@@ -81,6 +82,7 @@
 
                                                 <div class="pb-1">
                                                     <button
+                                                    type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::ACCEPTED_STATUS}}"
                                                         class="btn btn-sm btn-green">Accept
@@ -91,6 +93,7 @@
                                             @can('close', $requisition)
                                                 <div class="pb-1">
                                                     <button
+                                                    type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::CLOSED_STATUS}}"
                                                         onclick="return confirm('Are you sure to close the requisition?')"
@@ -121,6 +124,7 @@
                                             @can('hold', $requisition??null)
                                             <div class="pb-1">
                                             <button
+                                            type="submit"
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::HOLDING_STATUS}}"
                                                     class="btn btn-sm btn-orange">Hold
@@ -132,6 +136,7 @@
                                             @can('open', $requisition??null)
                                             <div class="pb-1">
                                                 <button
+                                                type="submit"
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::OPEN_STATUS}}"
                                                     class="btn btn-sm btn-coral">Open
@@ -143,7 +148,7 @@
                                                 <div class="pb-1">
                                                     <button data-toggle="modal" type="button"
                                                             data-target="#preview-{{$requisition->id}}"
-                                                            class="btn btn-sm btn-grey  ">view
+                                                            class="btn btn-sm btn-grey  ">View
                                                     </button>
                                                 </div>
                                             @endcan

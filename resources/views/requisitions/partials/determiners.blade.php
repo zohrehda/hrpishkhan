@@ -15,7 +15,7 @@ Please select the ones who need to approve your request in order.
                            @cannot('update_determiners',$requisition) disabled @endcannot
 
                     >
-                        <option selected value="{{$determiner->id}}">{{$determiner->email}}</option>
+                        <option selected value="{{$determiner->email}}">{{$determiner->email}}</option>
                     </select>
 
                     @can('update_determiners',$requisition)

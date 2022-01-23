@@ -83,6 +83,8 @@ $(document).ready(function () {
 
     $('#department').on('change', function (event) {
 
+        console.log('departmant change')
+
         department = $('#department').val();
         departments_level = getLevels['departments_level'][department];
         levels = getLevels['levels'];
@@ -276,7 +278,7 @@ $(document).ready(function () {
 //                        $("input[name='shift']").val('gg');
                     }
 
-
+            
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
                     //                  $("#form").find('input[type="hidden"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
@@ -285,16 +287,23 @@ $(document).ready(function () {
                     $("#form").find('input[type="radio"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
                     $("#form").find('input[type="checkbox"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
                     isNewInput.trigger('change');
-                    departmentInput.trigger('change');
+                  
 
                     if (index == 'department') {
-                        console.log(draft.level);
-                        console.log($("#form").find('select[name="level"]').val());
+                        departmentInput.trigger('change');  
                         $("#form").find('select[name="level"]').val(draft.level);
                         $("#form").find('select[name="vertical"]').val(draft.vertical);
-                        console.log($("#form").find('select[name="level"]').val());
+                        
+
+                        
+                      //  console.log($("#form").find('select[name="level"]').val());
                     }
-                });
+                   
+                    console.log($("#form").find('select[name="level"]').val());
+
+                })
+
+                ;
 
                 $(shiftCheckbox).trigger('change');
 
@@ -309,7 +318,10 @@ $(document).ready(function () {
                     $('#form-input-replacement').removeClass('d-none')
                 } else {
                     $('#form-input-replacement').addClass('d-none')
-                }
+                
+            }
+           
+
             }
 
         });
@@ -450,6 +462,12 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).prop('disabled', true);
         $('#form').submit();
+    });
+
+    $("button[type='submit']").click(function (e) {
+        e.preventDefault();
+        $(this).prop('disabled', true);
+        $(this).parents('form').submit();
     });
 
 });

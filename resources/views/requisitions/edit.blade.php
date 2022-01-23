@@ -16,6 +16,11 @@
             </div>
         </div>
     </div>
-    @include('requisitions.footer',['requisition'=>$requisition])
+
+    @include('requisitions.templates')
+    @include('requisitions.modals.draft')
+    @include('requisitions.modals.terms')
+    @include('requisitions.modals.add_viewer')
+
 
 @stop

@@ -134,12 +134,16 @@
 
     @can('add_viewer',$requisition??null)
         <button type="button"
-                data-toggle="modal" data-target="#AddViewer"
+                data-toggle="modal"
+                @if($requisition)
+                data-target="#AddViewer-{{$requisition->id}}"
+               @endif
                 id='import-requisition' class="btn btn-pink">Add Viewer
         </button>
     @endcan
     @can('hold', $requisition??null)
         <button
+        type="submit"
             name="progress_result"
             value="{{RequisitionStatus::HOLDING_STATUS}}"
             class="btn btn-orange">Hold
@@ -147,6 +151,7 @@
     @endcan
     @can('open', $requisition??null)
         <button
+        type="submit"
             name="progress_result"
             value="{{RequisitionStatus::OPEN_STATUS}}"
             class="btn btn-orange">Open
@@ -156,6 +161,7 @@
     @can('close', $requisition??null)
         <button
             name="progress_result"
+            type="submit"
             value="{{RequisitionStatus::CLOSED_STATUS}}"
             onclick="return confirm('Are you sure to close the requisition?')"
             class="btn btn-sm btn-black">Close

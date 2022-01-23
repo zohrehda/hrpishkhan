@@ -13,8 +13,10 @@
             </div>
         </div>
     </div>
-
-    @include('requisitions.footer',['requisition'=>null])
+    
+    @include('requisitions.templates')
+    @include('requisitions.modals.draft')
+    @include('requisitions.modals.terms')
 
 
     @if(config('app.required_terms'))
@@ -28,6 +30,3 @@
     @endif
 
 @stop
-
-
-
