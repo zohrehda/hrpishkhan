@@ -125,6 +125,7 @@
                                             <div class="pb-1">
                                             <button
                                             type="submit"
+                                            
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::HOLDING_STATUS}}"
                                                     class="btn btn-sm btn-orange">Hold

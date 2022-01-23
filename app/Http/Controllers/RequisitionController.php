@@ -301,6 +301,7 @@ class RequisitionController extends Controller
 
     public function determine(Request $request, Requisition $requisition)
     {
+     //   dd($request->all()) ;
         if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
             $requisition->accept($request->post('determiner_comment'));
             

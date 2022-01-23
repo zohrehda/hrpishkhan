@@ -465,9 +465,18 @@ $(document).ready(function () {
     });
 
     $("button[type='submit']").click(function (e) {
-        e.preventDefault();
-        $(this).prop('disabled', true);
-        $(this).parents('form').submit();
+ //        e.preventDefault();
+     //  $(this).prop('disabled', true);
+     
+     $(this).css({
+         "opacity":"0.5" ,
+         "cursor":"not-allowed" ,
+         "pointer-events":"none"
+
+        
+     })
+     //$(this).parents('form').submit() ;
+
     });
 
 });

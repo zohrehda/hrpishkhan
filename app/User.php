@@ -143,6 +143,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
        // $this->email = 'maryam.delbari@snapp.cab';
         // return StaffInfo::get() ;
+        // return [
+        //     'name'=>'ff' ,
+        //     'email'=>'ff' ,
+        // ] ;
         return StaffInfo::get()->where('email', $this->email)->first()??[
             'name'=>$this->name ,
             'email'=>$this->email 
