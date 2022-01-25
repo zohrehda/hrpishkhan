@@ -4,6 +4,7 @@ namespace App;
 
 use App\Classes\Ldap;
 use App\Extract\StaffInfo;
+use Exception;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -147,10 +148,19 @@ class User extends Authenticatable implements MustVerifyEmail
         //     'name'=>'ff' ,
         //     'email'=>'ff' ,
         // ] ;
-        return StaffInfo::get()->where('email', $this->email)->first()??[
-            'name'=>$this->name ,
-            'email'=>$this->email 
-        ];
+
+        try{
+            return StaffInfo::get()->where('email', $this->email)->first()??[
+                'name'=>$this->name ,
+                'email'=>$this->email 
+            ];
+        }catch(Exception $e){
+          return  [
+                'name'=>$this->name ,
+                'email'=>$this->email 
+            ];
+        }
+       
 
     }
 
