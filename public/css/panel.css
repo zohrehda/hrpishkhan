@@ -241,3 +241,28 @@ nav {
     right: -57px;
 }
 
+.terms{
+    text-align: justify;
+    font-size: 18px;
+}
+
+.terms > ul{
+    margin: 0;
+    padding: 0;    
+}
+.terms > ul > ul{
+    padding: 0 2px;    
+}
+
+
+.terms ul ol{
+    margin: 0;
+    padding: 5px 0;
+
+}
+
+
+
+
+
+
