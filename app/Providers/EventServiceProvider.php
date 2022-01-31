@@ -5,9 +5,12 @@ namespace App\Providers;
 use App\Events\RequisitionAccepted;
 use App\Events\RequisitionRejected;
 use App\Events\RequisitionSent;
+use App\Events\RequisitionSubmitted;
 use App\Listeners\SendAcceptedEmail;
 use App\Listeners\SendNewEmail;
 use App\Listeners\SendRejectedEmail;
+use App\Listeners\SendSubmittedEmail;
+
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -30,6 +33,10 @@ class EventServiceProvider extends ServiceProvider
 
         RequisitionRejected::class => [
             SendRejectedEmail::class,
+        ],
+
+        RequisitionSubmitted::class => [
+            SendSubmittedEmail::class,
         ],
 
 

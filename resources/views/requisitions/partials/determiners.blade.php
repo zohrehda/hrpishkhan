@@ -32,7 +32,7 @@ Please select the ones who need to approve your request in order.
         <br>
         <div class="row">
             <div class="col-12">
-                <button type="button" id="add_receiver" class="btn btn-sm btn-success">Add
+                <button type="button" id="add_receiver" class="btn btn-sm btn-plus btn-success">+
                 </button>
             </div>
         </div>
@@ -43,7 +43,7 @@ Please select the ones who need to approve your request in order.
     <br>
     <div class="row">
         <div class="col-12">
-            <button type="button" id="add_receiver" class="btn btn-sm btn-success">Add
+            <button type="button" id="add_receiver" class="btn btn-sm btn-plus btn-success">+
             </button>
         </div>
     </div>

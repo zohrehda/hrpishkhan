@@ -86,8 +86,8 @@ class StaffHierarchy
     public static $departments_levels = [
         'tech' => [
             'trainee', 'junior', 'mid', 'senior', 'principal', 'engineering_manager'
-            , 'senior_engineering_manager', 'associate_director', 'director', 'senior_director'
-            , 'senior_director', 'cto'
+            , 'senior_engineering_manager', 'associate_director', 'director', 
+            'senior_director'  
         ],
 
         'product' => [
@@ -100,9 +100,10 @@ class StaffHierarchy
             'lead', 'manager'
         ],
         'ect' => [
-            'trainee', 'junior', 'specialist', 'mid', 'senior', 'lead', 'senior_manager'
-            , 'director', 'senior_director', 'principal'
-            , 'cxo'
+   'trainee',   'specialist' ,'senior_specialist' ,
+   'lead' , 'manager' , 'senior_manager' ,'director' ,
+
+    
         ]
     ];
 

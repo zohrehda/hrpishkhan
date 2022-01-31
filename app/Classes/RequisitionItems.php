@@ -122,9 +122,10 @@ class RequisitionItems
                 'type' => 'multiple',
                 'grid_col' => 12,
                 'data' => [
-                    'options' => [1 => 'Morning (Women)', 2 => 'Evening & Night (Men)', 3 => 'Holiday (Women)', 4 => 'Holiday (Men)',
-                        5 => 'Night', 6 => 'Day'
-                    ],
+                    'options' => 
+                    [1 => 'Morning', 2 => 'Evening & Night', 3 => 'Holiday',
+                    4 => 'Day- 12 Hours',  5 => 'Night- 12 Hours'
+                    ]
                 ],
                 //  'label' => 'Shift (Only for Call Center Positions)',
                 'required' => false,
@@ -164,6 +165,7 @@ class RequisitionItems
             ],
             'degree' => [
                 'type' => 'select',
+                'label'=>'Degree (Minimum)' ,
                 'required' => true,
                 'grid_col' => 6,
                 'validate_rules' => ['required'],
@@ -175,7 +177,8 @@ class RequisitionItems
                 'required' => true,
                 'label' => 'Experience (Year)',
                 'validate_rules' => ['required'],
-                'options' => [1 => 'Fresh Graduate', 2 => '1', 3 => '1-2', 4 => '2-4', 5 => '4-6', 6 => '6-10', 7 => 'More than 10']
+                'options' => 
+                [1 => 'Fresh Graduate', 2 => '1-2', 3 => '2-4', 4 => '4-6', 5 => '6-10', 6 => 'More than 10']
             ],
             'mission' => [
                 'type' => 'textarea',
