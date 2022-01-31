@@ -32,7 +32,7 @@ class CreateRequisitionsTable extends Migration
             $table->string('replacement')->nullable();
             $table->string('field_of_study');
             $table->string('degree');
-            $table->integer('experience_year');
+            $table->string('experience_year');
             $table->text('mission');
             $table->json('competency');
             $table->text('outcome');
