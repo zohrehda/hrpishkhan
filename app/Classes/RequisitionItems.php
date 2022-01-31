@@ -123,8 +123,11 @@ class RequisitionItems
                 'grid_col' => 12,
                 'data' => [
                     'options' => 
-                    [1 => 'Morning', 2 => 'Evening & Night', 3 => 'Holiday',
-                    4 => 'Day- 12 Hours',  5 => 'Night- 12 Hours'
+                    ['morning' => 'Morning',
+                     'evening_night' => 'Evening & Night',
+                      'holiday' => 'Holiday',
+                    'day_12h' => 'Day- 12 Hours',
+                      'night_12h' => 'Night- 12 Hours'
                     ]
                 ],
                 //  'label' => 'Shift (Only for Call Center Positions)',
@@ -178,7 +181,12 @@ class RequisitionItems
                 'label' => 'Experience (Year)',
                 'validate_rules' => ['required'],
                 'options' => 
-                [1 => 'Fresh Graduate', 2 => '1-2', 3 => '2-4', 4 => '4-6', 5 => '6-10', 6 => 'More than 10']
+                ['fresh_graduate' => 'Fresh Graduate', 
+                '1-2' => '1-2',
+                 '2-4' => '2-4',
+                  '4-6' => '4-6', 
+                  '6-10' => '6-10', 
+                  'more-10' => 'More than 10']
             ],
             'mission' => [
                 'type' => 'textarea',
