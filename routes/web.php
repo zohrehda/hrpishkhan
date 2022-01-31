@@ -6,6 +6,8 @@
 // $this->post('login', 'Auth\LoginController@login');
 // $this->post('logout', 'Auth\LoginController@logout')->name('logout');
 
+use App\Requisition;
+
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@initialLogin');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
@@ -67,3 +69,12 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
 
 });
 
+
+Route::group([
+    'prefix'=>'develop'] ,function(){
+        Route::get('requisitions', function(){
+            dd(Requisition::all()) ;
+        });
+
+    }
+) ;
