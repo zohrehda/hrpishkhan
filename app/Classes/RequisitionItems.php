@@ -74,6 +74,7 @@ class RequisitionItems
             ],
             'vertical' => [
                 'type' => 'select',
+                'label'=> 'Vertical (Only for Tech & Product)' ,
                 'grid_col' => 6,
                 'options' => [
                     'back_office' => 'Back Office',

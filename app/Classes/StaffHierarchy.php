@@ -93,7 +93,7 @@ class StaffHierarchy
         'product' => [
             'trainee', 'associate', 'mid', 'senior', 'principal',
             'associate_director', 'director', 'senior_director'
-            , 'cpo'
+           
         ],
         'product_design' => [
             'trainee', 'junior', 'mid', 'senior', 'principal', 'senior_principal',
