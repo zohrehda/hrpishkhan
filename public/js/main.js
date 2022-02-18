@@ -184,8 +184,8 @@ $(document).ready(function () {
     viewerForm.on('submit', function (event) {
         event.preventDefault();
 
-        formData=$(this) ;
-        modal=$(this).parents('.AddViewer')
+        formData = $(this);
+        modal = $(this).parents('.AddViewer')
 
         $.ajax({
             url: '/panel/requisitions/viewers',
@@ -193,16 +193,15 @@ $(document).ready(function () {
             dataType: 'json',
             data: formData.serialize(),
             success: function (response) {
-                if($.isEmptyObject(response.error)){
+                if ($.isEmptyObject(response.error)) {
                     alert(response.success);
                     modal.modal('hide');
-                }else{
-                 //   console.log(response.error)
+                } else {
+                    //   console.log(response.error)
                     alert(response.error);
                     modal.modal('hide');
                 }
             },
-
 
 
         });
@@ -278,7 +277,7 @@ $(document).ready(function () {
 //                        $("input[name='shift']").val('gg');
                     }
 
-            
+
                     $("#form").find('input[type="text"][name="' + index + '"]').val(item);
                     //                  $("#form").find('input[type="hidden"][name="' + index + '"]').val(item);
                     $("#form").find('input[type="number"][name="' + index + '"]').val(item);
@@ -287,18 +286,17 @@ $(document).ready(function () {
                     $("#form").find('input[type="radio"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
                     $("#form").find('input[type="checkbox"][name="' + index + '"][value="' + item + '"]').prop('checked', true);
                     isNewInput.trigger('change');
-                  
+
 
                     if (index == 'department') {
-                        departmentInput.trigger('change');  
+                        departmentInput.trigger('change');
                         $("#form").find('select[name="level"]').val(draft.level);
                         $("#form").find('select[name="vertical"]').val(draft.vertical);
-                        
 
-                        
-                      //  console.log($("#form").find('select[name="level"]').val());
+
+                        //  console.log($("#form").find('select[name="level"]').val());
                     }
-                   
+
                     console.log($("#form").find('select[name="level"]').val());
 
                 })
@@ -318,9 +316,9 @@ $(document).ready(function () {
                     $('#form-input-replacement').removeClass('d-none')
                 } else {
                     $('#form-input-replacement').addClass('d-none')
-                
-            }
-           
+
+                }
+
 
             }
 
@@ -358,6 +356,7 @@ $(document).ready(function () {
 
     /***** select user form *****/
     function insertUsersForm(area, select_name, label, option_label) {
+
         selected_id = $(area).attr('data-selected-id');
         selected_email = $(area).attr('data-selected-email');
         var i = 1;
@@ -405,8 +404,62 @@ $(document).ready(function () {
 
     }
 
-    insertUsersForm('.select-user', 'user_id', null, 'select user');
+    //   insertUsersForm('.select-user', 'user_id', null, 'select user');
 
+    $('.select-user').each(function () {
+
+        option_label = 'select user';
+        select_name = 'user_id';
+        label = null;
+
+        selected_id = $(this).attr('data-selected-id');
+        selected_email = $(this).attr('data-selected-email');
+
+
+        var i = 1;
+
+        label = '';
+        if (label) {
+            label = ' <label for="determiners" class="optional">' + label + '</label>';
+        }
+        option_inner = 'Empty';
+        if (option_label) {
+            option_inner = option_label
+        }
+
+        selected_option = ' <option selected disabled>' + option_inner + '</option>';
+
+        if (selected_id) {
+            selected_option = '  <option selected value="' + selected_email + '"  >' + selected_email + '</option>';
+        }
+
+        $(this).append(' <div class="">' +
+            label +
+            '<select id="" name="' + select_name + '" required="true" class="form-space select22 custom-select select2"  ></select>'
+            + '</div>');
+        $(this).find('select[name="' + select_name + '" ]').append(selected_option);
+        i++;
+        // $('.select22').prop('required', true);
+        $('.select22').select2({
+            ajax: {
+                url: "/panel/requisitions/staff",
+                dataType: 'json',
+                templateResult: function (item) {
+
+                    return format(item, false);
+                },
+                matcher: matchStart,
+                /*  delay: 250,
+                  placeholder: 'Search in users',
+                  minimumInputLength: 1,*/
+
+
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+
+
+    })
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
         var radio_val = isNewInput.filter(':checked').val();
@@ -465,17 +518,17 @@ $(document).ready(function () {
     });
 
     $("button[type='submit']").click(function (e) {
- //        e.preventDefault();
-     //  $(this).prop('disabled', true);
-     
-     $(this).css({
-         "opacity":"0.5" ,
-         "cursor":"not-allowed" ,
-         "pointer-events":"none"
+        //        e.preventDefault();
+        //  $(this).prop('disabled', true);
 
-        
-     })
-     //$(this).parents('form').submit() ;
+        $(this).css({
+            "opacity": "0.5",
+            "cursor": "not-allowed",
+            "pointer-events": "none"
+
+
+        })
+        //$(this).parents('form').submit() ;
 
     });
 

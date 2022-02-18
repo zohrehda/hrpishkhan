@@ -301,10 +301,10 @@ class RequisitionController extends Controller
 
     public function determine(Request $request, Requisition $requisition)
     {
-     //   dd($request->all()) ;
+        // dd($request->all()) ;
         if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
             $requisition->accept($request->post('determiner_comment'));
-            
+
         } elseif ($request->post('progress_result') == RequisitionStatus::ASSIGN_STATUS) {
 
             $request->validate([
@@ -404,7 +404,7 @@ class RequisitionController extends Controller
 
     public function staff(Request $request)
     {
-      
+
         $users_provider = config('app.users_provider');
 
         if ($users_provider == 'ldap') {

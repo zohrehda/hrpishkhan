@@ -129,17 +129,16 @@ class Requisition extends Model
 
     public function setDeterminerIdAttribute($value)
     {
-       // $determiner_id = $value;
-     // $user=  User::by_provider($value) ;
-      //  if (config('app.users_provider') == 'ldap') {
-       //     $determiner_id = User::where('email', $value)->first()->id;
-       // }
-     //  $user=  User::by_provider($value) ;
+        // $determiner_id = $value;
+        // $user=  User::by_provider($value) ;
+        //  if (config('app.users_provider') == 'ldap') {
+        //     $determiner_id = User::where('email', $value)->first()->id;
+        // }
+        //  $user=  User::by_provider($value) ;
         $this->attributes['determiner_id'] = $value;
 
     }
 
-    
 
     public function getLabelAttribute()
     {
@@ -152,7 +151,7 @@ class Requisition extends Model
         if (Auth::user()->user_assigned_to_requisitions()->get()->where('id', $this->id)->count()) {
             $label = 'assignment';
         }
-        
+
 
         return $label;
     }
@@ -266,14 +265,14 @@ class Requisition extends Model
     {
         $c = $this->current_approval_progress()->id;
         $this->status = RequisitionStatus::PENDING_STATUS;
-       
+
         $this->current_approval_progress()->update([
             'status' => RequisitionStatus::ACCEPTED_STATUS,
             'determiner_comment' => $comment
         ]);
-       // $this->current_approval_progress()->save() ;
+        // $this->current_approval_progress()->save() ;
 
-         if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
+        if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
             $this->determiner_id = null;
             $this->status = RequisitionStatus::ACCEPTED_STATUS;
             event(new RequisitionAccepted(User::find(Auth::id()), $this->owner));
@@ -340,14 +339,14 @@ class Requisition extends Model
             'status' => RequisitionStatus::REJECTED_STATUS,
             'determiner_comment' => $comment
         ]);
-      //  $this->current_approval_progress()->save() ;
+        //  $this->current_approval_progress()->save() ;
         //  if ($this->accepted_approval_progresses()->isNotEmpty()) {
         if ($this->accepted_approval_progresses()->count()) {
             // update requisition's last progress to pending
             $this->accepted_approval_progresses->last()->update([
                 'status' => RequisitionStatus::PENDING_STATUS,
             ]);
-           // $this->accepted_approval_progresses->last()->save() ;
+            // $this->accepted_approval_progresses->last()->save() ;
         }
 
         // send the requisition to last determiner.
@@ -355,24 +354,24 @@ class Requisition extends Model
 
         $sender = User::find(Auth::id());
 
-        if($this->approval_progresses()->first()->status==RequisitionStatus::REJECTED_STATUS  ){
+        if ($this->approval_progresses()->first()->status == RequisitionStatus::REJECTED_STATUS) {
             $this->update([
-                'status'=>RequisitionStatus::REJECTED_STATUS ,
-            ]) ;
-            $this->save() ;
+                'status' => RequisitionStatus::REJECTED_STATUS,
+            ]);
+            $this->save();
         }
 
-        if($this->status==RequisitionStatus::REJECTED_STATUS){
+        if ($this->status == RequisitionStatus::REJECTED_STATUS) {
             $recipient = $this->owner;
-            
+
             event(new RequisitionRejected($sender, $recipient));
 
-        }else{
+        } else {
             $recipient = User::find($this->current_approval_progress()->determiner_id);
-   event(new RequisitionSent($sender, $recipient));
+            event(new RequisitionSent($sender, $recipient));
         }
 
- 
+
         if ($this->current_progress()->status != RequisitionStatus::ADMIN_PRIMARY_PENDING)
             $this->current_progress()->delete();
 
@@ -425,17 +424,16 @@ class Requisition extends Model
             'status' => RequisitionStatus::PENDING_STATUS,
             'determiner_comment' => null
         ]);
-      //  $this->approval_progresses()->save() ;
-     }
+        //  $this->approval_progresses()->save() ;
+    }
 
 
     public function approval_progress_status()
     {
-        
+
         $status_array = $this->approval_progresses()->getResults()->map(function ($item) {
             return $item->getOriginal('status');
         })->toArray();
-
 
 
         if (count(array_unique($status_array)) == RequisitionStatus::ACCEPTED_STATUS) {
@@ -499,8 +497,7 @@ class Requisition extends Model
 
     public function user_assigned()
     {
-        return $this->belongsToMany(User::class, 'requisition_assignments', 'requisition_id', 'to')
-            ;
+        return $this->belongsToMany(User::class, 'requisition_assignments', 'requisition_id', 'to');
     }
 
     public function assignment_time()
@@ -518,10 +515,7 @@ class Requisition extends Model
 
     public function assign($to, $type)
     {
-        // RequisitionAssignment::where('from', Auth::user()->id)->delete();
-        // $this->auth_user_assignment_assigned()->delete();
-        $to=User::by_provider($to) ;
-        
+        $to = User::by_provider($to);
         if ($this->assignments()->count() > 1) {
             $this->type_do_assignment()->delete();
         }
@@ -529,7 +523,7 @@ class Requisition extends Model
         $this->update([
             'status' => RequisitionStatus::ASSIGN_STATUS
         ]);
-        $this->save() ;
+        $this->save();
         RequisitionAssignment::updateOrCreate([
             'requisition_id' => $this->id,
             'from' => Auth::user()->id,

@@ -15,24 +15,25 @@
             <div class="mr-1">
                 <div
                     class="custom-control custom-radio custom-control-inline custom-switch">
-                    <input type="radio" id="customRadioInline1"
+                    <input type="radio" id="assign-type-{{$requisition->id}}"
                            name="assign_type"
                            @if($requisition->assignment_type()=='assign') checked
                            @endif
                            value="assign" class="custom-control-input">
                     <label class="custom-control-label"
-                           for="customRadioInline1">assign
+                            
+                           for="assign-type-{{$requisition->id}}">assign
                         to assign</label>
                 </div>
                 <div
                     class="custom-control custom-radio custom-control-inline custom-switch">
-                    <input type="radio" required id="customRadioInline2"
+                    <input type="radio" required id="do-{{$requisition->id}}"
                            name="assign_type" value="do"
                            @if($requisition->assignment_type()=='do') checked
                            @endif
                            class="custom-control-input">
                     <label class="custom-control-label"
-                           for="customRadioInline2">assign
+                           for="do-{{$requisition->id}}">assign
                         to do</label>
                 </div>
             </div>
