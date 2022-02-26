@@ -146,7 +146,7 @@ class Requisition extends Model
 
 
         if (Auth::user()->user_viewable_requisitions()->get()->where('id', $this->id)->count()) {
-            $label = 'viewable';
+            $label = 'just view';
         }
         if (Auth::user()->user_assigned_to_requisitions()->get()->where('id', $this->id)->count()) {
             $label = 'assignment';
