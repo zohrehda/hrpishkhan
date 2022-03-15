@@ -15,9 +15,9 @@
 <div class="container alert alert-warning  font-weight-bold show">
      Welcome , to start using application, first Hr Admin login.
     </div>
-    @endif 
+    @endif
 
-    
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-7">
@@ -47,7 +47,7 @@
 
                                 <input id="email" type="email"
                                            class="form-control" name="email"
-                
+
                                            value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 @endif
 
@@ -65,12 +65,16 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <div
+
+                            @if(config('app.recaptcha_status'))
+                                <div class="form-group row">
+                                    <div
                                         class="g-recaptcha form-group"
                                         data-sitekey="{{config('recaptcha.api_site_key')}}">
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
+
 
                             <div class="form-group row mb-0">
                                 <div class="col-md-8 offset-md-4">

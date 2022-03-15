@@ -135,6 +135,8 @@ return [
 
     'required_terms' => env('REQUIRED_TERMS'),
 
+    'recaptcha_status'=>env('RECAPTCHA_STATUS',false) ,
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
