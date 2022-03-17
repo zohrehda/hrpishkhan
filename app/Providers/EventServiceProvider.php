@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Events\RequisitionAccepted;
+use App\Events\RequisitionAssigned;
 use App\Events\RequisitionRejected;
 use App\Events\RequisitionSent;
 use App\Events\RequisitionSubmitted;
 use App\Listeners\SendAcceptedEmail;
+use App\Listeners\SendAssignedEmail;
 use App\Listeners\SendNewEmail;
 use App\Listeners\SendRejectedEmail;
 use App\Listeners\SendSubmittedEmail;
@@ -38,6 +40,9 @@ class EventServiceProvider extends ServiceProvider
         RequisitionSubmitted::class => [
             SendSubmittedEmail::class,
         ],
+        RequisitionAssigned::class=>[
+            SendAssignedEmail::class
+        ]
 
 
     ];

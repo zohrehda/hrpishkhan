@@ -5,6 +5,7 @@ namespace App;
 use Adldap\Laravel\Commands\Import;
 use Adldap\Laravel\Facades\Adldap;
 use App\Classes\StaffHierarchy;
+use App\Events\RequisitionAssigned;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -532,6 +533,8 @@ class Requisition extends Model
             'to' => $to->id,
             'type' => $type
         ]);
+        $sender=Auth::user() ;
+        event(new RequisitionAssigned($sender,$to,$type)) ;
     }
 
     public static function getOrderedDeterminers($value)
