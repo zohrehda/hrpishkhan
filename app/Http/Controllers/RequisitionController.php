@@ -64,7 +64,7 @@ class RequisitionController extends Controller
 
         $departments = StaffHierarchy::$departments;
         $drafts = Auth::user()->drafts;
-        $form_sections_items = RequisitionItems::getSections();
+        $form_sections_items = RequisitionSetting::sections();
 
         return view('requisitions.create', compact('departments', 'drafts', 'form_sections_items'));
     }
@@ -154,8 +154,7 @@ class RequisitionController extends Controller
 
         // authorize user to view edit page
         $this->authorize('edit', $requisition);
-        $form_sections_items = RequisitionItems::getSections();
-
+        $form_sections_items = RequisitionSetting::sections();
 
         return view('requisitions.edit', compact('requisition', 'departments', 'levels', 'form_sections_items'));
     }

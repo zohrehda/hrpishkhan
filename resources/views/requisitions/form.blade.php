@@ -7,81 +7,88 @@
                 <div class="row">
                     @foreach($section_content['items'] as $name=>$schema)
                         <div class="col-{{$schema['grid_col']}}">
-                            @switch($schema['type'])
+
+
+                        @switch($schema['type'])
 
                                 @case('text')
-                                <label for="{{$name}}"
-                                       class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
+                                    <label for="{{$name}}"
+                                           class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
 
-                                <input type="text" id="{{$name}}" name="{{$name}}" class="form-control form-space"
-                                       placeholder="{{$schema['label']}}"
-                                       value="{{ old($name,$requisition->$name??'') }}">
-                                @break
+                                    <input type="text" id="{{$name}}" name="{{$name}}" class="form-control form-space"
+                                           placeholder="{{$schema['label']}}"
+                                           value="{{ old($name,$requisition->$name??'') }}">
+                                    @break
 
                                 @case('number')
-                                <label for="{{$name}}"
-                                       class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
+                                    <label for="{{$name}}"
+                                           class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
 
-                                <input type="number" id="{{$name}}" name="{{$name}}" class="form-control form-space"
-                                       placeholder="{{$schema['label']}}"
-                                       value="{{ old($name,$requisition->$name??'') }}">
-                                @break
+                                    <input type="number" id="{{$name}}" name="{{$name}}" class="form-control form-space"
+                                           placeholder="{{$schema['label']}}"
+                                           value="{{ old($name,$requisition->$name??'') }}">
+                                    @break
 
                                 @case('select')
-                                <label for="{{$name}}"
-                                       class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
+                                    <label for="{{$name}}"
+                                           class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
 
-                                <select id="{{$name}}" name="{{$name}}" data-old="{{old($name)}}"
-                                        class="form-space custom-select">
-
-                                    @if($schema['required'] )
-                                        <option @if( old($name)=='' || !isset($requisition)  ) selected @endif disabled
-                                                value=''>
-                                            Empty
-                                        </option>
+                                    @if(isset($requisition) and count($schema['options'])>0 and !in_array($requisition->getOriginal($name),array_keys($schema['options'])) )
+                                        <small class="text-danger"> the input type has changed. choose a new
+                                            value </small>
                                     @endif
+                                    <select id="{{$name}}" name="{{$name}}" data-old="{{old($name)}}"
+                                            class="form-space custom-select">
 
-                                    @foreach($schema['options'] as $value=>$option)
-                                        {{$value}}
-                                        <option value="{{$value}}"
-                                                @if( old($name,isset($requisition)?$requisition->getOriginal($name):'' )==$value) selected @endif
-                                        >{{$option}}</option>
-                                    @endforeach
-                                </select>
-                                @break
+                                        @if($schema['required'] )
+                                            <option @if( old($name)=='' || !isset($requisition)  ) selected
+                                                    @endif disabled
+                                                    value=''>
+                                                Empty
+                                            </option>
+                                        @endif
+
+                                        @foreach($schema['options'] as $value=>$option)
+                                            {{$value}}
+                                            <option value="{{$value}}"
+                                                    @if( old($name,isset($requisition)?$requisition->getOriginal($name):'' )==$value) selected @endif
+                                            >{{$option}}</option>
+                                        @endforeach
+                                    </select>
+                                    @break
 
                                 @case('multiple')
 
-                                @include('requisitions.partials.'.$name,['data'=>$schema['data']   ,'requisition' =>$requisition??null  ] )
+                                    @include('requisitions.partials.'.$name,['data'=>$schema['data']   ,'requisition' =>$requisition??null  ] )
 
-                                @break
+                                    @break
                                 @case('radio')
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="row">
-                                            <label class="pr-1 @if($schema['required']) required @endif"></label>
-                                            @foreach($schema['radios'] as $value=>$radio)
-                                                <div class="custom-control custom-radio custom-control-inline col ">
-                                                    <input type="radio" id="{{$radio}}" name="{{$name}}"
-                                                           value="{{$value}}"
-                                                           class="custom-control-input"
-                                                           @if((string)old($name,isset($requisition)?$requisition->getOriginal($name):'f' )==(string)$value) checked @endif >
-                                                    <label class="custom-control-label"
-                                                           for="{{$radio}}">{{$radio}}</label>
-                                                </div>
-                                            @endforeach
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <label class="pr-1 @if($schema['required']) required @endif"></label>
+                                                @foreach($schema['radios'] as $value=>$radio)
+                                                    <div class="custom-control custom-radio custom-control-inline col ">
+                                                        <input type="radio" id="{{$radio}}" name="{{$name}}"
+                                                               value="{{$value}}"
+                                                               class="custom-control-input"
+                                                               @if((string)old($name,isset($requisition)?$requisition->getOriginal($name):'f' )==(string)$value) checked @endif >
+                                                        <label class="custom-control-label"
+                                                               for="{{$radio}}">{{$radio}}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
 
-                                </div>
-                                @break
+                                    </div>
+                                    @break
                                 @case('textarea')
-                                <label for="{{$name}}"
-                                       class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
-                                <textarea type="text" id="{{$name}}" name="{{$name}}"
-                                          placeholder="{{$schema['placeholder']}}" rows="3"
-                                          class="form-control form-space">{{ old($name,$requisition->$name??'')}}</textarea>
-                                @break
+                                    <label for="{{$name}}"
+                                           class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
+                                    <textarea type="text" id="{{$name}}" name="{{$name}}"
+                                              placeholder="{{$schema['placeholder']}}" rows="3"
+                                              class="form-control form-space">{{ old($name,$requisition->$name??'')}}</textarea>
+                                    @break
                             @endswitch
                         </div>
                     @endforeach
@@ -116,7 +123,7 @@
             </button>
         @elsecannot('accept',$requisition)
             <button type="submit" class="btn btn-success" onclick="return confirm('Updating will result in status reset on approval_progresses\n' +
-                             'Are you sure?')" >Update
+                             'Are you sure?')">Update
             </button>
         @endcan
     @else
@@ -139,14 +146,14 @@
         <button type="button"
                 data-toggle="modal"
                 @if($requisition)
-                data-target="#AddViewer-{{$requisition->id}}"
-               @endif
+                    data-target="#AddViewer-{{$requisition->id}}"
+                @endif
                 id='import-requisition' class="btn btn-pink">Add Viewer
         </button>
     @endcan
     @can('hold', $requisition??null)
         <button
-        type="submit"
+            type="submit"
             name="progress_result"
             value="{{RequisitionStatus::HOLDING_STATUS}}"
             class="btn btn-orange">Hold
@@ -154,7 +161,7 @@
     @endcan
     @can('open', $requisition??null)
         <button
-        type="submit"
+            type="submit"
             name="progress_result"
             value="{{RequisitionStatus::OPEN_STATUS}}"
             class="btn btn-orange">Open

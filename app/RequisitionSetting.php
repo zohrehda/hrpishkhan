@@ -2,22 +2,17 @@
 
 namespace App;
 
-use App\Classes\RequisitionItems;
 use Illuminate\Database\Eloquent\Model;
 
 class RequisitionSetting extends Model
 {
-    //
     protected $guarded = [];
     private $primary;
-
-    //  private static $schema;
 
     public static function schema(): array
     {
         $initial = config('requisition_items');
         $schema = [];
-        $i = 0;
         foreach ($initial as $k => $v) {
 
             if (!empty($v['disabled'])) {
@@ -43,7 +38,6 @@ class RequisitionSetting extends Model
     public function __construct($primary)
     {
         $this->primary = $primary;
-    //    dd($primary);
         parent::__construct();
     }
 
@@ -70,6 +64,49 @@ class RequisitionSetting extends Model
             +
             ['competency.*' => 'required|array|min:2'];
 
+    }
+
+    public static function sections() : array
+    {
+        return [
+            'requisition_information' => [
+                'title' => 'Requisition Information',
+                'items' => self::slice_items('department', 'level'),
+            ],
+
+            'position_information' => [
+                'title' => 'Position Information',
+                'items' => self::slice_items('en_title', 'replacement'),
+
+            ],
+
+            'job_requirements' => [
+                'title' => 'Job Requirements',
+                'items' => self::slice_items('field_of_study', 'comment'),
+            ],
+
+            'competency' => [
+                'title' => 'Competency',
+                'items' => self::slice_items('competency', 'competency'),
+            ],
+            'interviewers' => [
+                'title' => 'Interviewers',
+                'items' => self::slice_items('interviewers', 'interviewers'),
+            ],
+            'determiners' => [
+                'title' => 'Approver Selection',
+                'items' => self::slice_items('determiners', 'determiners'),
+            ]
+        ];
+    }
+
+    private static function slice_items($from, $to): array
+    {
+        $schema = self::schema();
+        $keys = array_keys($schema);
+        $from = array_search($from, $keys);
+        $length = array_search($to, $keys) - $from + 1;
+        return array_slice($schema, $from, $length);
     }
 
 }
