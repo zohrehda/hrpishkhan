@@ -186,6 +186,7 @@ class Requisition extends Model
 
     public function rest_approval_progress()
     {
+        // dd($this->current_approval_progress()->role);
         return $this->hasMany(RequisitionApprovalProgress::class, 'requisition_id')
             ->where('role', '>', $this->current_approval_progress()->role);
     }
@@ -276,6 +277,7 @@ class Requisition extends Model
         if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
             $this->determiner_id = null;
             $this->status = RequisitionStatus::ACCEPTED_STATUS;
+            $this->accepted = 1;
             event(new RequisitionAccepted(User::find(Auth::id()), $this->owner));
 
             $this->create_progress(RequisitionStatus::ACCEPTED_STATUS);
@@ -533,8 +535,8 @@ class Requisition extends Model
             'to' => $to->id,
             'type' => $type
         ]);
-        $sender=Auth::user() ;
-        event(new RequisitionAssigned($sender,$to,$type)) ;
+        $sender = Auth::user();
+        event(new RequisitionAssigned($sender, $to, $type));
     }
 
     public static function getOrderedDeterminers($value)
@@ -611,9 +613,25 @@ class Requisition extends Model
                 'requisition_id' => $this->id,
                 'determiner_id' => $determiner_id,
                 'role' => $role,
-                'type'=>$type
+                'type' => $type
             ]);
         }
+    }
+
+    public function final_accept()
+    {
+        if ($this->current_determiner()->is_hr_admin()) {
+            $this->current_approval_progress()->update([
+                'status' => ACCEPTED_STATUS
+            ]);
+        }
+        $this->update(['accepted' => 1, 'status' => ACCEPTED_STATUS]);
+        $this->create_progress(FINAL_ACCEPT_ACTION);
+    }
+
+    public function is_final_accepted(): bool
+    {
+        return ($this->current_determiner() and $this->rest_approval_progress()->count() > 0 and $this->accepted);
     }
 
     public function update_determiners($determiners)

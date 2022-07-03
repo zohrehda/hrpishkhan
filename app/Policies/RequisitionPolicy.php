@@ -27,7 +27,7 @@ class RequisitionPolicy
 
     public function update_only_titles(User $user, Requisition $requisition)
     {
-        return ($user->is_hr_admin() and (!$requisition->current_determiner() or !$requisition->current_determiner()->is_hr_admin()))  ;
+        return ($user->is_hr_admin() and (!$requisition->current_determiner() or !$requisition->current_determiner()->is_hr_admin()));
 
     }
 
@@ -128,6 +128,12 @@ class RequisitionPolicy
             $requisition->current_progress()->status == RequisitionStatus::ADMIN_PRIMARY_PENDING) {
             return true;
         }
+    }
+
+    public function final_accept(User $user, Requisition $requisition):bool
+    {
+        return ($user->is_hr_admin() and $requisition->accepted == 0 and
+            $requisition->current_progress()->status != ADMIN_FINAL_PENDING);
     }
 
 

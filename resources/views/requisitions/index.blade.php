@@ -21,6 +21,10 @@
 
                             <div class="card-body collapse multi-collapse"
                                  id="card-{{$requisition->id}}-{{$card_class}}">
+                                @if($requisition->is_final_accepted())
+                                    <div class=" font-weight-bold">This form has been approved by the admin </div>
+                                @endif
+                                <br>
                                 @foreach($requisition->approval_progresses as $progress)
                                     <p class="card-text">
 
@@ -90,6 +94,18 @@
                                                 </div>
 
                                             @endcan
+
+                                            @can('final_accept', $requisition)
+                                                <div class="pb-1">
+                                                    <button
+                                                        type="submit"
+                                                        name="progress_result"
+                                                        value="{{FINAL_ACCEPT_ACTION}}"
+                                                        class="btn btn-sm btn-green">Final Accept
+                                                    </button>
+                                                </div>
+
+                                            @endcan
                                             @can('close', $requisition)
                                                 <div class="pb-1">
                                                     <button
@@ -109,7 +125,7 @@
                 id='import-requisition' class="btn  btn-sm btn-pink">Add Viewer
         </button>
                                             </div>
-      
+
     @endcan
 
                                             @can('destroy', $requisition)
@@ -125,13 +141,13 @@
                                             <div class="pb-1">
                                             <button
                                             type="submit"
-                                            
+
                                                     name="progress_result"
                                                     value="{{RequisitionStatus::HOLDING_STATUS}}"
                                                     class="btn btn-sm btn-orange">Hold
                                                 </button>
                                             </div>
-                                                
+
                                             @endcan
 
                                             @can('open', $requisition??null)
@@ -164,11 +180,11 @@
                             </div>
                         </div>
 
-                      
+
                         @include('requisitions.modals.preview',['requisition'=>$requisition])
                         @include('requisitions.modals.add_viewer',['requisition'=>$requisition])
-  
- 
+
+
                     </div>
 
                 @endforeach

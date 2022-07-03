@@ -192,6 +192,8 @@ class RequisitionController extends Controller
             $requisition->close();
         } elseif ($request->post('progress_result') == RequisitionStatus::OPEN_STATUS) {
             $requisition->open();
+        }elseif ($request->post('progress_result') == FINAL_ACCEPT_ACTION) {
+            $requisition->final_accept();
         }
 
 
