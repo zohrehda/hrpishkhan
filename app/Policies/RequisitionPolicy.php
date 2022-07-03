@@ -27,9 +27,8 @@ class RequisitionPolicy
 
     public function update_only_titles(User $user, Requisition $requisition)
     {
-        if ($user->is_hr_admin() and (!$requisition->current_determiner() or !$requisition->current_determiner()->is_hr_admin())) {
-            return true;
-        }
+        return ($user->is_hr_admin() and (!$requisition->current_determiner() or !$requisition->current_determiner()->is_hr_admin()))  ;
+
     }
 
     public function accept(User $user, Requisition $requisition)
@@ -46,7 +45,6 @@ class RequisitionPolicy
     public function view(User $user, Requisition $requisition)
     {
         return true;
-
     }
 
     public function destroy(User $user, Requisition $requisition)

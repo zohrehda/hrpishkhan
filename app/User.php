@@ -100,7 +100,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Requisition::class, 'determiner_id')
             ->where('status', '=', RequisitionStatus::PENDING_STATUS);
     }
-    
+
 
     public function user_viewable_pending_requisitions()
     {
@@ -152,15 +152,15 @@ class User extends Authenticatable implements MustVerifyEmail
         try{
             return StaffInfo::get()->where('email', $this->email)->first()??[
                 'name'=>$this->name ,
-                'email'=>$this->email 
+                'email'=>$this->email
             ];
         }catch(Exception $e){
           return  [
                 'name'=>$this->name ,
-                'email'=>$this->email 
+                'email'=>$this->email
             ];
         }
-       
+
 
     }
 
@@ -171,11 +171,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function is_hr_admin()
     {
-        if (Auth::user()->role == 'hr_admin') {
-            return true;
-        }
-        return false;
-
+        return ($this->role == 'hr_admin');
     }
 
 
@@ -276,10 +272,10 @@ class User extends Authenticatable implements MustVerifyEmail
             $ldap = new Ldap();
             $ldap->ImportLdapToModel($value);
 
-            
+
         }
         return self::where('email', $value)->first();
-        
+
        // return self::find($value);
     }
 

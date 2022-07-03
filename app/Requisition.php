@@ -594,7 +594,15 @@ class Requisition extends Model
 
     public function create_determiners($determiners)
     {
+
         foreach ($determiners as $key => $determiner_id) {
+
+            $type = DETERMINERS_PENDING_PRG_STATUS;
+            if (!$key && $determiner_id == User::hr_admin()->id) {
+                $type = ADMIN_PRIMARY_PENDING_PRG_STATUS;
+            } elseif ($key + 1 == count($determiners) && $determiner_id == User::hr_admin()->id) {
+                $type = ADMIN_FINAL_PENDING_PRG_STATUS;
+            }
 
             $last_pending_approval_progress = $this->pending_approval_progresses()->get()->last();
             $role = ($last_pending_approval_progress) ? $last_pending_approval_progress->role + 1 : 1;
@@ -603,7 +611,7 @@ class Requisition extends Model
                 'requisition_id' => $this->id,
                 'determiner_id' => $determiner_id,
                 'role' => $role,
-
+                'type'=>$type
             ]);
         }
     }
