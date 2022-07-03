@@ -39,7 +39,9 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
         Route::get('/', 'SettingsController@setting')->name('setting');
         Route::get('levels', 'SettingsController@levels')->name('setting.level');
     });
-
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('/', 'UsersController@index')->name('users.index');
+    });
 
     /* Food reservation routes*/
     /*Route::group(['prefix' => 'foods', 'namespace' => 'FoodReservation', 'middleware' => 'checkUserRole' ] , function () {
@@ -68,6 +70,7 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
     });*/
 
 });
+
 
 
 Route::group([

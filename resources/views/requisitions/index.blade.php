@@ -22,7 +22,7 @@
                             <div class="card-body collapse multi-collapse"
                                  id="card-{{$requisition->id}}-{{$card_class}}">
                                 @if($requisition->is_final_accepted())
-                                    <div class=" font-weight-bold">This form has been approved by the admin </div>
+                                    <div class=" font-weight-bold">This form has been approved by the admin</div>
                                 @endif
                                 <br>
                                 @foreach($requisition->approval_progresses as $progress)
@@ -77,7 +77,7 @@
                                             @can('accept', $requisition)
                                                 <div class="pb-1">
                                                     <button
-                                                    type="submit"
+                                                        type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::REJECTED_STATUS}}"
                                                         class="btn btn-sm btn-yellow">Reject
@@ -86,7 +86,7 @@
 
                                                 <div class="pb-1">
                                                     <button
-                                                    type="submit"
+                                                        type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::ACCEPTED_STATUS}}"
                                                         class="btn btn-sm btn-green">Accept
@@ -109,7 +109,7 @@
                                             @can('close', $requisition)
                                                 <div class="pb-1">
                                                     <button
-                                                    type="submit"
+                                                        type="submit"
                                                         name="progress_result"
                                                         value="{{RequisitionStatus::CLOSED_STATUS}}"
                                                         onclick="return confirm('Are you sure to close the requisition?')"
@@ -119,14 +119,16 @@
                                             @endcan
 
                                             @can('add_viewer',$requisition)
-                                            <div class="pb-1">
-                                            <button type="button"
-                data-toggle="modal" data-target="#AddViewer-{{$requisition->id}}"
-                id='import-requisition' class="btn  btn-sm btn-pink">Add Viewer
-        </button>
-                                            </div>
+                                                <div class="pb-1">
+                                                    <button type="button"
+                                                            data-toggle="modal"
+                                                            data-target="#AddViewer-{{$requisition->id}}"
+                                                            id='import-requisition' class="btn  btn-sm btn-pink">Add
+                                                        Viewer
+                                                    </button>
+                                                </div>
 
-    @endcan
+                                            @endcan
 
                                             @can('destroy', $requisition)
                                                 <div class="pb-1">
@@ -138,27 +140,27 @@
                                             @endcan
 
                                             @can('hold', $requisition??null)
-                                            <div class="pb-1">
-                                            <button
-                                            type="submit"
+                                                <div class="pb-1">
+                                                    <button
+                                                        type="submit"
 
-                                                    name="progress_result"
-                                                    value="{{RequisitionStatus::HOLDING_STATUS}}"
-                                                    class="btn btn-sm btn-orange">Hold
-                                                </button>
-                                            </div>
+                                                        name="progress_result"
+                                                        value="{{RequisitionStatus::HOLDING_STATUS}}"
+                                                        class="btn btn-sm btn-orange">Hold
+                                                    </button>
+                                                </div>
 
                                             @endcan
 
                                             @can('open', $requisition??null)
-                                            <div class="pb-1">
-                                                <button
-                                                type="submit"
-                                                    name="progress_result"
-                                                    value="{{RequisitionStatus::OPEN_STATUS}}"
-                                                    class="btn btn-sm btn-coral">Open
-                                                </button>
-                                            </div>
+                                                <div class="pb-1">
+                                                    <button
+                                                        type="submit"
+                                                        name="progress_result"
+                                                        value="{{RequisitionStatus::OPEN_STATUS}}"
+                                                        class="btn btn-sm btn-coral">Open
+                                                    </button>
+                                                </div>
                                             @endcan
 
                                             @can('view', $requisition)
@@ -171,7 +173,16 @@
                                             @endcan
                                         </div>
                                     </form>
-                                    @include('requisitions.partials.assignments',['requisition'=>$requisition])
+                                    @if($requisition->assignments->count())
+                                        <div class="alert alert-warning  ">
+                                            {!! $requisition->prettyAssignments() !!}
+                                        </div>
+                                    @endif
+
+                                    @can('assign',$requisition)
+                                        @include('requisitions.partials.assignments',['requisition'=>$requisition])
+                                    @endcan
+
                                 </div>
 
                                 <div class="card-footer text-center text-white">

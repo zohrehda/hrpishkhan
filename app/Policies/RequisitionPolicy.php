@@ -136,5 +136,16 @@ class RequisitionPolicy
             $requisition->current_progress()->status != ADMIN_FINAL_PENDING);
     }
 
+    public function assign(User $user, Requisition $requisition)
+    {
+        if (in_array($requisition->status, [ASSIGNED_STATUS, ACCEPTED_STATUS])
+            and ($user->is_hr_admin() or $user->user_assigned_to_assign_requisitions->whereIn('id', $requisition->id)->count()   )
+
+        ) {
+
+            return true;
+        }
+    }
+
 
 }

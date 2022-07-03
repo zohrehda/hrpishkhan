@@ -70,6 +70,22 @@ $(document).ready(function () {
         levelInputElm.html(html)
     }
 
+    /***** get staff using ajax *****/
+    function initializeSelect2(elem) {
+        elem.select2({
+            ajax: {
+                url: "/panel/users",
+                dataType: 'json',
+                templateResult: function (item) {
+                    return format(item, false);
+                },
+                matcher: matchStart,
+            }
+        });
+    }
+    initializeSelect2($('.select-user'));
+    initializeSelect2($('.approver'));
+
     function appendDrafts() {
         $.ajax({
             url: '/panel/requisitions/draft',
@@ -345,131 +361,10 @@ $(document).ready(function () {
     });
 
 
-    /***** get staff using ajax *****/
-    function initializeSelect2(elem) {
-        elem.select2({
-            ajax: {
-                url: "/panel/requisitions/staff",
-                dataType: 'json',
-                templateResult: function (item) {
-                    return format(item, false);
-                },
-                matcher: matchStart,
-                /*  delay: 250,
-                  placeholder: 'Search in users',
-                  minimumInputLength: 1,*/
-            }
-        });
-    }
-
-    initializeSelect2($('.approver'));
-
-    /***** select user form *****/
-    function insertUsersForm(area, select_name, label, option_label) {
-
-        selected_id = $(area).attr('data-selected-id');
-        selected_email = $(area).attr('data-selected-email');
-        var i = 1;
-        //    $('.form-receivers-part').empty();
-        // var select_name = "user";
-        label = '';
-        if (label) {
-            label = ' <label for="determiners" class="optional">' + label + '</label>';
-        }
-        option_inner = 'Empty';
-        if (option_label) {
-            option_inner = option_label
-        }
-
-        selected_option = ' <option selected disabled>' + option_inner + '</option>'
-        if (selected_id) {
-            selected_option = '  <option selected value="' + selected_id + '"  >' + selected_email + '</option>';
-        }
-
-        $(area).append(' <div class="">' +
-            label +
-            '<select id="" name="' + select_name + '" required="true" class="form-space select22 custom-select select2"  ></select>'
-            + '</div>');
-        $('select[name="' + select_name + '" ]').append(selected_option)
-        i++;
-        // $('.select22').prop('required', true);
-        $('.select22').select2({
-            ajax: {
-                url: "/panel/requisitions/staff",
-                dataType: 'json',
-                templateResult: function (item) {
-
-                    return format(item, false);
-                },
-                matcher: matchStart,
-                /*  delay: 250,
-                  placeholder: 'Search in users',
-                  minimumInputLength: 1,*/
 
 
-                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-            }
-        });
 
 
-    }
-
-    //   insertUsersForm('.select-user', 'user_id', null, 'select user');
-
-    $('.select-user').each(function () {
-
-        option_label = 'select user';
-        select_name = 'user_id';
-        label = null;
-
-        selected_id = $(this).attr('data-selected-id');
-        selected_email = $(this).attr('data-selected-email');
-
-
-        var i = 1;
-
-        label = '';
-        if (label) {
-            label = ' <label for="determiners" class="optional">' + label + '</label>';
-        }
-        option_inner = 'Empty';
-        if (option_label) {
-            option_inner = option_label
-        }
-
-        selected_option = ' <option selected disabled>' + option_inner + '</option>';
-
-        if (selected_id) {
-            selected_option = '  <option selected value="' + selected_email + '"  >' + selected_email + '</option>';
-        }
-
-        $(this).append(' <div class="">' +
-            label +
-            '<select id="" name="' + select_name + '" required="true" class="form-space select22 custom-select select2"  ></select>'
-            + '</div>');
-        $(this).find('select[name="' + select_name + '" ]').append(selected_option);
-        i++;
-        // $('.select22').prop('required', true);
-        $('.select22').select2({
-            ajax: {
-                url: "/panel/requisitions/staff",
-                dataType: 'json',
-                templateResult: function (item) {
-
-                    return format(item, false);
-                },
-                matcher: matchStart,
-                /*  delay: 250,
-                  placeholder: 'Search in users',
-                  minimumInputLength: 1,*/
-
-
-                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-            }
-        });
-
-
-    })
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
         var radio_val = isNewInput.filter(':checked').val();

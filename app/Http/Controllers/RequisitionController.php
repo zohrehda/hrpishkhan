@@ -176,7 +176,7 @@ class RequisitionController extends Controller
         if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
             $requisition->accept($request->post('determiner_comment'));
 
-        } elseif ($request->post('progress_result') == RequisitionStatus::ASSIGN_STATUS) {
+        } elseif ($request->post('progress_result') == ASSIGN_ACTION) {
 
             $request->validate([
                 'user_id' => 'required'
