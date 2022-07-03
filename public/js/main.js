@@ -38,6 +38,37 @@ $(document).ready(function () {
         setting = getSetting(),
         formItemsSetting = setting['form_items'];
 
+    const departmentInputElm = $("select[name='department']");
+    const levelInputElm = $("select[name='level']");
+
+    function appendLevel() {
+        let department = departmentInputElm.val();
+        let departments_level = getLevels['departments_level'][department];
+        let levels = getLevels['levels'];
+
+        let html=''
+        if (department) {
+            if (typeof departments_level == "undefined") {
+                departments_level = getLevels['departments_level']['ect'];
+            }
+
+            let old=levelInputElm.attr('data-old') ;
+
+            if(old.length>0){
+                html += "<option value="+old+" selected>"+levels[old]+"</option>";
+            }else{
+                html += "<option value='' selected>Empty</option>";
+            }
+            levelInputElm.empty()
+            $.each(departments_level, function (key, value) {
+                html += "<option value=" + value + ">" + levels[value] + "</option>";
+            });
+
+        } else {
+            html += "<option value=''>Empty</option>";
+        }
+        levelInputElm.html(html)
+    }
 
     function appendDrafts() {
         $.ajax({
@@ -78,35 +109,15 @@ $(document).ready(function () {
         });
     }
 
-
     /***** customise level select option depending on selected department *****/
 
-    $('#department').on('change', function (event) {
-
-        console.log('departmant change')
-
-        department = $('#department').val();
-        departments_level = getLevels['departments_level'][department];
-        levels = getLevels['levels'];
-
-        if (department) {
-
-            if (typeof departments_level == "undefined") {
-                departments_level = getLevels['departments_level']['ect'];
-            }
-
-            $('select#level').empty();
-
-            $.each(departments_level, function (key, value) {
-                html = "<option value=" + value + ">" + levels[value] + "</option>";
-                $('select#level').append(html);
-            });
-
-        } else {
-            html = "<option>Empty</option>";
-            $('select#level').append(html);
-        }
+    departmentInputElm.on('change', function (event) {
+        appendLevel()
+        levelInputElm.attr('data-old','')
     });
+
+    appendLevel()
+   // departmentInputElm.trigger('change')
 
     /***** handle approver section depending on department and is new *****/
 
@@ -180,7 +191,6 @@ $(document).ready(function () {
     });
 
     /***** store requisition viewers *****/
-
     viewerForm.on('submit', function (event) {
         event.preventDefault();
 

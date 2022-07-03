@@ -30,14 +30,17 @@
                                 @case('select')
                                 <label for="{{$name}}"
                                        class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
-                                <select id="{{$name}}" name="{{$name}}"
+
+                                <select id="{{$name}}" name="{{$name}}" data-old="{{old($name)}}"
                                         class="form-space custom-select">
+
                                     @if($schema['required'] )
                                         <option @if( old($name)=='' || !isset($requisition)  ) selected @endif disabled
-                                                value="empty">
+                                                value=''>
                                             Empty
                                         </option>
                                     @endif
+
                                     @foreach($schema['options'] as $value=>$option)
                                         {{$value}}
                                         <option value="{{$value}}"
