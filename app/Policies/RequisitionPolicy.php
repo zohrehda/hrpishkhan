@@ -16,20 +16,28 @@ class RequisitionPolicy
 
     public function edit(User $user, Requisition $requisition)
     {
-        if ($requisition->status == RequisitionStatus::PENDING_STATUS) {
-            $allowed_ids = [$requisition->owner_id, $requisition->determiner_id];
-            if (in_array($user->id, $allowed_ids)) {
-                return true;
-            }
+        if ($user->is_hr_admin()) {
+            return true;
+        }
+        $allowed_ids = [$requisition->owner_id, $requisition->determiner_id];
+        if ($requisition->status == PENDING_STATUS and in_array($user->id, $allowed_ids)) {
+            return true;
+        }
+    }
+
+    public function update_only_titles(User $user, Requisition $requisition)
+    {
+        if ($user->is_hr_admin() and (!$requisition->current_determiner() or !$requisition->current_determiner()->is_hr_admin())) {
+            return true;
         }
     }
 
     public function accept(User $user, Requisition $requisition)
     {
-        if ($user->id == $requisition->determiner_id && 
-        ($requisition->status==RequisitionStatus::PENDING_STATUS || 
-        $requisition->status==RequisitionStatus::REJECTED_STATUS
-        )
+        if ($user->id == $requisition->determiner_id &&
+            ($requisition->status == RequisitionStatus::PENDING_STATUS ||
+                $requisition->status == RequisitionStatus::REJECTED_STATUS
+            )
         ) {
             return true;
         }

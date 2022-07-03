@@ -113,7 +113,7 @@
             </button>
         @elsecannot('accept',$requisition)
             <button type="submit" class="btn btn-success" onclick="return confirm('Updating will result in status reset on approval_progresses\n' +
-                             'Are you sure?')">Update
+                             'Are you sure?')" >Update
             </button>
         @endcan
     @else
@@ -200,8 +200,14 @@
             if (level) {
                 $('select#level').val(level)
             }
-        });
 
+            let update_only_titles = @json((isset($requisition))?auth()->user()->can('update_only_titles',$requisition):false) ;
+            if (update_only_titles) {
+                $('input:not([name="fa_title"],[name="en_title"],[type="hidden"] ),select,textarea,#add_competency,' +
+                    '#add_interviewer,#import-requisition,#draft-requisition ').prop('disabled', true);
+                $('#form').append("<input type='hidden' name='only_titles' value='1' >")
+            }
+        });
 
     </script>
 

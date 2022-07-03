@@ -22,7 +22,7 @@ class RequisitionController extends Controller
     {
         $pending = Auth::user()->pending_determiner_requisitions;
 
-        $rejected=Auth::user()->determiner_rejected_requisitions->merge(Auth::user()->rejected_user_requisitions);
+        $rejected = Auth::user()->determiner_rejected_requisitions->merge(Auth::user()->rejected_user_requisitions);
 
         $in_progress = Auth::user()->pending_user_requisitions->merge(Auth::user()->determiner_requisitions)
             ->merge(Auth::user()->user_viewable_pending_requisitions);
@@ -71,7 +71,7 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),RequisitionSetting::validation_rules());
+        $validator = Validator::make($request->all(), RequisitionSetting::validation_rules());
         if ($validator->fails()) {
             session(['termAccepted' => 1]);
             return redirect()->back()->withErrors($validator)->withInput();
@@ -99,13 +99,17 @@ class RequisitionController extends Controller
 
     public function update(Request $request)
     {
+        $requisition = Requisition::find($request->post('id'));
+
+        if ($request->post('only_titles')) {
+            return $this->update_only_titles($request, $requisition);
+        }
 
         $validator = Validator::make($request->all(), RequisitionSetting::validation_rules());
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $requisition = Requisition::find($request->post('id'));
         $requisition = $requisition->store($request);
 
         if ($request->file('attachment')) {
@@ -114,7 +118,7 @@ class RequisitionController extends Controller
 
         if (Auth::user()->can('update_determiners', $requisition)) {
             $determiners = Determiners::ordered($request->post('determiners', []), $requisition);
-            $requisition->update_determiners($determiners) ;
+            $requisition->update_determiners($determiners);
         }
 
         if (Auth::user()->can('accept', $requisition)) {
@@ -124,6 +128,20 @@ class RequisitionController extends Controller
 
         $requisition->save();
 
+        $request->session()->flash('success', 'Requisition updated successfully.');
+        return redirect()->route('dashboard');
+    }
+
+    private function update_only_titles(Request $request, Requisition $requisition)
+    {
+        $this->validate($request,
+            [
+                'fa_title' => RequisitionSetting::validation_rules()['fa_title'],
+                'en_title' => RequisitionSetting::validation_rules()['en_title'],
+            ]
+        );
+        $requisition = $requisition->store($request);
+        $requisition->save();
         $request->session()->flash('success', 'Requisition updated successfully.');
         return redirect()->route('dashboard');
     }
@@ -185,11 +203,6 @@ class RequisitionController extends Controller
     }
 
 
-
-
-
-
-
     public function customizeReceiver()
     {
         $users = $this->determiners();
@@ -243,7 +256,6 @@ class RequisitionController extends Controller
     }
 
 
-
     public function determiners()
     {
         return User::whereNotIn('id', [Auth::id()/*, User::hr_manager()->id*/])
@@ -290,14 +302,16 @@ class RequisitionController extends Controller
     {
         $term = $request->input('term');
         $users = Adldap::search()->where('userPrincipalName', '!=', Auth::user()->email)->whereStartsWith('userPrincipalName', $term)->get()
-       ->map(function ($item, $key) {
-            return $item->userPrincipalName [0];
-        })->toArray();
+            ->map(function ($item, $key) {
+                return $item->userPrincipalName [0];
+            })->toArray();
 
-        return $users ;
+        return $users;
 
     }
-    public function formatUsers($users){
+
+    public function formatUsers($users)
+    {
 
         $result['results'] = [];
         foreach ($users as $k => $v) {
@@ -309,11 +323,12 @@ class RequisitionController extends Controller
         return json_encode($result);
     }
 
-    public function getLdapEloquentUsers(Request $request){
+    public function getLdapEloquentUsers(Request $request)
+    {
 
-        $users=array_merge($this->ldapUsers($request), $this->eloquentUsers($request) ) ;
-        return $this->formatUsers($users) ;
-     //   strtolower
+        $users = array_merge($this->ldapUsers($request), $this->eloquentUsers($request));
+        return $this->formatUsers($users);
+        //   strtolower
     }
 
     public function staff(Request $request)
@@ -322,7 +337,7 @@ class RequisitionController extends Controller
         $users_provider = config('app.users_provider');
 
         if ($users_provider == 'ldap') {
-            return $this->getLdapEloquentUsers($request) ;
+            return $this->getLdapEloquentUsers($request);
             return $this->getLdapUsers($request);
 
         } elseif ($users_provider == 'mysql') {
@@ -337,9 +352,10 @@ class RequisitionController extends Controller
 
         $users = User::where('email', 'like', "%$term%")->where('email', '!=', Auth::user()->email)->pluck('email')->toArray();
 
-        return $users ;
+        return $users;
 
     }
+
     public function mysqlUsers(Request $request)
     {
         $term = $request->input('term');
