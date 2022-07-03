@@ -576,5 +576,57 @@ class Requisition extends Model
         return $this->hasMany(RequisitionViewer::class, 'requisition_id');
     }
 
+    public function store($request, $data = [])
+    {
+        $items = $request->all();
+        $array = [];
+        foreach ($items as $name => $value) {
+
+            $item = RequisitionSetting::find($name);
+            if ($item) {
+                if (!$item->is_foreign()) {
+                    $array[$name] = $value;
+                }
+            }
+        }
+        return $this->updateOrCreate(['id' => $request->id ?: 0], array_merge($array, $data));
+    }
+
+    public function create_determiners($determiners)
+    {
+        foreach ($determiners as $key => $determiner_id) {
+
+            $last_pending_approval_progress = $this->pending_approval_progresses()->get()->last();
+            $role = ($last_pending_approval_progress) ? $last_pending_approval_progress->role + 1 : 1;
+
+            $this->approval_progresses()->create([
+                'requisition_id' => $this->id,
+                'determiner_id' => $determiner_id,
+                'role' => $role,
+
+            ]);
+        }
+    }
+
+    public function update_determiners($determiners)
+    {
+        $this->rest_approval_progress()->delete();
+        $this->create_determiners($determiners);
+
+    }
+
+    public function store_files($files)
+    {
+        $this->attachments()->delete();
+        foreach ($files as $file) {
+
+            $file_name = uniqid() . "." . $file->getClientOriginalExtension();
+            $file->storeAs('/attachments', $file_name);
+            $this->attachments()->create([
+                'name' => $file_name,
+                'requisition_id' => $this->id
+            ]);
+        }
+    }
 
 }
