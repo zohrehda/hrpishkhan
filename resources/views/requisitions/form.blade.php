@@ -132,14 +132,11 @@
 </div>
 
 <div class="hover-buttons">
-    <button type="button"
-            data-toggle="modal" data-target="#DraftNameModal"
-            id='draft-requisition' class="btn btn-blue">Draft
-    </button>
+
 
     <button type="button"
-            data-toggle="modal" data-target="#DraftImportModal"
-            id='import-requisition' class="btn btn-navy">Template
+            data-toggle="modal" data-target="#draftModel"
+              class="btn btn-navy">Template
     </button>
 
     @can('add_viewer',$requisition??null)
@@ -182,7 +179,12 @@
 </div>
 
 @section('script')
+    <script src="{{asset('js/draft.js')}}"></script>
     <script>
+        myDraftsHandler({
+            user: @json(auth()->user())
+        })
+
         $(function () {
             var competency = @json((isset($requisition))?$requisition->getOriginal('competency'):null) ;
             competency = JSON.parse(competency)

@@ -15,6 +15,7 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::redirect('/', 'login');
 
+
 Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], function () {
     Route::get('dashboard', 'RequisitionController@index')->name('dashboard');
     Route::group(['prefix' => 'requisitions'], function () {

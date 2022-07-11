@@ -32,7 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password', 'remember_token',
     ];
-
+    protected $appends = ['is_hr_admin'];
     /**
      * The attributes that should be cast to native types.
      *
@@ -42,21 +42,22 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    const ROLE_HR_ADMIN='hr_admin' ;
-    const ROLE_USER='user' ;
+    const ROLE_HR_ADMIN = 'hr_admin';
+    const ROLE_USER = 'user';
 
     /**
      * get Human Resources manager user
      *
      */
 
-     public static function hr_admin_setup(){
+    public static function hr_admin_setup()
+    {
 
-        if(self::where('role',self::ROLE_HR_ADMIN)->first()){
-            return true ;
+        if (self::where('role', self::ROLE_HR_ADMIN)->first()) {
+            return true;
         }
         return false;
-     }
+    }
 
 
     public static function hr_manager()
@@ -133,6 +134,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_approval_progresses', 'determiner_id')
             ->where('requisitions.status', '=', RequisitionStatus::REJECTED_STATUS);
     }
+
     public function rejected_user_requisitions()
     {
         return $this->hasMany(Requisition::class, 'owner_id')
@@ -142,22 +144,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function details()
     {
-       // $this->email = 'maryam.delbari@snapp.cab';
+        // $this->email = 'maryam.delbari@snapp.cab';
         // return StaffInfo::get() ;
         // return [
         //     'name'=>'ff' ,
         //     'email'=>'ff' ,
         // ] ;
 
-        try{
-            return StaffInfo::get()->where('email', $this->email)->first()??[
-                'name'=>$this->name ,
-                'email'=>$this->email
+        try {
+            return StaffInfo::get()->where('email', $this->email)->first() ?? [
+                'name' => $this->name,
+                'email' => $this->email
             ];
-        }catch(Exception $e){
-          return  [
-                'name'=>$this->name ,
-                'email'=>$this->email
+        } catch (Exception $e) {
+            return [
+                'name' => $this->name,
+                'email' => $this->email
             ];
         }
 
@@ -172,6 +174,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function is_hr_admin()
     {
         return ($this->role == 'hr_admin');
+    }
+
+    public function getIsHrAdminAttribute()
+    {
+        return $this->attributes['is_hr_admin'] = ($this->role == 'hr_admin');
+
     }
 
 
@@ -276,7 +284,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return self::where('email', $value)->first();
 
-       // return self::find($value);
+        // return self::find($value);
     }
 
     public function drafts()
@@ -289,15 +297,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Requisition::class, 'requisition_viewers', 'user_id', 'requisition_id');
 
     }
-
-
-
-
-
-
-
-
-
 
 
 }

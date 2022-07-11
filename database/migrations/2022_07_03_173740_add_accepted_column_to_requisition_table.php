@@ -26,8 +26,8 @@ class AddAcceptedColumnToRequisitionTable extends Migration
      */
     public function down()
     {
-        Schema::table('requisition', function (Blueprint $table) {
-            $table->removeColumn('accepted') ;
+        Schema::table('requisitions', function (Blueprint $table) {
+            $table->dropColumn('accepted') ;
         });
     }
 }

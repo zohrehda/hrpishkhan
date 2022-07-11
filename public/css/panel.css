@@ -80,7 +80,8 @@ nav {
     color: #FFFFFF;
     background-color: #28a745;
 }
-.bg-green{
+
+.bg-green {
     background-color: #28a745;
 }
 
@@ -94,7 +95,8 @@ nav {
     color: #FFFFFF;
     background-color: #dc3545;
 }
-.bg-red{
+
+.bg-red {
     background-color: #dc3545;
 }
 
@@ -111,7 +113,8 @@ nav {
 .btn-yellow:hover {
     background-color: #eeb714;
 }
-.bg-yellow{
+
+.bg-yellow {
     background-color: #ffcd39;
 
 }
@@ -130,20 +133,22 @@ nav {
     color: #FFFFFF;
     background-color: #007bff;
 }
-.bg-blue{
+
+.bg-blue {
     background-color: #007bff;
 
 }
+
 .btn-blue:hover {
     color: #fff;
     background-color: #0069d9;
     border-color: #0062cc;
 }
-.bg-assign{
-    background-color: #0000CD
 
-;
+.bg-assign {
+    background-color: #0000CD;
 }
+
 .btn-black {
     color: #FFFFFF;
     background-color: #343a40;
@@ -153,15 +158,18 @@ nav {
     color: #FFFFFF;
     background-color: #000000;
 }
-.bg-black{
+
+.bg-black {
     background-color: #000000;
 
 }
+
 .btn-orange {
     color: #FFFFFF;
     background-color: #F39C12;
 }
-.bg-orange{
+
+.bg-orange {
     background-color: #F39C12;
 }
 
@@ -170,19 +178,21 @@ nav {
     background-color: #DD8F12;
 }
 
-.btn-coral{
+.btn-coral {
     color: #FFFFFF;
-    background-color:#FF7F50 ;
+    background-color: #FF7F50;
 }
 
-.btn-coral:hover{
+.btn-coral:hover {
     color: #FFFFFF;
-    background-color:#f39b6f ;
+    background-color: #f39b6f;
 }
+
 .btn-grey {
     color: #FFFFFF;
     background-color: #7F8C8D;
 }
+
 .btn-grey:hover {
     color: #FFFFFF;
     background-color: #5E6768;
@@ -202,10 +212,12 @@ nav {
     color: #FFFFFF;
     background-color: #DE3163;
 }
-.bg-pink{
+
+.bg-pink {
     background-color: #DE3163;
 
 }
+
 .btn-pink:hover {
     color: #FFFFFF;
     background-color: #B0284F;
@@ -213,8 +225,8 @@ nav {
 
 .card-btn-containers {
     margin: 10px 0;
-  /*  background-color: #fff;*/
-  
+    /*  background-color: #fff;*/
+
     border-radius: 5px;
     display: flex;
     justify-content: center;
@@ -225,14 +237,14 @@ nav {
 
 .card-btn-containers .btn {
     margin: auto 2px;
-    border:2px solid #FFFFFF;
+    border: 2px solid #FFFFFF;
 }
 
 .preview {
     font-size: 18px;
 }
 
-.ribbon{
+.ribbon {
     background-color: red;
     position: absolute;
     transform: rotate(45deg);
@@ -241,32 +253,54 @@ nav {
     right: -57px;
 }
 
-.terms{
+.terms {
     text-align: justify;
     font-size: 18px;
 }
 
-.terms > ul{
+.terms > ul {
     margin: 0;
-    padding: 0;    
+    padding: 0;
 }
-.terms > ul > ul{
-    padding: 0 2px;    
+
+.terms > ul > ul {
+    padding: 0 2px;
 }
 
 
-.terms ul ol{
+.terms ul ol {
     margin: 0;
     padding: 5px 0;
 
 }
 
-.btn-plus{
+.btn-plus {
     font-size: 22px;
-padding: 2px 13px;
-margin: 0;
+    padding: 2px 13px;
+    margin: 0;
 }
 
+.my-draft-highlight-li {
+    background-color: #d6d8db;
+}
 
+#draft .draft-actions {
+    transition: all 1s ease-in-out;
+}
 
+#draft .outer-ul .draft-li:hover .draft-actions {
+    display: block !important;
+}
 
+#draft .draft-li {
+    height: 55px;
+}
+
+#draft .outer-ul .outer-li .li-title:hover .cat-actions {
+    display: block !important;
+}
+
+#draft .feedback {
+    padding-left: 5px;
+    width: 100%;
+}
