@@ -130,16 +130,17 @@ class RequisitionPolicy
         }
     }
 
-    public function final_accept(User $user, Requisition $requisition):bool
+    public function final_accept(User $user, Requisition $requisition): bool
     {
         return ($user->is_hr_admin() and $requisition->accepted == 0 and
+            in_array($requisition->status, [RequisitionStatus::PENDING_STATUS, RequisitionStatus::REJECTED_STATUS]) and
             $requisition->current_progress()->status != ADMIN_FINAL_PENDING);
     }
 
     public function assign(User $user, Requisition $requisition)
     {
         if (in_array($requisition->status, [ASSIGNED_STATUS, ACCEPTED_STATUS])
-            and ($user->is_hr_admin() or $user->user_assigned_to_assign_requisitions->whereIn('id', $requisition->id)->count()   )
+            and ($user->is_hr_admin() or $user->user_assigned_to_assign_requisitions->whereIn('id', $requisition->id)->count())
 
         ) {
 
