@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RequisitionCreated;
 use App\Requisition;
 use App\RequisitionViewer;
 use App\User;
@@ -14,7 +15,6 @@ class RequisitionViewersController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->input('requisition_id')) ;
         $validator = Validator::make($request->all(), [
             'users' => 'array',
         ]);
@@ -25,10 +25,10 @@ class RequisitionViewersController extends Controller
             ->merge($requisition->user_assigned->pluck('email'))
             ->merge($requisition->requisition_viewers->pluck('email'))
             ->toArray();
-            
-           
+
+
             $has_forbidden_user = array_intersect($request->input('users',[]), $forbidden_users);
-           
+
 
             if (count($has_forbidden_user)) {
 
@@ -45,15 +45,19 @@ class RequisitionViewersController extends Controller
         $requisition_id = $request->input('requisition_id');
 
         Requisition::find($requisition_id)->requisition_viewers()->delete();
-
+        $requisition = Requisition::find($request->input('requisition_id'));
         foreach ($viewers as $viewer) {
            // echo $viewer ;
+            $user=User::by_provider($viewer) ;
             $credentials = [
-                'user_id' => User::by_provider($viewer)->id,
+                'user_id' => $user->id,
                 'requisition_id' => $requisition_id
             ];
             RequisitionViewer::create($credentials);
+            event(new RequisitionCreated($requisition, $user));
         }
+
+
         return response()->json(['success'=>'Done']);
 
 

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Classes\Determiners;
 use App\Classes\StaffHierarchy;
+use App\Events\RequisitionChanged;
+use App\Events\RequisitionCreated;
 use App\Events\RequisitionSent;
+use App\Notifications\NewRequisition;
 use App\Requisition;
 use App\RequisitionSetting;
 use App\RequisitionStatus;
@@ -20,6 +23,7 @@ class RequisitionController extends Controller
 {
     public function index()
     {
+        //  dd(Requisition::find(2)->unread_notifications->first()->type);
         $pending = Auth::user()->pending_determiner_requisitions;
 
         $rejected = Auth::user()->determiner_rejected_requisitions->merge(Auth::user()->rejected_user_requisitions);
@@ -71,6 +75,7 @@ class RequisitionController extends Controller
 
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), RequisitionSetting::validation_rules());
         if ($validator->fails()) {
             session(['termAccepted' => 1]);
@@ -90,9 +95,9 @@ class RequisitionController extends Controller
         }
 
         $this->send_email_to_determiner($requisition->determiner_id);
-
         $requisition->save();
         $requisition->create_progress(ADMIN_PRIMARY_PENDING_PRG_STATUS);
+
         $request->session()->flash('success', 'Requisition sent successfully.');
         return redirect()->route('dashboard');
     }
@@ -173,7 +178,7 @@ class RequisitionController extends Controller
     public function determine(Request $request, Requisition $requisition)
     {
         // dd($request->all()) ;
-        if ($request->post('progress_result') == RequisitionStatus::ACCEPTED_STATUS) {
+        if ($request->post('progress_result') == ACCEPT_ACTION) {
             $requisition->accept($request->post('determiner_comment'));
 
         } elseif ($request->post('progress_result') == ASSIGN_ACTION) {
@@ -183,19 +188,21 @@ class RequisitionController extends Controller
             ]);
             $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-        } elseif ($request->post('progress_result') == RequisitionStatus::REJECTED_STATUS) {
+        } elseif ($request->post('progress_result') ==REJECT_ACTION) {
             $requisition->reject($request->post('determiner_comment'));
 
-        } elseif ($request->post('progress_result') == RequisitionStatus::HOLDING_STATUS) {
+        } elseif ($request->post('progress_result') == HOLD_ACTION) {
             $requisition->hold();
-        } elseif ($request->post('progress_result') == RequisitionStatus::CLOSED_STATUS) {
+        } elseif ($request->post('progress_result') == CLOSE_ACTION) {
             $requisition->close();
-        } elseif ($request->post('progress_result') == RequisitionStatus::OPEN_STATUS) {
+        } elseif ($request->post('progress_result') == OPEN_ACTION) {
             $requisition->open();
-        }elseif ($request->post('progress_result') == FINAL_ACCEPT_ACTION) {
+        } elseif ($request->post('progress_result') == FINAL_ACCEPT_ACTION) {
             $requisition->final_accept();
         }
+       // event(new RequisitionCreated($requisition,User::find(4)));
 
+        event(new RequisitionChanged($requisition,$request->post('progress_result')));
 
         $request->session()->flash('success', 'Requisition updated successfully.');
 

@@ -28,13 +28,42 @@
 {{--    </div>--}}
 
 {{--</nav>--}}
-<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0">Welcome, {{ Auth::user()->name }}</a>
-    <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{{ route('logout') }}">Sign out</a>
-        </li>
-    </ul>
+<nav class="navbar navbar-dark justify-content-start fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand  col-sm-3 col-md-2 mr-0">Welcome, {{ Auth::user()->name }}</a>
+
+    <div class="d-flex justify-content-between w-100 align-content-center">
+        <ul class="navbar-nav  ">
+            <li class="nav-item text-nowrap h-100 ">
+
+                <div class="notification-bell h-100  ">
+                    <img class="cursor-pointer h-75 m-1 " src="{{asset('svg/notification-ring-svgrepo-com.svg')}}">
+                    <span
+                        class="notification-count badge badge-light">{{Auth::user()->unreadNotifications->count()?:'' }}</span>
+                </div>
+
+                <ul class="notification-list mt-2 shadow-lg p-1 position-absolute w-25  mb-5 bg-white rounded list-group list-group-flush">
+                    @forelse(Auth::user()->unReadnotifications->sortBy('created_at')->reverse() as $notification)
+                        <li class="list-group-item  d-flex justify-content-between @if(!$notification->read_at)font-weight-bold @endif cursor-pointer"
+                            data-requisition-id="{{$notification->data['requisition_id']}}">
+                            <span>{{$notification->message}}</span>
+                            <small>{{$notification->created_at}}</small>
+                        </li>
+
+                    @empty
+                        <li class="list-group-item">there is no notification</li>
+                    @endforelse
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{{ route('logout') }}">Sign out</a>
+            </li>
+        </ul>
+
+    </div>
+
 </nav>
 
 <div class="container-fluid">

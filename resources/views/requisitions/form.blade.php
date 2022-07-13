@@ -115,10 +115,10 @@
 <div class="center">
     @if($requisition??null)
         @can('accept',$requisition)
-            <button name="progress_result" value="{{RequisitionStatus::ACCEPTED_STATUS}}" type="submit"
+            <button name="progress_result" value="{{ACCEPT_ACTION}}" type="submit"
                     class="btn btn-green">Accept
             </button>
-            <button name="progress_result" value="{{RequisitionStatus::REJECTED_STATUS}}" type="submit"
+            <button name="progress_result" value="{{REJECT_ACTION}}" type="submit"
                     class="btn btn-yellow">Reject
             </button>
         @elsecannot('accept',$requisition)
@@ -152,7 +152,7 @@
         <button
             type="submit"
             name="progress_result"
-            value="{{RequisitionStatus::HOLDING_STATUS}}"
+            value="{{HOLD_ACTION}}"
             class="btn btn-orange">Hold
         </button>
     @endcan
@@ -160,7 +160,7 @@
         <button
             type="submit"
             name="progress_result"
-            value="{{RequisitionStatus::OPEN_STATUS}}"
+            value="{{OPEN_ACTION}}"
             class="btn btn-orange">Open
         </button>
     @endcan
@@ -169,7 +169,7 @@
         <button
             name="progress_result"
             type="submit"
-            value="{{RequisitionStatus::CLOSED_STATUS}}"
+            value="{{CLOSE_ACTION}}"
             onclick="return confirm('Are you sure to close the requisition?')"
             class="btn btn-sm btn-black">Close
 

@@ -17,6 +17,7 @@ Route::redirect('/', 'login');
 
 
 Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], function () {
+
     Route::get('dashboard', 'RequisitionController@index')->name('dashboard');
     Route::group(['prefix' => 'requisitions'], function () {
         Route::get('create', 'RequisitionController@create')->name('requisitions.create');
@@ -24,7 +25,7 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
         Route::get('{requisition}/edit', 'RequisitionController@edit')->name('requisitions.edit');
         Route::post('update', 'RequisitionController@update')->name('requisitions.update');
         Route::get('{requisition}/destroy', 'RequisitionController@destroy')->name('requisitions.destroy');
-       // Route::get('{requisition}/close', 'RequisitionController@close')->name('requisitions.close');
+        // Route::get('{requisition}/close', 'RequisitionController@close')->name('requisitions.close');
         Route::post('{requisition}/determine', 'RequisitionController@determine')->name('requisitions.determine');
         Route::post('/customizeReceiver', 'RequisitionController@customizeReceiver')->name('requisitions.customizeReceiver');
         Route::get('/ldapUsers', 'RequisitionController@ldapUsers')->name('requisitions.ldapUsers');
@@ -42,6 +43,10 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
     });
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', 'UsersController@index')->name('users.index');
+    });
+    Route::group(['prefix' => 'notifications'], function () {
+        Route::get('/', 'NotificationsController@index')->name('notifications.index');
+        Route::post('/mark_as_read', 'NotificationsController@mark_as_read')->name('notifications.mark_as_read');
     });
 
     /* Food reservation routes*/
@@ -73,12 +78,11 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth'/*, 'verified'*/]], fu
 });
 
 
-
 Route::group([
-    'prefix'=>'develop'] ,function(){
-        Route::get('requisitions', function(){
-            dd(Requisition::all()) ;
-        });
+    'prefix' => 'develop'], function () {
+    Route::get('requisitions', function () {
+        dd(Requisition::all());
+    });
 
-    }
-) ;
+}
+);

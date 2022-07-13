@@ -70,10 +70,37 @@ $(document).ready(function () {
         levelInputElm.html(html)
     }
 
+    /***** store requisition viewers *****/
+
+    viewerForm.on('submit', function (event) {
+        event.preventDefault();
+
+        formData = $(this);
+        modal = $(this).parents('.AddViewer')
+
+        $.ajax({
+            url: '/panel/requisitions/viewers',
+            type: 'post',
+            dataType: 'json',
+            data: formData.serialize(),
+            success: function (response) {
+                if ($.isEmptyObject(response.error)) {
+                    alert(response.success);
+                    modal.modal('hide');
+                } else {
+                    alert(response.error);
+                    modal.modal('hide');
+                }
+            },
+
+
+        });
+
+    });
 
     /***** disable & enable vertical input depending on value of department input *****/
     departmentInput.on('change', function () {
-         value = $(departmentInput).val();
+        value = $(departmentInput).val();
 
         departmentsRequiresvertical = Object.values(formItemsSetting.vertical.required_if)[0];
         if (departmentsRequiresvertical.indexOf(value) !== -1) {
@@ -160,8 +187,8 @@ $(document).ready(function () {
 
     /***** empty input modals *****/
     $('.modal').on('show.bs.modal', function (e) {
-     //   $(this).find('input[type="checkbox"]').prop('checked', false);
-       // $(this).find('input[type="text"]').val('');
+        //   $(this).find('input[type="checkbox"]').prop('checked', false);
+        // $(this).find('input[type="text"]').val('');
 
     });
 
@@ -215,19 +242,56 @@ $(document).ready(function () {
     });
 
     $("button[type='submit']").click(function (e) {
-        //        e.preventDefault();
-        //  $(this).prop('disabled', true);
-
         $(this).css({
             "opacity": "0.5",
             "cursor": "not-allowed",
             "pointer-events": "none"
-
-
         })
-        //$(this).parents('form').submit() ;
-
     });
+
+    $('.notification-bell').on('click', function () {
+        $('.notification-list').toggle()
+
+    })
+    $(document).on('click', function (event) {
+
+        if (!event.target.closest('.notification-bell') && !event.target.closest('.notification-list')) {
+            $('.notification-list').hide()
+        }
+    })
+
+    $('.notification-list li').on('click', function () {
+        $('.requisition-card').removeClass('highlight-card')
+
+        let _this = $(this);
+        let requisition_id = _this.attr('data-requisition-id');
+        $('.requisition-card[id="' + requisition_id + '"]').addClass('highlight-card')
+    })
+
+    $(document).on('click', '[data-notification="1"]', function () {
+
+        let _this = $(this);
+        _this.removeClass('highlight-card')
+        let requisition_id = _this.attr('id')
+        $.ajax({
+            url: '/panel/notifications/mark_as_read',
+            type: 'post',
+            data: {
+                requisition_id: requisition_id
+            },
+            success: function () {
+                _this.attr('data-notification', 0)
+                _this.find('.ribbon').fadeOut();
+                let notificationLi = $('.notification-list li[data-requisition-id="' + requisition_id + '"]')
+                notificationLi.removeClass('font-weight-bold')
+                let count = notificationLi.length
+                let countElm = $('.notification-bell .notification-count')
+                countElm.text((countElm.text() - count > 0) ? Number(countElm.text()) - count : '')
+            }
+        })
+        _this.attr('data-notification', '0')
+
+    })
 
 });
 
@@ -308,3 +372,4 @@ function interviewer_html(interviewer = null) {
     }
 
 }
+

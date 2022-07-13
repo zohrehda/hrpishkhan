@@ -4,17 +4,23 @@
             <div class="row">
                 @foreach($requisitions as $requisition)
                     <div class="col-md-4 form-space">
-
-                        <div class="card {{ $card_class }}  text-white overflow-hidden">
+                        <div class="card {{ $card_class }} requisition-card  text-white overflow-hidden"
+                             data-notification="{{$requisition->has_notification?1:0}}"
+                             id="{{$requisition->id}}">
                             <div class="card-header text-center "
                                  data-toggle="collapse" type="button"
                                  data-target="#card-{{$requisition->id}}-{{$card_class}}">
-                                {{ $requisition->en_title }}
-                                <br>
-                                {{$requisition->owner->details()['name']}}
-                                <br>
+                                <div class="position-absolute">
+                                    <span class="badge badge-light" style="font-size: 13px">{{$requisition->label}}</span>
+                                </div>
+                                <div>
+                                    {{ $requisition->en_title }}
+                                    <br>
+                                    {{$requisition->owner->details()['name']}}
+                                </div>
+
                                 <div class="ribbon">
-                                    {{$requisition->label}}
+                                    {{$requisition->notification_label}}
                                 </div>
 
                             </div>
@@ -79,7 +85,7 @@
                                                     <button
                                                         type="submit"
                                                         name="progress_result"
-                                                        value="{{RequisitionStatus::REJECTED_STATUS}}"
+                                                        value="{{REJECT_ACTION}}"
                                                         class="btn btn-sm btn-yellow">Reject
                                                     </button>
                                                 </div>
@@ -88,7 +94,7 @@
                                                     <button
                                                         type="submit"
                                                         name="progress_result"
-                                                        value="{{RequisitionStatus::ACCEPTED_STATUS}}"
+                                                        value="{{ACCEPT_ACTION}}"
                                                         class="btn btn-sm btn-green">Accept
                                                     </button>
                                                 </div>
@@ -111,7 +117,7 @@
                                                     <button
                                                         type="submit"
                                                         name="progress_result"
-                                                        value="{{RequisitionStatus::CLOSED_STATUS}}"
+                                                        value="{{CLOSE_ACTION}}"
                                                         onclick="return confirm('Are you sure to close the requisition?')"
                                                         class="btn btn-sm btn-black">Close
                                                     </button>
@@ -145,7 +151,7 @@
                                                         type="submit"
 
                                                         name="progress_result"
-                                                        value="{{RequisitionStatus::HOLDING_STATUS}}"
+                                                        value="{{HOLD_ACTION}}"
                                                         class="btn btn-sm btn-orange">Hold
                                                     </button>
                                                 </div>
@@ -157,7 +163,7 @@
                                                     <button
                                                         type="submit"
                                                         name="progress_result"
-                                                        value="{{RequisitionStatus::OPEN_STATUS}}"
+                                                        value="{{OPEN_ACTION}}"
                                                         class="btn btn-sm btn-coral">Open
                                                     </button>
                                                 </div>

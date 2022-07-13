@@ -11,6 +11,7 @@ class RequisitionStatus
     const HOLDING_STATUS = 'holding';
     const OPEN_STATUS = 'open';
     const REJECTED_STATUS = 'rejected';
+
     const ADMIN_PRIMARY_PENDING = 'admin_primary_pending';
     const ADMIN_FINAL_PENDING = 'admin_final_pending';
     const DETERMINERS_PENDING = 'determiners_pending';

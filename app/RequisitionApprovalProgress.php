@@ -21,9 +21,9 @@ class RequisitionApprovalProgress extends Model
      */
     public function getStatusAttribute()
     {
-        if ($this->attributes['status'] == RequisitionStatus::ACCEPTED_STATUS) {
+        if ($this->attributes['status'] == ACCEPTED_STATUS) {
             return "accepted";
-        } elseif ($this->attributes['status'] == RequisitionStatus::PENDING_STATUS) {
+        } elseif ($this->attributes['status'] == PENDING_STATUS) {
             return "pending";
         } else return "rejected";
     }

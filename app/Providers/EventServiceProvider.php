@@ -4,13 +4,17 @@ namespace App\Providers;
 
 use App\Events\RequisitionAccepted;
 use App\Events\RequisitionAssigned;
+use App\Events\RequisitionChanged;
+use App\Events\RequisitionCreated;
 use App\Events\RequisitionRejected;
 use App\Events\RequisitionSent;
 use App\Events\RequisitionSubmitted;
 use App\Listeners\SendAcceptedEmail;
 use App\Listeners\SendAssignedEmail;
 use App\Listeners\SendNewEmail;
+use App\Listeners\SendNewRequisitionNotification;
 use App\Listeners\SendRejectedEmail;
+use App\Listeners\SendRequisitionChangedNotification;
 use App\Listeners\SendSubmittedEmail;
 
 use Illuminate\Auth\Events\Registered;
@@ -36,14 +40,18 @@ class EventServiceProvider extends ServiceProvider
         RequisitionRejected::class => [
             SendRejectedEmail::class,
         ],
-
         RequisitionSubmitted::class => [
             SendSubmittedEmail::class,
         ],
         RequisitionAssigned::class=>[
             SendAssignedEmail::class
         ]
-
+        ,RequisitionCreated::class=>[
+            SendNewRequisitionNotification::class
+        ],
+        RequisitionChanged::class=>[
+            SendRequisitionChangedNotification::class
+        ]
 
     ];
 

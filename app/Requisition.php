@@ -6,6 +6,8 @@ use Adldap\Laravel\Commands\Import;
 use Adldap\Laravel\Facades\Adldap;
 use App\Classes\StaffHierarchy;
 use App\Events\RequisitionAssigned;
+use App\Events\RequisitionCreated;
+use App\Notifications\NewRequisition;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -66,13 +68,11 @@ class Requisition extends Model
     public function getDegreeAttribute()
     {
         return RequisitionItems::getItems('degree')['options'][$this->attributes['degree']] ?? $this->attributes['degree'];
-
     }
 
     public function getExperienceYearAttribute()
     {
         return RequisitionItems::getItems('experience_year')['options'][$this->attributes['experience_year']] ?? $this->attributes['experience_year'];
-
     }
 
     public function getCompetencyAttribute($value)
@@ -112,39 +112,9 @@ class Requisition extends Model
         $this->attributes['interviewers'] = $interviewers;
     }
 
-    public function setDeterminerAttribute($value)
-    {
-        //   dd($value);
-        $determiners = self::getOrderedDeterminers($value);
-        $sender = User::find(Auth::id());
-
-        $determiners_id = [];
-        foreach ($determiners as $d) {
-            $determiners_id[] = User::by_provider($d)->id;
-        }
-        $determiner_id = $determiners_id[0];
-        $recipient = User::find($determiners_id[0]);
-        event(new RequisitionSent($sender, $recipient));
-        $this->attributes['determiner_id'] = $determiner_id;
-    }
-
-    public function setDeterminerIdAttribute($value)
-    {
-        // $determiner_id = $value;
-        // $user=  User::by_provider($value) ;
-        //  if (config('app.users_provider') == 'ldap') {
-        //     $determiner_id = User::where('email', $value)->first()->id;
-        // }
-        //  $user=  User::by_provider($value) ;
-        $this->attributes['determiner_id'] = $value;
-
-    }
-
-
     public function getLabelAttribute()
     {
         $label = '';
-
 
         if (Auth::user()->user_viewable_requisitions()->get()->where('id', $this->id)->count()) {
             $label = 'just view';
@@ -156,6 +126,38 @@ class Requisition extends Model
 
         return $label;
     }
+
+    public function getNotificationLabelAttribute() :string
+    {
+        $notification = $this->unread_notifications()->first();
+        $label = '';
+        if (!$this->has_notification) {
+            return $label;
+        }
+        if ($notification->type == Notification::NEW_TYPE) {
+            $label = 'new';
+        }
+        if ($notification->type == Notification::CHANGED_TYPE) {
+            $label = 'changed';
+        }
+        return $label;
+    }
+
+    public function getHasNotificationAttribute()
+    {
+        return $this->unread_notifications()->count() > 0;
+    }
+
+    public function notifications()
+    {
+        return Auth::user()->notifications()->where('data->requisition_id', $this->id);
+    }
+
+    public function unread_notifications()
+    {
+        return $this->notifications()->whereNull('read_at');
+    }
+
 
     /**
      * get all approval_progresses for requisition
@@ -171,8 +173,8 @@ class Requisition extends Model
     public function pending_approval_progresses()
     {
         return $this->hasMany(RequisitionApprovalProgress::class, 'requisition_id')
-            ->where('status', '=', RequisitionStatus::PENDING_STATUS)
-            ->orWhere('status', '=', RequisitionStatus::REJECTED_STATUS);
+            ->where('status', '=', PENDING_STATUS)
+            ->orWhere('status', '=', REJECTED_STATUS);
     }
 
 
@@ -198,7 +200,7 @@ class Requisition extends Model
     public function accepted_approval_progresses()
     {
         return $this->hasMany(RequisitionApprovalProgress::class, 'requisition_id')
-            ->where('status', '=', RequisitionStatus::ACCEPTED_STATUS);
+            ->where('status', '=', ACCEPTED_STATUS);
     }
 
     /**
@@ -216,8 +218,8 @@ class Requisition extends Model
     public function pending_determiners()
     {
         return $this->belongsToMany(User::class, 'requisition_approval_progresses', 'requisition_id', 'determiner_id')
-            ->Where('status', '=', RequisitionStatus::PENDING_STATUS)
-            ->orWhere('status', '=', RequisitionStatus::REJECTED_STATUS);
+            ->Where('status', '=', PENDING_STATUS)
+            ->orWhere('status', '=', REJECTED_STATUS);
     }
 
     /**
@@ -242,64 +244,6 @@ class Requisition extends Model
         return $this->hasMany(RequisitionProgress::class, 'requisition_id');
     }
 
-    public function current_progress()
-    {
-        return $this->progresses()->latest()->first();
-    }
-
-
-    public function open()
-    {
-        if ($this->current_progress()->status == RequisitionStatus::HOLDING_STATUS) {
-            $this->current_progress()->delete();
-        }
-
-        $this->update([
-            'status' => (in_array($this->current_progress()->status, RequisitionStatus::PENDING_GROUP)) ? RequisitionStatus::PENDING_STATUS : $this->current_progress()->status
-        ]);
-        $this->save();
-    }
-
-    /**
-     * accept requisition
-     */
-    public function accept($comment = null)
-    {
-        $c = $this->current_approval_progress()->id;
-        $this->status = RequisitionStatus::PENDING_STATUS;
-
-        $this->current_approval_progress()->update([
-            'status' => RequisitionStatus::ACCEPTED_STATUS,
-            'determiner_comment' => $comment
-        ]);
-        // $this->current_approval_progress()->save() ;
-
-        if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
-            $this->determiner_id = null;
-            $this->status = RequisitionStatus::ACCEPTED_STATUS;
-            $this->accepted = 1;
-            event(new RequisitionAccepted(User::find(Auth::id()), $this->owner));
-
-            $this->create_progress(RequisitionStatus::ACCEPTED_STATUS);
-
-        } else {
-            // send the requisition to next determiner.
-            $this->determiner_id = $this->current_approval_progress()->determiner_id;
-            $sender = User::find(Auth::id());
-            $recipient = User::find($this->current_approval_progress()->determiner_id);
-            event(new RequisitionSent($sender, $recipient));
-
-            $status = RequisitionStatus::DETERMINERS_PENDING;
-            if ($this->determiner_id == User::hr_admin()->id) {
-                $status = RequisitionStatus::ADMIN_FINAL_PENDING;
-            }
-            $this->create_progress($status);
-
-        }
-        $this->save();
-    }
-
-
     public function create_progress($status)
     { //firstOrCreate
         $this->progresses()->create([
@@ -308,38 +252,88 @@ class Requisition extends Model
         ]);
     }
 
+    public function current_progress()
+    {
+        return $this->progresses()->latest()->first();
+    }
+
+
+    public function open()
+    {
+        if ($this->current_progress()->status == HOLDING_STATUS) {
+            $this->current_progress()->delete();
+        }
+
+
+        $this->update([
+            'status' => (in_array($this->current_progress()->status, PENDING_GROUP_STATUS)) ? PENDING_STATUS : $this->current_progress()->status
+        ]);
+        $this->save();
+    }
+
+    public function accept($comment = null)
+    {
+        $c = $this->current_approval_progress()->id;
+        $this->status = PENDING_STATUS;
+
+        $this->current_approval_progress()->update([
+            'status' => ACCEPTED_STATUS,
+            'determiner_comment' => $comment
+        ]);
+        // $this->current_approval_progress()->save() ;
+
+        if (Auth::user()->is_hr_admin() && $this->approval_progresses()->get()->last()->id == $c) {
+            $this->determiner_id = null;
+            $this->status = ACCEPTED_STATUS;
+            $this->accepted = 1;
+            event(new RequisitionAccepted(User::find(Auth::id()), $this->owner));
+
+            $this->create_progress(ACCEPTED_STATUS);
+
+        } else {
+            // send the requisition to next determiner.
+            $this->determiner_id = $this->current_approval_progress()->determiner_id;
+            $sender = User::find(Auth::id());
+            $recipient = User::find($this->current_approval_progress()->determiner_id);
+            event(new RequisitionSent($sender, $recipient));
+            event(new RequisitionCreated($this, $recipient));
+
+            $status = DETERMINERS_PENDING_PRG_STATUS;
+            if ($this->determiner_id == User::hr_admin()->id) {
+                $status = ADMIN_FINAL_PENDING_PRG_STATUS;
+            }
+            $this->create_progress($status);
+
+        }
+        $this->save();
+    }
 
     public function hold()
     {
         $this->update(
-            ['status' => RequisitionStatus::HOLDING_STATUS
+            ['status' => HOLDING_STATUS
             ]);
         $this->save();
-        $this->create_progress(RequisitionStatus::HOLDING_STATUS);
+        $this->create_progress(HOLDING_STATUS);
 
     }
-
 
     public function close()
     {
         $this->update(
-            ['status' => RequisitionStatus::CLOSED_STATUS
+            ['status' => CLOSED_STATUS
             ]);
         $this->save();
-        $this->create_progress(RequisitionStatus::CLOSED_STATUS);
+        $this->create_progress(CLOSED_STATUS);
 
     }
 
-
-    /**
-     * reject requisition
-     */
     public function reject($comment = null)
     {
         // rejecting progress
         // update progress to rejected status.
         $this->current_approval_progress()->update([
-            'status' => RequisitionStatus::REJECTED_STATUS,
+            'status' => REJECTED_STATUS,
             'determiner_comment' => $comment
         ]);
         //  $this->current_approval_progress()->save() ;
@@ -347,7 +341,7 @@ class Requisition extends Model
         if ($this->accepted_approval_progresses()->count()) {
             // update requisition's last progress to pending
             $this->accepted_approval_progresses->last()->update([
-                'status' => RequisitionStatus::PENDING_STATUS,
+                'status' => PENDING_STATUS,
             ]);
             // $this->accepted_approval_progresses->last()->save() ;
         }
@@ -357,14 +351,14 @@ class Requisition extends Model
 
         $sender = User::find(Auth::id());
 
-        if ($this->approval_progresses()->first()->status == RequisitionStatus::REJECTED_STATUS) {
+        if ($this->approval_progresses()->first()->status == REJECTED_STATUS) {
             $this->update([
-                'status' => RequisitionStatus::REJECTED_STATUS,
+                'status' => REJECTED_STATUS,
             ]);
             $this->save();
         }
 
-        if ($this->status == RequisitionStatus::REJECTED_STATUS) {
+        if ($this->status == REJECTED_STATUS) {
             $recipient = $this->owner;
 
             event(new RequisitionRejected($sender, $recipient));
@@ -372,23 +366,63 @@ class Requisition extends Model
         } else {
             $recipient = User::find($this->current_approval_progress()->determiner_id);
             event(new RequisitionSent($sender, $recipient));
+            event(new RequisitionCreated($this, $recipient));
         }
 
 
-        if ($this->current_progress()->status != RequisitionStatus::ADMIN_PRIMARY_PENDING)
+        if ($this->current_progress()->status != ADMIN_PRIMARY_PENDING_PRG_STATUS)
             $this->current_progress()->delete();
 
         $this->save();
     }
 
+    public function assign($to, $type)
+    {
+
+        $to = User::by_provider($to);
+        if ($this->assignments()->count() > 1) {
+            $this->type_do_assignment()->delete();
+        }
+        $this->create_progress(ASSIGNED_STATUS);
+        $this->update([
+            'status' => ASSIGNED_STATUS
+        ]);
+        $this->save();
+        RequisitionAssignment::updateOrCreate([
+            'requisition_id' => $this->id,
+            'from' => Auth::user()->id,
+
+        ], [
+            'to' => $to->id,
+            'type' => $type
+        ]);
+        $sender = Auth::user();
+        event(new RequisitionCreated($this,$to));
+
+        event(new RequisitionAssigned($sender, $to, $type));
+
+    }
+
+    public function final_accept()
+    {
+        if ($this->current_determiner()->is_hr_admin()) {
+            $this->current_approval_progress()->update([
+                'status' => ACCEPTED_STATUS
+            ]);
+        }
+        $this->update(['accepted' => 1, 'status' => ACCEPTED_STATUS]);
+        $this->create_progress(FINAL_ACCEPT_ACTION);
+    }
+
+
     public function current_progress_status()
     {
-        $status = RequisitionStatus::DETERMINERS_PENDING;
+        $status = DETERMINERS_PENDING_PRG_STATUS;
         if ($this->is_first_approval_progress()) {
-            $status = RequisitionStatus::ADMIN_PRIMARY_PENDING;
+            $status = ADMIN_PRIMARY_PENDING_PRG_STATUS;
 
         } elseif ($this->is_last_approval_progress()) {
-            $status = RequisitionStatus::ADMIN_FINAL_PENDING;
+            $status = ADMIN_FINAL_PENDING_PRG_STATUS;
         }
         return $status;
     }
@@ -424,10 +458,13 @@ class Requisition extends Model
         $this->determiner_id = $this->approval_progresses()->first()->determiner_id;
         // update all approval_progresses to pending status.
         $this->approval_progresses()->update([
-            'status' => RequisitionStatus::PENDING_STATUS,
+            'status' => PENDING_STATUS,
             'determiner_comment' => null
         ]);
-        //  $this->approval_progresses()->save() ;
+        $this->determiners()->map(function ($user) {
+            event(new RequisitionCreated($this, $user));
+
+        });
     }
 
 
@@ -439,7 +476,7 @@ class Requisition extends Model
         })->toArray();
 
 
-        if (count(array_unique($status_array)) == RequisitionStatus::ACCEPTED_STATUS) {
+        if (count(array_unique($status_array)) == ACCEPTED_STATUS) {
             $status = array_unique($status_array) [0];
 
         } else {
@@ -507,7 +544,7 @@ class Requisition extends Model
     {
         $last = $this->assignments()->latest()->first();
 
-        if ($this->status == RequisitionStatus::CLOSED_STATUS) {
+        if ($this->status == CLOSED_STATUS) {
             return Carbon::parse($this->getOriginal('updated_at'))->longAbsoluteDiffForHumans(Carbon::parse($last->updated_at));
         }
         if (!$last) {
@@ -516,61 +553,22 @@ class Requisition extends Model
         return Carbon::createFromTimeStamp(strtotime($last->updated_at))->diffForHumans();
     }
 
-    public function assign($to, $type)
-    {
-        $to = User::by_provider($to);
-        if ($this->assignments()->count() > 1) {
-            $this->type_do_assignment()->delete();
-        }
-        $this->create_progress(RequisitionStatus::ASSIGN_STATUS);
-        $this->update([
-            'status' => RequisitionStatus::ASSIGN_STATUS
-        ]);
-        $this->save();
-        RequisitionAssignment::updateOrCreate([
-            'requisition_id' => $this->id,
-            'from' => Auth::user()->id,
-
-        ], [
-            'to' => $to->id,
-            'type' => $type
-        ]);
-        $sender = Auth::user();
-        event(new RequisitionAssigned($sender, $to, $type));
-    }
-
-    public static function getOrderedDeterminers($value)
-    {
-        $value = ($value) ?: [];
-
-        if ($value && $value[0] != User::hr_admin()->id) {
-            array_unshift($value, User::hr_admin()->id);
-        }
-
-        if (last($value) != User::hr_admin()->id) {
-            $value[] = User::hr_admin()->id;
-        }
-
-        return $value;
-    }
-
 
     public function approver_determiners()
     {
         return $this->belongsToMany(User::class, 'requisition_approval_progresses', 'requisition_id', 'determiner_id')
-            ->where('requisition_approval_progresses.type', RequisitionStatus::DETERMINERS_PENDING);
+            ->where('requisition_approval_progresses.type', DETERMINERS_PENDING_PRG_STATUS);
 
     }
 
     public function holding_requisitions()
     {
-        return $this->where('status', RequisitionStatus::HOLDING_STATUS);
+        return $this->where('status', HOLDING_STATUS);
     }
 
     public function viewers()
     {
         return $this->belongsToMany(User::class, 'requisition_viewers', 'requisition_id', 'user_id');
-
     }
 
     public function requisition_viewers()
@@ -596,7 +594,6 @@ class Requisition extends Model
 
     public function create_determiners($determiners)
     {
-
         foreach ($determiners as $key => $determiner_id) {
 
             $type = DETERMINERS_PENDING_PRG_STATUS;
@@ -615,19 +612,15 @@ class Requisition extends Model
                 'role' => $role,
                 'type' => $type
             ]);
+            if ($type != ADMIN_FINAL_PENDING_PRG_STATUS) {
+                $user = User::find($determiner_id);
+                event(new RequisitionCreated($this, $user));
+            }
+
+
         }
     }
 
-    public function final_accept()
-    {
-        if ($this->current_determiner()->is_hr_admin()) {
-            $this->current_approval_progress()->update([
-                'status' => ACCEPTED_STATUS
-            ]);
-        }
-        $this->update(['accepted' => 1, 'status' => ACCEPTED_STATUS]);
-        $this->create_progress(FINAL_ACCEPT_ACTION);
-    }
 
     public function is_final_accepted(): bool
     {
