@@ -24,13 +24,7 @@ $(document).ready(function () {
         }).responseJSON;
     }
 
-    var draftForm = $('#form-draft'),
-        viewerForm = $('.form-viewer'),
-        saveDraft = draftForm.find('#save-draft-requisition'),
-        draftUpdate = draftForm.find('input[name="draft_update"]'),
-        draftDelete = $("#draft_delete"),
-        DraftImportModal = $('#DraftImportModal'),
-        DraftNameModal = $('#DraftNameModal'),
+    var viewerForm = $('.form-viewer'),
         departmentInput = $("select[name='department']"),
         isNewInput = $("input[name='is_new']"),
         getLevels = getLevelOptions(),
@@ -40,8 +34,10 @@ $(document).ready(function () {
 
     const departmentInputElm = $("select[name='department']");
     const levelInputElm = $("select[name='level']");
+    $('select').select2()
 
     function appendLevel() {
+
         let department = departmentInputElm.val();
         let departments_level = getLevels['departments_level'][department];
         let levels = getLevels['levels'];
@@ -51,6 +47,7 @@ $(document).ready(function () {
             if (typeof departments_level == "undefined") {
                 departments_level = getLevels['departments_level']['ect'];
             }
+
 
             let old = levelInputElm.attr('data-old');
 
@@ -68,40 +65,15 @@ $(document).ready(function () {
             html += "<option value=''>Empty</option>";
         }
         levelInputElm.html(html)
+      //  $("select[name='level']").trigger('change')
+
     }
 
-    /***** store requisition viewers *****/
-
-    viewerForm.on('submit', function (event) {
-        event.preventDefault();
-
-        formData = $(this);
-        modal = $(this).parents('.AddViewer')
-
-        $.ajax({
-            url: '/panel/requisitions/viewers',
-            type: 'post',
-            dataType: 'json',
-            data: formData.serialize(),
-            success: function (response) {
-                if ($.isEmptyObject(response.error)) {
-                    alert(response.success);
-                    modal.modal('hide');
-                } else {
-                    alert(response.error);
-                    modal.modal('hide');
-                }
-            },
-
-
-        });
-
-    });
 
     /***** disable & enable vertical input depending on value of department input *****/
     departmentInput.on('change', function () {
-        value = $(departmentInput).val();
 
+        value = $(departmentInput).val();
         departmentsRequiresvertical = Object.values(formItemsSetting.vertical.required_if)[0];
         if (departmentsRequiresvertical.indexOf(value) !== -1) {
             $("*[name='vertical[]']").prop('disabled', false);
@@ -109,8 +81,27 @@ $(document).ready(function () {
             $("*[name='vertical[]']").prop('disabled', true);
             $("*[name='vertical[]']").val('empty');
         }
+
     });
     departmentInput.trigger('change');
+
+
+    /***** customise level select option depending on selected department *****/
+    departmentInputElm.on('change', function (event) {
+        appendLevel()
+        levelInputElm.attr('data-old', '')
+    });
+
+    appendLevel()
+
+    $('#department , input[name="is_new"]').on('change', function (event) {
+        display_status = DisplayApprover();
+        if (display_status) {
+            $("#determiners").show();
+        } else {
+            $("#determiners").hide();
+        }
+    });
 
     /***** get staff using ajax *****/
     function initializeSelect2(elem) {
@@ -125,27 +116,11 @@ $(document).ready(function () {
             }
         });
     }
-    $('select').select2({
-    })
 
     initializeSelect2($('.select-user'));
     initializeSelect2($('.approver'));
 
-
-    /***** customise level select option depending on selected department *****/
-
-    departmentInputElm.on('change', function (event) {
-
-        appendLevel()
-        levelInputElm.attr('data-old', '')
-    });
-
-    appendLevel()
-
-    // departmentInputElm.trigger('change')
-
     /***** handle approver section depending on department and is new *****/
-
     function DisplayApprover() {
         is_new = $("input[name='is_new']");
         var radio_val = is_new.filter(':checked').val();
@@ -156,15 +131,6 @@ $(document).ready(function () {
         }
         return true;
     }
-
-    $('#department , input[name="is_new"]').on('change', function (event) {
-        display_status = DisplayApprover();
-        if (display_status) {
-            $("#determiners").show();
-        } else {
-            $("#determiners").hide();
-        }
-    });
 
     /***** shift *****/
     $(shiftCheckbox).on('change', function () {
@@ -204,7 +170,6 @@ $(document).ready(function () {
     /***** disable & enable replacement input depending on value of is_new input *****/
     isNewInput.on('change', function () {
         var radio_val = isNewInput.filter(':checked').val();
-        //  console.log(radio_val);
         if (radio_val == 0) {
 
             $("input[name='replacement']").prop('disabled', false);
@@ -216,8 +181,6 @@ $(document).ready(function () {
 
 
     /***** add receiver select input *****/
-    //   j = 0;
-
     $("#add_receiver").on('click', function () {
 
         // j++;
@@ -243,6 +206,34 @@ $(document).ready(function () {
         $('#form').submit();
     });
 
+    /***** store requisition viewers *****/
+    viewerForm.on('submit', function (event) {
+        event.preventDefault();
+
+        formData = $(this);
+        modal = $(this).parents('.AddViewer')
+
+        $.ajax({
+            url: '/panel/requisitions/viewers',
+            type: 'post',
+            dataType: 'json',
+            data: formData.serialize(),
+            success: function (response) {
+                if ($.isEmptyObject(response.error)) {
+                    alert(response.success);
+                    modal.modal('hide');
+                } else {
+                    alert(response.error);
+                    modal.modal('hide');
+                }
+            },
+
+
+        });
+
+    });
+
+    /***** disable submit button after click *****/
     $("button[type='submit']").click(function (e) {
         $(this).css({
             "opacity": "0.5",
@@ -251,19 +242,23 @@ $(document).ready(function () {
         })
     });
 
+    /***** display notification list after click on bell *****/
     $('.notification-bell').on('click', function () {
         $('.notification-list').toggle()
 
     })
+
+    /***** hide notification list after click on outside *****/
     $(document).on('click', function (event) {
 
         if (!event.target.closest('.notification-bell') && !event.target.closest('.notification-list')) {
             $('.notification-list').hide()
-         //   $('.requisition-card').removeClass('highlight-card')
+            //   $('.requisition-card').removeClass('highlight-card')
         }
 
     })
 
+    /***** make card highlight after clicking on associated notification *****/
     $('.notification-list li').on('click', function () {
         $('.requisition-card').removeClass('highlight-card')
 
@@ -272,8 +267,8 @@ $(document).ready(function () {
         $('.requisition-card[id="' + requisition_id + '"]').addClass('highlight-card')
     })
 
+    /***** notification mark as read request *****/
     $(document).on('click', '[data-notification="1"]', function () {
-
         let _this = $(this);
         _this.removeClass('highlight-card')
         let requisition_id = _this.attr('id')

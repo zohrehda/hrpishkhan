@@ -219,7 +219,8 @@
             var level = @json((isset($requisition))?$requisition->getOriginal('level'):null) ;
 
             if (level) {
-                $('select#level').val(level)
+                $('select#level').val(level) ;
+                $('select#level').trigger('change')
             }
 
             let update_only_titles = @json((isset($requisition))?auth()->user()->can('update_only_titles',$requisition):false) ;

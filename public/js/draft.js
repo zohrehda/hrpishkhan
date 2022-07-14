@@ -497,9 +497,10 @@ function myDraftsHandler(options) {
                         let input = mainForm.querySelector('input[type="number"][name=' + index + '], input[type="text"][name=' + index + '] ,select[name=' + index + '] ')
                         if (input) {
                             input.value = value
+                            $('select').trigger('change')
                         }
-                        if (index === 'vertical') {
 
+                        if (index === 'vertical') {
                             $('select[id="vertical"]').val(value)
                             $('select[id="vertical"]').trigger('change')
                         }
