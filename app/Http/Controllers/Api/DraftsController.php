@@ -74,6 +74,7 @@ class DraftsController extends Controller
                 'draft' => json_encode($request->except(['draft_name', 'draft_cat_id', 'draft_public']))
             ]);
         }
+
         return response()->json($new);
     }
 

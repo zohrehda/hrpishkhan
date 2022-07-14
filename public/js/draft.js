@@ -457,6 +457,8 @@ function myDraftsHandler(options) {
                 </div>`;
         }
 
+//        console.log(document.querySelector('select[id="vertical"]').selectedOptions )
+
         function importDraft(event) {
             let liElm = event.target.parentElement.parentElement
             if (document.querySelector('.my-draft-highlight-li')) {
@@ -491,10 +493,17 @@ function myDraftsHandler(options) {
                         if (index === 'competency') {
                             competency_html(value);
                         }
+
                         let input = mainForm.querySelector('input[type="number"][name=' + index + '], input[type="text"][name=' + index + '] ,select[name=' + index + '] ')
                         if (input) {
                             input.value = value
                         }
+                        if (index === 'vertical') {
+
+                            $('select[id="vertical"]').val(value)
+                            $('select[id="vertical"]').trigger('change')
+                        }
+
 
                         let textarea = mainForm.querySelector('textarea[name=' + index + ']')
                         if (textarea) {
@@ -511,7 +520,8 @@ function myDraftsHandler(options) {
                     triggerEvent(departmentELm, 'change')
                     triggerEvent(mainForm.querySelector("input[name='is_new']"), 'change')
                     mainForm.querySelector('#level').value = draft.level ?? ''
-                    mainForm.querySelector('#vertical').value = draft.vertical ?? ''
+                    //   mainForm.querySelector('#vertical').value = draft.vertical ?? ''
+
                 })
         }
 
@@ -526,7 +536,7 @@ function myDraftsHandler(options) {
             document.querySelector('input[name="draft_name"]').value = (draft) ? draft.name : ''
             document.querySelector('select[name="draft_cat_id"]').value = (draft) ? (draft.cat_id || '') : ''
             document.querySelector('input[name="public_draft"]').checked = (draft) ? (draft.public === '1') : false
-         //   document.querySelector('input[name="includes_main_form"]').checked = false
+            //   document.querySelector('input[name="includes_main_form"]').checked = false
 
         }
 

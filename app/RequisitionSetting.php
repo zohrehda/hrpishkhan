@@ -38,6 +38,9 @@ class RequisitionSetting extends Model
     public function __construct($primary)
     {
         $this->primary = $primary;
+        foreach (self::schema()[$primary] as $k => $v) {
+            $this->$k = $v;
+        }
         parent::__construct();
     }
 
@@ -66,7 +69,7 @@ class RequisitionSetting extends Model
 
     }
 
-    public static function sections() : array
+    public static function sections(): array
     {
         return [
             'requisition_information' => [

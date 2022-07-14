@@ -9,7 +9,7 @@
                         <div class="col-{{$schema['grid_col']}}">
 
 
-                        @switch($schema['type'])
+                            @switch($schema['type'])
 
                                 @case('text')
                                     <label for="{{$name}}"
@@ -33,14 +33,17 @@
                                     <label for="{{$name}}"
                                            class=@if($schema['required']) 'required' @endif>{{$schema['label']}}</label>
 
-                                    @if(isset($requisition) and count($schema['options'])>0 and !in_array($requisition->getOriginal($name),array_keys($schema['options'])) )
+                                    @if(!isset($schema['multiple']) and isset($requisition) and count($schema['options'])>0 and !in_array($requisition->getOriginal($name),array_keys($schema['options'])) )
                                         <small class="text-danger"> the input type has changed. choose a new
                                             value </small>
                                     @endif
-                                    <select id="{{$name}}" name="{{$name}}" data-old="{{old($name)}}"
-                                            class="form-space custom-select">
 
-                                        @if($schema['required'] )
+                                    <select id="{{$name}}"
+                                            name=@if(isset($schema['multiple'])) {{$name.'[]'}} @else {{$name}} @endif data-old="{{ !is_array(old($name))?old($name):json_encode(old($name)) }}"
+                                            class="form-space custom-select "
+                                            @if(isset($schema['multiple'])) multiple="multiple" @endif>
+
+                                        @if($schema['required'] and !isset($schema['multiple']) )
                                             <option @if( old($name)=='' || !isset($requisition)  ) selected
                                                     @endif disabled
                                                     value=''>
@@ -51,7 +54,13 @@
                                         @foreach($schema['options'] as $value=>$option)
                                             {{$value}}
                                             <option value="{{$value}}"
-                                                    @if( old($name,isset($requisition)?$requisition->getOriginal($name):'' )==$value) selected @endif
+                                                    @if(isset($schema['multiple']))
+                                                        @if( in_array( $value, old($name, isset($requisition)? (json_decode($requisition->getOriginal($name),true)?:[$requisition->getOriginal($name)])  :[] ) ) ) selected
+                                                    @endif
+
+                                                    @else
+                                                        @if( old($name,isset($requisition)?$requisition->getOriginal($name):'' )==$value) selected @endif
+                                                @endif
                                             >{{$option}}</option>
                                         @endforeach
                                     </select>
@@ -136,7 +145,7 @@
 
     <button type="button"
             data-toggle="modal" data-target="#draftModel"
-              class="btn btn-navy">Template
+            class="btn btn-navy">Template
     </button>
 
     @can('add_viewer',$requisition??null)

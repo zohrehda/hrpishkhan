@@ -104,10 +104,10 @@ $(document).ready(function () {
 
         departmentsRequiresvertical = Object.values(formItemsSetting.vertical.required_if)[0];
         if (departmentsRequiresvertical.indexOf(value) !== -1) {
-            $("*[name='vertical']").prop('disabled', false);
+            $("*[name='vertical[]']").prop('disabled', false);
         } else {
-            $("*[name='vertical']").prop('disabled', true);
-            $("*[name='vertical']").val('empty');
+            $("*[name='vertical[]']").prop('disabled', true);
+            $("*[name='vertical[]']").val('empty');
         }
     });
     departmentInput.trigger('change');
@@ -125,6 +125,8 @@ $(document).ready(function () {
             }
         });
     }
+    $('select').select2({
+    })
 
     initializeSelect2($('.select-user'));
     initializeSelect2($('.approver'));
@@ -257,7 +259,9 @@ $(document).ready(function () {
 
         if (!event.target.closest('.notification-bell') && !event.target.closest('.notification-list')) {
             $('.notification-list').hide()
+         //   $('.requisition-card').removeClass('highlight-card')
         }
+
     })
 
     $('.notification-list li').on('click', function () {

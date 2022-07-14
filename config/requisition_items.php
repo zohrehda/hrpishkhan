@@ -77,6 +77,7 @@ return [
         'type' => 'select',
         'label' => 'Vertical (Only for Tech & Product)',
         'grid_col' => 6,
+        'multiple' => true,
         'options' => [
             'back_office' => 'Back Office',
             'excellence_center' => 'Center Of Excellence',

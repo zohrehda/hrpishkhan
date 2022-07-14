@@ -29,6 +29,8 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+
     <link href="{{ asset('css/panel.css') }}" rel="stylesheet">
     <link href="{{ asset('css/side-panel.css') }}" rel="stylesheet">
 
@@ -36,7 +38,6 @@
     <link href="{{asset('MD.BootstrapPersianDateTimePicker/dist/jquery.md.bootstrap.datetimepicker.style.css')}}"
           rel="stylesheet"/>
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     <!--

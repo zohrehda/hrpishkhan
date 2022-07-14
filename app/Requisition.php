@@ -54,11 +54,39 @@ class Requisition extends Model
 
     }
 
+    public function setVerticalAttribute($value)
+    {
+        if (is_array($value)) {
+            return $this->attributes['vertical'] = json_encode($value);
+        }
+        return $this->attributes['vertical'] = $value;
+
+    }
+
+    public function getVerticalAttribute()
+    {
+        $decode = json_decode($this->attributes['vertical'], true);
+
+        if ($decode) {
+            $decode = array_map(function ($value) {
+                return RequisitionSetting::find('vertical')->options[$value];
+
+            },
+                json_decode($this->attributes['vertical'], true)
+            );
+
+            return implode(',', $decode);
+        }
+        return RequisitionSetting::find('vertical')->options[$this->attributes['vertical']];
+
+
+    }
+
     public function getIsNewAttribute()
     {
         return RequisitionItems::getItems('is_new')['radios'][$this->attributes['is_new']] ?? $this->attributes['is_new'];
-
     }
+
 
     public function getShiftAttribute()
     {
@@ -127,7 +155,7 @@ class Requisition extends Model
         return $label;
     }
 
-    public function getNotificationLabelAttribute() :string
+    public function getNotificationLabelAttribute(): string
     {
         $notification = $this->unread_notifications()->first();
         $label = '';
@@ -397,7 +425,7 @@ class Requisition extends Model
             'type' => $type
         ]);
         $sender = Auth::user();
-        event(new RequisitionCreated($this,$to));
+        event(new RequisitionCreated($this, $to));
 
         event(new RequisitionAssigned($sender, $to, $type));
 
@@ -461,16 +489,27 @@ class Requisition extends Model
             'status' => PENDING_STATUS,
             'determiner_comment' => null
         ]);
-        $this->determiners()->map(function ($user) {
+        $this->determiners->map(function ($user) {
             event(new RequisitionCreated($this, $user));
 
         });
     }
 
+    public function isChangedSelectOption($item, $value): bool
+    {
+        $options = RequisitionSetting::find($item)->options;
+        if (count($options) > 0 and !in_array($value, array_keys($options))) {
+            return true;
+        }
+        return false;
+
+        //  isset($requisition) and count($schema['options'])>0 and !in_array($requisition->getOriginal($name),array_keys($schema['options']))
+
+
+    }
 
     public function approval_progress_status()
     {
-
         $status_array = $this->approval_progresses()->getResults()->map(function ($item) {
             return $item->getOriginal('status');
         })->toArray();
