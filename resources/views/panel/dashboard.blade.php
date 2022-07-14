@@ -3,6 +3,8 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    @php $staff_info=App\Extract\StaffInfo::get() @endphp
+
     <h2>Pending</h2>
     <hr>
     @include('requisitions.index', ['requisitions' => $pending , 'card_class' => 'bg-red'])
@@ -29,6 +31,6 @@
 
 
 
-    
+
 
 @endsection

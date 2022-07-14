@@ -16,7 +16,8 @@
                                 <div>
                                     {{ $requisition->en_title }}
                                     <br>
-                                    {{$requisition->owner->details()['name']}}
+                                    {{$staff_info->where('email',$requisition->owner->email)->first()['name']??$requisition->owner->name  }}
+
                                 </div>
 
                                 <div class="ribbon">
@@ -58,7 +59,7 @@
                                     <div class="card-body bg-light">
 
                                         <div>
-                                            @foreach($requisition->owner->details() as $k=>$v)
+                                            @foreach($staff_info->where('email',$requisition->owner->email)->first()??['name'=>$requisition->owner->name,'email'=>$requisition->owner->email] as $k=>$v)
                                                 <div class="text-dark">
                                                     {{ucfirst($k)}} : {{$v}}
                                                 </div>
