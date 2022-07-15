@@ -59,39 +59,13 @@ function dropZone2(options) {
             let name = elm.files[i].name
             let type = elm.files[i].type
             let size = elm.files[i].size
-
+            if (size>5990859){
+                alert('maximum file size is 6MB')
+                return ;
+            }
             reader.onload = function (e) {
                 let data = e.target.result;
                 _this.createImageBlock({isNew: true, src: data, name: name, size: size, type: type})
-
-                /*   let img = document.createElement('img')
-                   if (validImgType.includes(type)) {
-                       img.setAttribute('src', data)
-                   } else {
-                       img.setAttribute('src', 'http://hrpishkhan.local/file.png')
-                   }
-
-                   let imgBlock = document.createElement('div')
-                   imgBlock.setAttribute('class', 'img-block')
-                   imgBlock.setAttribute('data-file', name)
-                   imgBlock.addEventListener('mouseenter', function () {
-                       //   imgBlock.firstChild.
-                   })
-                   let cover = document.createElement('div')
-                   let coverOuter = document.createElement('div')
-                   cover.setAttribute('class', 'cover')
-                   cover.innerHTML = name + "<br>" + size
-                   coverOuter.appendChild(cover)
-                   coverOuter.setAttribute('class', 'cover-outer')
-                   imgBlock.appendChild(coverOuter)
-                   let caption = document.createElement('div')
-                   caption.setAttribute('class', 'caption')
-                   caption.setAttribute('data-toggle', 'remove')
-                   caption.innerText = 'remove'
-                   imgBlock.appendChild(img)
-                   imgBlock.appendChild(caption)
-                   document.querySelector('.dropzone').appendChild(imgBlock)
-   */
                 document.querySelectorAll("[data-toggle=remove]").forEach(function (item) {
                     item.addEventListener('click', function () {
                         _this.remove(this, elm)

@@ -41,11 +41,11 @@
                         class="notification-count badge badge-light">{{Auth::user()->unreadNotifications->count()?:'' }}</span>
                 </div>
 
-                <ul class="notification-list mt-2 shadow-lg p-1 position-absolute w-25  mb-5 bg-white rounded list-group list-group-flush">
+                <ul class="notification-list mt-2 shadow-lg p-1 position-absolute   mb-5 bg-white rounded list-group list-group-flush">
                     @forelse(Auth::user()->unReadnotifications->sortBy('created_at')->reverse() as $notification)
-                        <li class="list-group-item  d-flex justify-content-between @if(!$notification->read_at)font-weight-bold @endif cursor-pointer"
+                        <li class="list-group-item align-items-center  d-flex justify-content-between @if(!$notification->read_at)font-weight-bold @endif cursor-pointer"
                             data-requisition-id="{{$notification->data['requisition_id']}}">
-                            <span>{{$notification->message}}</span>
+                            <span class="mr-2">{{$notification->message}}</span>
                             <small>{{$notification->created_at}}</small>
                         </li>
 
