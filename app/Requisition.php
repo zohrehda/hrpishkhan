@@ -78,7 +78,7 @@ class Requisition extends Model
 
             return implode(',', $decode);
         }
-        return RequisitionSetting::find('vertical')->options[$this->attributes['vertical']];
+        return RequisitionSetting::find('vertical')->options[$this->attributes['vertical']]??$this->attributes['vertical'];
 
 
     }
