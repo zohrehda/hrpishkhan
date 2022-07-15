@@ -45,7 +45,7 @@
                     @forelse(Auth::user()->unReadnotifications->sortBy('created_at')->reverse() as $notification)
                         <li class="list-group-item align-items-center  d-flex justify-content-between @if(!$notification->read_at)font-weight-bold @endif cursor-pointer"
                             data-requisition-id="{{$notification->data['requisition_id']}}">
-                            <span class="mr-2">{{$notification->message}}</span>
+                            <span class="mr-5">{{$notification->message}}</span>
                             <small>{{$notification->created_at}}</small>
                         </li>
 
