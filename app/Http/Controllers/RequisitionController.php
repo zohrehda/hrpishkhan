@@ -7,6 +7,7 @@ use App\Classes\StaffHierarchy;
 use App\Events\RequisitionChanged;
 use App\Events\RequisitionCreated;
 use App\Events\RequisitionSent;
+use App\Notification;
 use App\Notifications\NewRequisition;
 use App\Requisition;
 use App\RequisitionSetting;
@@ -92,9 +93,9 @@ class RequisitionController extends Controller
 
         $requisition->attachments_handler($request->file('attachments', []), $request->input('removed_attachments', []));
 
-     /*   if ($request->file('attachments')) {
-            $requisition->store_files($request->file('attachments'));
-        }*/
+        /*   if ($request->file('attachments')) {
+               $requisition->store_files($request->file('attachments'));
+           }*/
 
         $this->send_email_to_determiner($requisition->determiner_id);
         $requisition->save();
@@ -168,9 +169,9 @@ class RequisitionController extends Controller
 
     public function destroy(Requisition $requisition)
     {
-        // authorize user to delete requisition
-        $this->authorize('destroy', $requisition);
 
+        $this->authorize('destroy', $requisition);
+        Notification::where('data->requisition_id', $requisition->id)->delete();
         $requisition->delete();
 
         Session()->flash('success', 'Requisition deleted successfully.');
