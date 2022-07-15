@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-9">
-                <form id="form" action="{{ Route('requisitions.update') }}" method="POST">
+                <form id="form" action="{{ Route('requisitions.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="id" value="{{$requisition->id}}">
 

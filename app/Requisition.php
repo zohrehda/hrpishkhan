@@ -18,6 +18,7 @@ use App\Events\RequisitionRejected;
 
 
 use App\Classes\RequisitionItems;
+use Illuminate\Support\Facades\Storage;
 
 
 class Requisition extends Model
@@ -673,9 +674,30 @@ class Requisition extends Model
 
     }
 
-    public function store_files($files)
+    public function attachments()
     {
-        $this->attachments()->delete();
+        return $this->hasMany(Attachments::class, 'requisition_id');
+    }
+
+    public function attachments_handler($attachments, $removed)
+    {
+        $this->store_attachments($attachments);
+        $this->delete_attachments($removed);
+
+    }
+
+    public function delete_attachments($attachments)
+    {
+        foreach ($attachments as $file_id) {
+
+            $file = $this->attachments()->find($file_id);
+            $file->delete();
+            Storage::delete('/attachments/' . $file->name);
+        }
+    }
+
+    public function store_attachments($files)
+    {
         foreach ($files as $file) {
 
             $file_name = uniqid() . "." . $file->getClientOriginalExtension();

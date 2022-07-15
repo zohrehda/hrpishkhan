@@ -46,7 +46,7 @@ class RequisitionSetting extends Model
 
     public function is_foreign(): bool
     {
-        return (in_array($this->primary, ['attachment', 'determiners']));
+        return (in_array($this->primary, ['attachments', 'determiners']));
     }
 
     public static function find($primary)
@@ -96,6 +96,10 @@ class RequisitionSetting extends Model
                 'title' => 'Interviewers',
                 'items' => self::slice_items('interviewers', 'interviewers'),
             ],
+            'attachments' => [
+                'title' => 'Attachments',
+                'items' => self::slice_items('attachments', 'attachments'),
+            ] ,
             'determiners' => [
                 'title' => 'Approver Selection',
                 'items' => self::slice_items('determiners', 'determiners'),

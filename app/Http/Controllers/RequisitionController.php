@@ -90,9 +90,11 @@ class RequisitionController extends Controller
         $requisition->create_determiners($determiners);
 
 
-        if ($request->file('attachment')) {
-            $requisition->store_files($request->file('attachment'));
-        }
+        $requisition->attachments_handler($request->file('attachments', []), $request->input('removed_attachments', []));
+
+     /*   if ($request->file('attachments')) {
+            $requisition->store_files($request->file('attachments'));
+        }*/
 
         $this->send_email_to_determiner($requisition->determiner_id);
         $requisition->save();
@@ -104,6 +106,7 @@ class RequisitionController extends Controller
 
     public function update(Request $request)
     {
+
         $requisition = Requisition::find($request->post('id'));
 
         if ($request->post('only_titles')) {
@@ -117,9 +120,8 @@ class RequisitionController extends Controller
 
         $requisition = $requisition->store($request);
 
-        if ($request->file('attachment')) {
-            $requisition->store_files($request->file('attachment'));
-        }
+        $requisition->attachments_handler($request->file('attachments', []), $request->input('removed_attachments', []));
+
 
         if (Auth::user()->can('update_determiners', $requisition)) {
             $determiners = Determiners::ordered($request->post('determiners', []), $requisition);
@@ -188,7 +190,7 @@ class RequisitionController extends Controller
             ]);
             $requisition->assign($request->post('user_id'), $request->post('assign_type'));
 
-        } elseif ($request->post('progress_result') ==REJECT_ACTION) {
+        } elseif ($request->post('progress_result') == REJECT_ACTION) {
             $requisition->reject($request->post('determiner_comment'));
 
         } elseif ($request->post('progress_result') == HOLD_ACTION) {
@@ -200,9 +202,9 @@ class RequisitionController extends Controller
         } elseif ($request->post('progress_result') == FINAL_ACCEPT_ACTION) {
             $requisition->final_accept();
         }
-       // event(new RequisitionCreated($requisition,User::find(4)));
+        // event(new RequisitionCreated($requisition,User::find(4)));
 
-        event(new RequisitionChanged($requisition,$request->post('progress_result')));
+        event(new RequisitionChanged($requisition, $request->post('progress_result')));
 
         $request->session()->flash('success', 'Requisition updated successfully.');
 
