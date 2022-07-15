@@ -16,7 +16,7 @@ class AddCatIdColumnToDraftsTable extends Migration
         Schema::table('drafts', function (Blueprint $table) {
 
             $table->addColumn('bigInteger','cat_id')->unsigned()->nullable()->default(null)  ;
-            $table->json('draft')->nullable()->change();
+          //  $table->json('draft')->nullable()->change();
             $table->foreign('cat_id','drafts_category_id_foreign')->on('draft_categories')->references('id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');

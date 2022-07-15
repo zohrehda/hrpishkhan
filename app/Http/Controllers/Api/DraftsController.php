@@ -53,21 +53,25 @@ class DraftsController extends Controller
             'draft_id' => 'exists:drafts,id',
             'draft_cat_id' => 'exists:draft_categories,id|nullable',
         ];
+        $draft = [];
         if (!$request->post('update')) {
             $rules['draft_name'][] = 'unique:drafts,name';
+            $draft = ['draft' => json_encode([])];
         }
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
         }
+
         $new = Draft::updateOrCreate(
             ['id' => $request->post('draft_id')],
             ['name' => $request->post('draft_name'),
                 'cat_id' => $request->post('draft_cat_id'),
                 'user_id' => $request->post('user_id'),
                 'public' => $request->input('public_draft') ? '1' : '0',
-            ]);
+            ]+$draft
+        );
 
         if ($request->post('includes_main_form')) {
             $new->update([
@@ -77,6 +81,7 @@ class DraftsController extends Controller
 
         return response()->json($new);
     }
+
 
     public function destroy($id)
     {
